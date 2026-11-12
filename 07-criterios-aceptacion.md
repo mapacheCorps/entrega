@@ -29,6 +29,19 @@ Característica: Recepción de aporte
     Entonces se informa la coincidencia exacta
     Y la coincidencia no se interpreta como aprobación académica
 
+  Escenario: Clasificación académica dependiente
+    Dado el autor selecciona una carrera
+    Cuando el sistema muestra los ramos disponibles
+    Entonces solo aparecen los ramos de esa carrera
+    Y al seleccionar un ramo, solo aparecen sus temas o unidades
+    Y el período académico se puede elegir con independencia del ramo
+
+  Escenario: Confirmación con información útil para el autor
+    Dado el autor presenta un aporte válido
+    Cuando el sistema confirma el registro
+    Entonces muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que aún no se publica
+    Y no muestra el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión
+
 ```
 
 ## HU-02 : Asignar responsable de revisión

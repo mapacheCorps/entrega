@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block titulo %}Coincidencia exacta — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <p class="etiqueta">Duplicado exacto</p>
+  <h1>Ya existe un archivo idéntico registrado</h1>
+
+  <div class="alerta info" role="status">
+    {{ mensaje or 'La coincidencia no es una aprobación académica.' }}
+  </div>
+
+  {% if duplicado %}
+    <h2>Aporte existente</h2>
+    <dl class="datos">
+      <dt>Identificador</dt><dd>#{{ duplicado.aporte_id }}</dd>
+      <dt>Autor</dt><dd>{{ duplicado.autor }}</dd>
+      <dt>Ramo</dt><dd>{{ duplicado.ramo }}</dd>
+      <dt>Tema</dt><dd>{{ duplicado.tema }}</dd>
+      <dt>Fecha de envío</dt><dd>{{ duplicado.fecha_envio }}</dd>
+      <dt>Estado del aporte</dt><dd>{{ duplicado.estado_aporte }}</dd>
+      <dt>Estado de la versión</dt><dd>{{ duplicado.estado_version }}</dd>
+    </dl>
+    <p>
+      <a class="boton" href="{{ url_for('detalle_aporte', aporte_id=duplicado.aporte_id) }}">Ver el aporte existente</a>
+    </p>
+  {% endif %}
+
+  <p class="ayuda">
+    Esta coincidencia solo indica que los bytes del archivo son iguales a los de
+    un aporte ya registrado. No representa una decisión de revisión ni una
+    aprobación académica.
+  </p>
+  <a class="enlace" href="{{ url_for('formulario_aporte') }}">Enviar otro aporte</a>
+</section>
+{% endblock %}

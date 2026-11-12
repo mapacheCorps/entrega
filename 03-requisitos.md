@@ -6,7 +6,7 @@ Los requisitos se clasifican en producto y proyecto. Los requisitos de producto 
 
 | ID | Requisito | Tipo | Actividad TO-BE | Cambio | Criterio |
 |---|---|---|---|---|---|
-| RP-01 | El sistema debe permitir enviar un aporte con archivo, procedencia declarada, carrera, ramo, período académico y tema o unidad. | Funcional | P01, P02, P03 | C01 | D03 |
+| RP-01 | El sistema debe permitir enviar un aporte con archivo, procedencia declarada, carrera, ramo, período académico y tema o unidad. Las opciones de ramo deben corresponder a la carrera seleccionada y las de tema al ramo seleccionado; el período académico se elige con independencia del ramo. | Funcional | P01, P02, P03 | C01 | D03 |
 | RP-02 | Antes de enviar a revisión, el sistema debe comprobar los campos obligatorios, que el archivo no esté vacío y que cumpla el formato y tamaño configurados; si falla, debe identificar el problema y solicitar corrección. La detección de duplicados exactos debe informar la coincidencia para resolverla sin atribuirle validez académica. | Funcional | P04, P07 | C02 | D04 |
 | RP-03 | El sistema debe asignar cada aporte a un ayudante habilitado para el ramo y disponible; si no existe, debe mantenerlo pendiente de asignación y mostrarlo a coordinación, sin aprobarlo automáticamente. | Funcional | P05 | C02 | D02 |
 | RP-04 | El sistema debe permitir al ayudante autorizado registrar aprobación, solicitud de corrección o rechazo, indicando versión, fecha, responsable, alcance y observaciones. | Funcional | P06, P10 | C03 | D01, D02 |

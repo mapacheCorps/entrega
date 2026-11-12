@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block titulo %}Inicio — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="hero">
+  <p class="etiqueta">Comunidad de apuntes</p>
+  <h1>Comparte tu apunte con la información que la comunidad necesita</h1>
+  <p>
+    Adjunta el archivo, declara su procedencia y clasifícalo por carrera, ramo,
+    período académico y tema. El aporte quedará pendiente de revisión; no se
+    publica de inmediato.
+  </p>
+  {% if es_estudiante %}
+    <a class="boton" href="{{ url_for('formulario_aporte') }}">Enviar un aporte</a>
+  {% else %}
+    <p class="aviso">
+      El perfil activo es <strong>{{ rol_actual }}</strong>. Para enviar un aporte,
+      cambia al perfil <strong>Estudiante</strong> en el selector superior.
+    </p>
+    {% if rol_actual == 'Moderador' %}
+      <p class="ayuda">El perfil Moderador representa a la Comunidad Estudiantil.</p>
+    {% endif %}
+  {% endif %}
+</section>
+
+<section class="tarjetas" aria-label="Resumen">
+  <article class="tarjeta">
+    <h2>Aportes registrados</h2>
+    <p class="numero">{{ total_aportes }}</p>
+    <p>En esta base de demostración.</p>
+  </article>
+  <article class="tarjeta">
+    <h2>Validación previa</h2>
+    <p>Datos obligatorios, formato, tamaño y duplicado exacto.</p>
+  </article>
+  <article class="tarjeta">
+    <h2>Sin publicación automática</h2>
+    <p>Todo aporte queda pendiente de asignación y revisión.</p>
+  </article>
+</section>
+{% endblock %}

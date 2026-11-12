@@ -42,4 +42,8 @@ Fuente editable: [`casos-de-uso.puml`](./diagramas/casos-de-uso.puml)
 4. Si la rechaza, la versión no se publica y el autor recibe la justificación y el feedback para corregirla.
 5. Si el autor presenta una nueva versión, esta vuelve al proceso de revisión.
 
+## Notas por caso de uso
+
+- **CU-01 — Clasificación dependiente:** el selector de ramo ofrece solo los ramos de la carrera seleccionada y el de tema solo los temas del ramo seleccionado; el período académico se elige con independencia del ramo. La validación del servidor rechaza combinaciones incoherentes.
+
 El diagrama no incorpora relaciones `<<include>>` ni `<<extend>>` sin una dependencia de objetivos que las justifique. El almacenamiento y el correo se mantienen como integraciones propuestas.

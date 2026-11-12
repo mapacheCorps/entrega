@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block titulo %}Enviar aporte — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <div>
+      <p class="etiqueta">HU-01 · Enviar y clasificar</p>
+      <h1>Enviar un aporte</h1>
+      <p>El aporte quedará pendiente de revisión y no se publicará automáticamente.</p>
+    </div>
+    <a class="enlace" href="{{ url_for('inicio') }}">Volver al inicio</a>
+  </div>
+
+  {% if not puede_crear %}
+    <div class="alerta">
+      El perfil activo es <strong>{{ rol_actual }}</strong>. Solo el perfil
+      <strong>Estudiante</strong> puede enviar aportes en esta historia.
+    </div>
+  {% endif %}
+
+  {% if error_general %}
+    <div class="alerta error" role="alert">{{ error_general }}</div>
+  {% endif %}
+
+  {% if errores.get('archivo') %}
+    <div class="alerta error" role="alert">{{ errores.get('archivo') }}</div>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('crear_aporte') }}" enctype="multipart/form-data" class="formulario">
+    <fieldset {% if not puede_crear %}disabled{% endif %}>
+      <legend>Archivo y procedencia</legend>
+
+      <div class="campo">
+        <label for="archivo">Archivo del apunte</label>
+        <input type="file" id="archivo" name="archivo" accept=".pdf,.docx,.pptx,.png,.jpg" required>
+        <p class="ayuda">Formatos aceptados: .pdf, .docx, .pptx, .png y .jpg. Máximo 10 MB.</p>
+        {% if errores.get('archivo') %}<p class="error-campo">{{ errores.get('archivo') }}</p>{% endif %}
+      </div>
+
+      <div class="campo">
+        <label for="procedencia">Procedencia declarada</label>
+        <input type="text" id="procedencia" name="procedencia" maxlength="500"
+               value="{{ valores.get('procedencia', '') }}"
+               placeholder="Ej.: apuntes de la clase, resumen propio, material de ayudantía" required>
+        {% if errores.get('procedencia') %}<p class="error-campo">{{ errores.get('procedencia') }}</p>{% endif %}
+      </div>
+    </fieldset>
+
+    <fieldset {% if not puede_crear %}disabled{% endif %}>
+      <legend>Clasificación académica</legend>
+
+      <div class="campo">
+        <label for="carrera_id">Carrera</label>
+        <select id="carrera_id" name="carrera_id" required>
+          <option value="">Selecciona una carrera</option>
+          {% for carrera in carreras %}
+            <option value="{{ carrera.id }}"
+              {% if valores.get('carrera_id')|string == carrera.id|string %}selected{% endif %}>
+              {{ carrera.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+        {% if errores.get('carrera_id') %}<p class="error-campo">{{ errores.get('carrera_id') }}</p>{% endif %}
+      </div>
+
+      <div class="campo">
+        <label for="ramo_id">Ramo</label>
+        <select id="ramo_id" name="ramo_id" required>
+          <option value="">Selecciona un ramo</option>
+          {% for grupo in ramos|groupby('carrera_nombre') %}
+            <optgroup label="{{ grupo.grouper }}">
+              {% for ramo in grupo.list %}
+                <option value="{{ ramo.id }}"
+                  {% if valores.get('ramo_id')|string == ramo.id|string %}selected{% endif %}>
+                  {{ ramo.nombre }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endfor %}
+        </select>
+        {% if errores.get('ramo_id') %}<p class="error-campo">{{ errores.get('ramo_id') }}</p>{% endif %}
+      </div>
+
+      <div class="campo">
+        <label for="periodo_id">Período académico</label>
+        <select id="periodo_id" name="periodo_id" required>
+          <option value="">Selecciona un período</option>
+          {% for periodo in periodos %}
+            <option value="{{ periodo.id }}"
+              {% if valores.get('periodo_id')|string == periodo.id|string %}selected{% endif %}>
+              {{ periodo.anio }} · semestre {{ periodo.semestre }}
+            </option>
+          {% endfor %}
+        </select>
+        {% if errores.get('periodo_id') %}<p class="error-campo">{{ errores.get('periodo_id') }}</p>{% endif %}
+      </div>
+
+      <div class="campo">
+        <label for="tema_id">Tema o unidad</label>
+        <select id="tema_id" name="tema_id" required>
+          <option value="">Selecciona un tema</option>
+          {% for grupo in temas|groupby('ramo_nombre') %}
+            <optgroup label="{{ grupo.grouper }}">
+              {% for tema in grupo.list %}
+                <option value="{{ tema.id }}"
+                  {% if valores.get('tema_id')|string == tema.id|string %}selected{% endif %}>
+                  {{ tema.numero }}. {{ tema.nombre }}
+                </option>
+              {% endfor %}
+            </optgroup>
+          {% endfor %}
+        </select>
+        {% if errores.get('tema_id') %}<p class="error-campo">{{ errores.get('tema_id') }}</p>{% endif %}
+      </div>
+    </fieldset>
+
+    {% if puede_crear %}
+      <button class="boton" type="submit">Enviar aporte</button>
+    {% endif %}
+  </form>
+</section>
+{% endblock %}

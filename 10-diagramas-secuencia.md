@@ -15,6 +15,10 @@ Fuente editable: [`dss-01.puml`](./diagramas/dss-01.puml)
 
 **Escenario principal:** el estudiante presenta un apunte válido, el servicio externo confirma el resguardo y el sistema deja el aporte pendiente de revisión comunitaria, no publicado.
 
+**Opciones de clasificación:** el selector de ramo ofrece solo los ramos de la carrera seleccionada y el de tema solo los temas del ramo seleccionado; el período académico se elige con independencia del ramo. La validación del servidor rechaza combinaciones incoherentes.
+
+**Confirmación al autor:** la respuesta exitosa muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que no se publica; no expone hash SHA-256, referencia de almacenamiento, tipo MIME ni fecha de creación de la versión.
+
 **Variantes `alt`:** datos de aporte inválidos o imposibilidad de resguardar el archivo. En ambos casos se informa el motivo al autor.
 
 ## DSS-02: Registrar la decisión y comunicar el feedback

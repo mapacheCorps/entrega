@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block titulo %}Aporte #{{ aporte.id }} — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+{% if aporte %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <div>
+      <p class="etiqueta">Aporte registrado</p>
+      <h1>Aporte #{{ aporte.id }}</h1>
+      <p class="estado estado-{{ aporte.estado_aporte }}">{{ aporte.estado_aporte_legible }}</p>
+    </div>
+    <a class="enlace" href="{{ url_for('inicio') }}">Volver al inicio</a>
+  </div>
+
+  {% if aviso %}
+    <div class="alerta" role="status">{{ aviso }}</div>
+  {% endif %}
+
+  {% if errores_archivo %}
+    <div class="alerta error" role="alert">
+      <p>El archivo no cumple las reglas configuradas:</p>
+      <ul>
+        {% for error in errores_archivo %}<li>{{ error }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div class="alerta info">
+    Este aporte <strong>aún no se publica</strong>. Queda pendiente de asignación y revisión.
+    {% if aporte.estado_aporte == 'RequiereCorreccion' %}
+      <a href="{{ url_for('formulario_correccion', aporte_id=aporte.id) }}">Subir un archivo corregido</a>.
+    {% endif %}
+  </div>
+
+  <div class="rejilla">
+    <section>
+      <h2>Clasificación</h2>
+      <dl class="datos">
+        <dt>Carrera</dt><dd>{{ aporte.carrera }}</dd>
+        <dt>Ramo</dt><dd>{{ aporte.ramo }}</dd>
+        <dt>Período</dt><dd>{{ aporte.anio }} · semestre {{ aporte.semestre }}</dd>
+        <dt>Tema</dt><dd>{{ aporte.tema }}</dd>
+        <dt>Procedencia</dt><dd>{{ aporte.procedencia }}</dd>
+        <dt>Autor</dt><dd>{{ aporte.autor }}</dd>
+        <dt>Fecha de envío</dt><dd>{{ aporte.fecha_envio_legible }}</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Versión actual</h2>
+      <dl class="datos">
+        <dt>Número</dt><dd>{{ aporte.numero }}</dd>
+        <dt>Archivo</dt><dd>{{ aporte.nombre_archivo }}</dd>
+        <dt>Estado</dt><dd>{{ aporte.estado_version_legible }}</dd>
+        <dt>Tamaño</dt><dd>{{ aporte.tamano_legible }}</dd>
+        <dt>Tipo MIME</dt><dd>{{ aporte.tipo_mime or '—' }}</dd>
+        <dt>Referencia de almacenamiento</dt><dd>{{ aporte.referencia_archivo or 'Sin archivo resguardado' }}</dd>
+        <dt>SHA-256</dt><dd class="mono">{{ aporte.hash_archivo or '—' }}</dd>
+        <dt>Creada</dt><dd>{{ aporte.fecha_creacion_legible }}</dd>
+      </dl>
+    </section>
+  </div>
+</section>
+{% else %}
+<section class="panel">
+  <h1>Aporte no disponible</h1>
+  <p>No fue posible cargar la información del aporte.</p>
+</section>
+{% endif %}
+{% endblock %}

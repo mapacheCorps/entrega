@@ -15,6 +15,8 @@ Como **estudiante que aporta material**, quiero **adjuntar y clasificar mi apunt
 - **HU-01-CA1:** Dado un archivo y todos los datos obligatorios válidos, al enviar se registra un aporte y pasa a validación.
 - **HU-01-CA2:** Si falta un campo obligatorio o el archivo incumple una regla configurada, se identifica el problema y no se remite a revisión hasta corregirlo.
 - **HU-01-CA3:** La coincidencia con un archivo idéntico se comunica para resolver el duplicado; no se presenta como aprobación académica.
+- **HU-01-CA4:** Las opciones de ramo corresponden a la carrera seleccionada y las de tema al ramo seleccionado; el período académico se elige con independencia del ramo.
+- **HU-01-CA5:** La confirmación muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que no se publica; no muestra hash, referencia de almacenamiento, tipo MIME ni fecha de creación.
 
 ## HU-02
 

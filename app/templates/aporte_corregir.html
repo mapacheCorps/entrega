@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block titulo %}Corregir aporte #{{ aporte.id }} — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <div>
+      <p class="etiqueta">Corrección de archivo</p>
+      <h1>Corregir el aporte #{{ aporte.id }}</h1>
+      <p>
+        La versión actual está en <strong>{{ aporte.estado_version_legible }}</strong>.
+        Al enviar un archivo se creará la versión {{ aporte.numero + 1 }} y la actual
+        quedará como <strong>Final</strong>.
+      </p>
+    </div>
+    <a class="enlace" href="{{ url_for('detalle_aporte', aporte_id=aporte.id) }}">Volver al aporte</a>
+  </div>
+
+  {% if error_general %}
+    <div class="alerta error" role="alert">{{ error_general }}</div>
+  {% endif %}
+
+  {% if errores.get('archivo') %}
+    <div class="alerta error" role="alert">{{ errores.get('archivo') }}</div>
+  {% endif %}
+
+  {% if errores_archivo %}
+    <div class="alerta error" role="alert">
+      <ul>
+        {% for error in errores_archivo %}<li>{{ error }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <dl class="datos">
+    <dt>Archivo anterior</dt><dd>{{ aporte.nombre_archivo }}</dd>
+    <dt>Estado anterior</dt><dd>{{ aporte.estado_version_legible }}</dd>
+  </dl>
+
+  <form method="post" action="{{ url_for('corregir_aporte', aporte_id=aporte.id) }}" enctype="multipart/form-data" class="formulario">
+    <div class="campo">
+      <label for="archivo">Archivo corregido</label>
+      <input type="file" id="archivo" name="archivo" accept=".pdf,.docx,.pptx,.png,.jpg" required>
+      <p class="ayuda">Formatos aceptados: .pdf, .docx, .pptx, .png y .jpg. Máximo 10 MB.</p>
+    </div>
+    <button class="boton" type="submit">Enviar versión corregida</button>
+  </form>
+</section>
+{% endblock %}

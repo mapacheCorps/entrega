@@ -1,3 +1,12 @@
 .idea/
 .DS_Store
 Thumbs.db
+
+# Aplicación Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+data/app.db
+data/archivos/
