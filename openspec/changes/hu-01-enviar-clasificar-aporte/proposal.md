@@ -7,6 +7,8 @@ En el proceso AS-IS el material se comparte por chats y contactos, sin una clasi
 ## What Changes
 
 - Se agrega una pantalla para que un estudiante autor adjunte un apunte y declare procedencia, carrera, ramo, período académico y tema.
+- La clasificación se elige en cascada: el selector de ramo ofrece solo los ramos de la carrera seleccionada y el de tema solo los temas del ramo seleccionado. El período académico se mantiene independiente. El servidor rechaza combinaciones incoherentes aunque se manipule la solicitud.
+- La confirmación muestra solo información útil para el autor: identificadores del aporte y de la versión, clasificación, estado y la aclaración de que no se publica. No expone hash SHA-256, referencia de almacenamiento, tipo MIME ni fecha de creación.
 - El sistema valida los campos obligatorios y el archivo: no vacío, extensión permitida (`.pdf`, `.docx`, `.pptx`, `.png`, `.jpg`) y tamaño máximo de 10 MB.
 - Se detectan duplicados exactos mediante SHA-256. Si existe una coincidencia, se informa el aporte ya registrado y no se presenta la coincidencia como aprobación académica.
 - Un envío válido crea un `Aporte` en estado `PendienteAsignacion` y su `VersionApunte` número 1 en estado `PendienteRevision`. El aporte no se publica.

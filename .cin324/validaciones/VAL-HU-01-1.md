@@ -1,6 +1,6 @@
 # Informe de validación — HU-01 · Enviar y clasificar un aporte
 
-**Fecha:** 2026-11-12 · **Cambio de OpenSpec validado:** `hu-01-enviar-clasificar-aporte` · **Estado:** artefactos actualizados; pendiente regenerar y volver a validar.
+**Fecha:** 2026-11-12 · **Cambio de OpenSpec validado:** `hu-01-enviar-clasificar-aporte` · **Estado:** ajustes implementados y verificados; pendiente la validación final del estudiante.
 
 ## Resumen
 
@@ -9,7 +9,7 @@
 | OBS-1 | Al elegir una carrera, el selector de ramo mostraba ramos de otras carreras; al elegir un ramo, el selector de tema mostraba temas de otros ramos. El período académico estaba bien. | **B** (brecha de especificación, con rastro de **C** frente a la ficha) | `07-criterios-aceptacion.md`, HU-01: escenario «Clasificación académica dependiente» | `04-historias-usuario.md`, `03-requisitos.md`, `.cin324/historias/HU-01.md`, `09-casos-de-uso.md`, `10-diagramas-secuencia.md`, `12-trazabilidad.md` |
 | OBS-2 | Después de enviar, la confirmación mostraba SHA-256, referencia de almacenamiento, tipo MIME y fecha de creación. Solo debía mostrar información útil para el autor. | **B** (brecha de especificación) | `07-criterios-aceptacion.md`, HU-01: escenario «Confirmación con información útil para el autor» | `04-historias-usuario.md`, `.cin324/historias/HU-01.md`, `10-diagramas-secuencia.md`, `12-trazabilidad.md` |
 
-**Lo que sí funcionó:** los cinco caminos de HU-01 (envío válido, datos faltantes, archivo inválido con corrección, duplicado exacto y fallo de almacenamiento), los estados, el selector de dos perfiles y las 60 pruebas automáticas.
+**Lo que sí funcionó:** los cinco caminos de HU-01 (envío válido, datos faltantes, archivo inválido con corrección, duplicado exacto y fallo de almacenamiento), los estados, el selector de dos perfiles y las 62 pruebas automáticas tras el ajuste.
 
 ## Detalle por observación
 
@@ -37,15 +37,22 @@
   - `07-criterios-aceptacion.md`: escenario «Confirmación con información útil para el autor».
   - `10-diagramas-secuencia.md`: nota «Confirmación al autor» en DSS-01.
 
+## Verificación de la regeneración
+
+- `pytest`: **62 pruebas aprobadas**.
+- `openspec validate "hu-01-enviar-clasificar-aporte"`: **cambio válido**; solo quedan las advertencias conocidas por usar `DEBE` en vez de `SHALL/MUST`.
+- Navegador, OBS-1: al seleccionar **Ingeniería Civil Informática** solo aparecen Cálculo I, Estructuras de Datos e Ingeniería de Requisitos; al seleccionar este último solo aparecen sus dos temas. Al cambiar a **Ingeniería Comercial** solo aparece Microeconomía y se limpian ramo y tema. El período académico permanece independiente.
+- Navegador, OBS-2: la confirmación del aporte #3 muestra aporte, versión, archivo, estado, clasificación y la aclaración de no publicación; no muestra SHA-256, referencia de almacenamiento, tipo MIME, tamaño ni fecha de creación.
+- El servidor sigue rechazando combinaciones incoherentes aunque se manipule la solicitud.
+
 ## Consistencia final
 
 - `12-trazabilidad.md` se revisó: RP-01 y RP-02 siguen apuntando a HU-01 → CU-01 → DSS-01 → EST-01; la matriz no requiere cambios.
-- No se modificó código de la aplicación ni `openspec/`.
-- No cambiaron el proceso TO-BE, las relaciones del modelo de dominio ni los estados.
+- La regeneración ajustó el formulario y la confirmación; no cambió el proceso TO-BE, las relaciones del modelo de dominio ni los estados.
+- `openspec/changes/hu-01-enviar-clasificar-aporte/` se actualizó con los dos escenarios, el diseño y las tareas del ajuste.
 
 ## Siguiente paso
 
-1. Hacer commit de los artefactos actualizados.
-2. Ejecutar `/cin324-generar-app` para regenerar el ajuste de HU-01.
-3. Volver a ejecutar `/cin324-validar-sistema` para comprobar que OBS-1 y OBS-2 quedaron resueltas.
-4. Archivar el cambio `hu-01-enviar-clasificar-aporte` solo después de esa validación.
+1. Validar la aplicación como cliente, siguiendo los dos recorridos de este informe.
+2. Si no hay observaciones, archivar el cambio `hu-01-enviar-clasificar-aporte`.
+3. Hacer commit de la regeneración y del estado actualizado.

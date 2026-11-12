@@ -44,6 +44,8 @@
 - [x] 6.5 Implementar `GET /aportes/{id}` como confirmación con identificadores, estados y la aclaración de que el aporte no se publica; verificar con una prueba que la página muestra los datos del aporte registrado.
 - [x] 6.6 Implementar `GET /aportes/{id}/corregir` y `POST /aportes/{id}/correcciones` para subir el archivo corregido y mostrar el resultado; verificar con la prueba de corrección de extremo a extremo.
 - [x] 6.7 Crear las plantillas Jinja2 del layout, inicio, formulario, confirmación y corrección, en español y con etiquetas accesibles; verificar manualmente que las cinco páginas se renderizan sin errores de plantilla.
+- [x] 6.8 Implementar la selección en cascada del formulario: ramo según carrera y tema según ramo, con el período académico independiente; verificar que las opciones incoherentes se oculten y que el servidor siga rechazando combinaciones manipuladas.
+- [x] 6.9 Ajustar la confirmación para mostrar identificadores del aporte y de la versión, clasificación, estado y aclaración de no publicación, sin hash SHA-256, referencia de almacenamiento, tipo MIME ni fecha de creación; verificar con una prueba de la página de detalle.
 
 ## 7. Pruebas de los escenarios Gherkin
 
@@ -51,6 +53,8 @@
 - [x] 7.2 Implementar la prueba del escenario «Datos de aporte inválidos», comprobando que se identifica la causa y que la versión no se remite a revisión; verificar que `pytest` la apruebe.
 - [x] 7.3 Implementar la prueba del escenario «Archivo duplicado exacto», comprobando que se informa la coincidencia, que no se crea un nuevo aporte y que el mensaje no la presenta como aprobación académica; verificar que `pytest` la apruebe.
 - [x] 7.4 Ejecutar la suite completa con una base temporal limpia y verificar que todas las pruebas pasan y que ninguna depende de `data/app.db`.
+- [x] 7.5 Implementar la prueba del escenario «Clasificación académica dependiente», comprobando las opciones dependientes y el rechazo del servidor ante una combinación incoherente; verificar que `pytest` la apruebe.
+- [x] 7.6 Implementar la prueba del escenario «Confirmación con información útil para el autor», comprobando los identificadores y la ausencia de datos técnicos; verificar que `pytest` la apruebe.
 
 ## 8. Integración final y documentación
 

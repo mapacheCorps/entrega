@@ -58,24 +58,12 @@ def _fecha_legible(valor: str | None) -> str:
     return valor.replace("T", " ").replace("+00:00", " UTC")
 
 
-def _tamano_legible(valor: int | None) -> str:
-    if valor is None:
-        return "—"
-    if valor < 1024:
-        return f"{valor} B"
-    if valor < 1024 * 1024:
-        return f"{valor / 1024:.1f} KB"
-    return f"{valor / (1024 * 1024):.1f} MB"
-
-
 def _detalle(conexion: sqlite3.Connection, aporte_id: int) -> dict[str, object] | None:
     fila = AporteRepositorio(conexion).obtener_detalle(aporte_id)
     if fila is None:
         return None
     datos = dict(fila)
     datos["fecha_envio_legible"] = _fecha_legible(datos.get("fecha_envio"))
-    datos["fecha_creacion_legible"] = _fecha_legible(datos.get("fecha_creacion"))
-    datos["tamano_legible"] = _tamano_legible(datos.get("tamano_bytes"))
     datos["estado_aporte_legible"] = ESTADOS_APORTE.get(
         str(datos.get("estado_aporte")), str(datos.get("estado_aporte"))
     )

@@ -18,6 +18,29 @@ El sistema DEBE registrar un `Aporte` y su primera `VersionApunte` cuando el aut
 - **THEN** el sistema registra el aporte y su primera versión
 - **AND** la versión queda pendiente de asignación o revisión, sin publicarse
 
+### Requirement: Clasificación académica dependiente
+
+El sistema DEBE ofrecer en el formulario solo los ramos de la carrera seleccionada y solo los temas del ramo seleccionado. El período académico DEBE elegirse con independencia del ramo. La validación del servidor DEBE rechazar combinaciones incoherentes aunque se manipule la solicitud.
+
+#### Scenario: Clasificación académica dependiente
+
+- **GIVEN** el autor selecciona una carrera
+- **WHEN** el sistema muestra los ramos disponibles
+- **THEN** solo aparecen los ramos de esa carrera
+- **AND** al seleccionar un ramo, solo aparecen sus temas o unidades
+- **AND** el período académico se puede elegir con independencia del ramo
+
+### Requirement: Confirmación con información útil para el autor
+
+El sistema DEBE mostrar en la confirmación los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que el aporte no se publica. NO DEBE mostrar el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión.
+
+#### Scenario: Confirmación con información útil para el autor
+
+- **GIVEN** el autor presenta un aporte válido
+- **WHEN** el sistema confirma el registro
+- **THEN** muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que aún no se publica
+- **AND** no muestra el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión
+
 ### Requirement: Validación de datos y archivo
 
 El sistema DEBE identificar la causa cuando faltan datos obligatorios o el archivo es inválido. Si faltan datos, no DEBE crear el aporte ni la versión. Si los datos están completos y el archivo es inválido, DEBE crear el `Aporte` y la `VersionApunte` en estado `RequiereCorreccion`, con `referenciaArchivo` nula, sin remitirlos a revisión. La corrección DEBE crear una versión nueva y cerrar la anterior como `Final`.

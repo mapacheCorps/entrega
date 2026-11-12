@@ -72,7 +72,7 @@
           {% for grupo in ramos|groupby('carrera_nombre') %}
             <optgroup label="{{ grupo.grouper }}">
               {% for ramo in grupo.list %}
-                <option value="{{ ramo.id }}"
+                <option value="{{ ramo.id }}" data-carrera-id="{{ ramo.carrera_id }}"
                   {% if valores.get('ramo_id')|string == ramo.id|string %}selected{% endif %}>
                   {{ ramo.nombre }}
                 </option>
@@ -104,7 +104,7 @@
           {% for grupo in temas|groupby('ramo_nombre') %}
             <optgroup label="{{ grupo.grouper }}">
               {% for tema in grupo.list %}
-                <option value="{{ tema.id }}"
+                <option value="{{ tema.id }}" data-ramo-id="{{ tema.ramo_id }}"
                   {% if valores.get('tema_id')|string == tema.id|string %}selected{% endif %}>
                   {{ tema.numero }}. {{ tema.nombre }}
                 </option>
@@ -120,5 +120,69 @@
       <button class="boton" type="submit">Enviar aporte</button>
     {% endif %}
   </form>
+
+  <noscript>
+    <p class="ayuda">
+      Sin JavaScript, el servidor validará que el ramo pertenezca a la carrera
+      y que el tema pertenezca al ramo antes de registrar el aporte.
+    </p>
+  </noscript>
 </section>
+
+<script>
+  (() => {
+    const carrera = document.getElementById("carrera_id");
+    const ramo = document.getElementById("ramo_id");
+    const tema = document.getElementById("tema_id");
+    if (!carrera || !ramo || !tema) return;
+
+    const opcionesRamo = Array.from(ramo.querySelectorAll("option[data-carrera-id]"));
+    const opcionesTema = Array.from(tema.querySelectorAll("option[data-ramo-id]"));
+
+    function ocultarGruposVacios(select) {
+      select.querySelectorAll("optgroup").forEach((grupo) => {
+        const tieneOpcionesVisibles = Array.from(
+          grupo.querySelectorAll("option")
+        ).some((opcion) => !opcion.hidden);
+        grupo.hidden = !tieneOpcionesVisibles;
+      });
+    }
+
+    function sincronizarTemas() {
+      const ramoId = ramo.value;
+      let temaValido = false;
+
+      opcionesTema.forEach((opcion) => {
+        const visible = ramoId !== "" && opcion.dataset.ramoId === ramoId;
+        opcion.hidden = !visible;
+        opcion.disabled = !visible;
+        if (visible && opcion.value === tema.value) temaValido = true;
+      });
+
+      if (!temaValido) tema.value = "";
+      ocultarGruposVacios(tema);
+    }
+
+    function sincronizarRamos() {
+      const carreraId = carrera.value;
+      let ramoValido = false;
+
+      opcionesRamo.forEach((opcion) => {
+        const visible =
+          carreraId !== "" && opcion.dataset.carreraId === carreraId;
+        opcion.hidden = !visible;
+        opcion.disabled = !visible;
+        if (visible && opcion.value === ramo.value) ramoValido = true;
+      });
+
+      if (!ramoValido) ramo.value = "";
+      ocultarGruposVacios(ramo);
+      sincronizarTemas();
+    }
+
+    carrera.addEventListener("change", sincronizarRamos);
+    ramo.addEventListener("change", sincronizarTemas);
+    sincronizarRamos();
+  })();
+</script>
 {% endblock %}

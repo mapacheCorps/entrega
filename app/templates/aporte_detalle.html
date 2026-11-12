@@ -51,14 +51,10 @@
     <section>
       <h2>Versión actual</h2>
       <dl class="datos">
-        <dt>Número</dt><dd>{{ aporte.numero }}</dd>
+        <dt>Aporte</dt><dd>#{{ aporte.id }}</dd>
+        <dt>Versión</dt><dd>#{{ aporte.version_id }} · número {{ aporte.numero }}</dd>
         <dt>Archivo</dt><dd>{{ aporte.nombre_archivo }}</dd>
         <dt>Estado</dt><dd>{{ aporte.estado_version_legible }}</dd>
-        <dt>Tamaño</dt><dd>{{ aporte.tamano_legible }}</dd>
-        <dt>Tipo MIME</dt><dd>{{ aporte.tipo_mime or '—' }}</dd>
-        <dt>Referencia de almacenamiento</dt><dd>{{ aporte.referencia_archivo or 'Sin archivo resguardado' }}</dd>
-        <dt>SHA-256</dt><dd class="mono">{{ aporte.hash_archivo or '—' }}</dd>
-        <dt>Creada</dt><dd>{{ aporte.fecha_creacion_legible }}</dd>
       </dl>
     </section>
   </div>

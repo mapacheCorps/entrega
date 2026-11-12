@@ -104,3 +104,64 @@ def test_escenario_archivo_duplicado_exacto(cliente, catalogos, ruta_db):
     assert "no es una aprobación académica" in segundo.text
     assert len(_consultar(ruta_db, "SELECT * FROM aportes")) == 1
     assert len(_consultar(ruta_db, "SELECT * FROM versiones_apunte")) == 1
+
+
+def test_escenario_clasificacion_academica_dependiente(cliente, catalogos, ruta_db):
+    # Dado el autor abre el formulario de clasificación
+    formulario = cliente.get("/aportes/nuevo")
+
+    # Cuando el sistema muestra los ramos disponibles
+    assert formulario.status_code == 200
+    assert "data-carrera-id=" in formulario.text
+    assert "data-ramo-id=" in formulario.text
+    assert "sincronizarRamos" in formulario.text
+    assert "sincronizarTemas" in formulario.text
+
+    # Entonces cada ramo declara su carrera y cada tema declara su ramo
+    assert 'data-carrera-id="' in formulario.text
+    assert 'data-ramo-id="' in formulario.text
+
+    # Y el servidor rechaza una combinación incoherente aunque se manipule la solicitud
+    incoherente = cliente.post(
+        "/aportes",
+        data=datos_aporte(
+            catalogos,
+            carrera_id=catalogos["otra_carrera_id"],
+            ramo_id=catalogos["ramo_id"],
+        ),
+        files={"archivo": ("apunte.pdf", b"%PDF-1.4", "application/pdf")},
+    )
+
+    assert incoherente.status_code == 400
+    assert "El ramo no pertenece a la carrera seleccionada." in incoherente.text
+    assert _consultar(ruta_db, "SELECT * FROM aportes") == []
+
+
+def test_escenario_confirmacion_con_informacion_util(cliente, catalogos, ruta_db):
+    # Dado el autor presenta un aporte válido
+    respuesta = cliente.post(
+        "/aportes",
+        data=datos_aporte(catalogos),
+        files={"archivo": ("apunte.pdf", b"%PDF-1.4 confirmacion", "application/pdf")},
+        follow_redirects=False,
+    )
+    assert respuesta.status_code == 303
+
+    # Cuando el sistema confirma el registro
+    detalle = cliente.get(respuesta.headers["location"])
+
+    # Entonces muestra identificadores, clasificación, estado y la aclaración de no publicación
+    assert detalle.status_code == 200
+    assert "Aporte</dt><dd>#1" in detalle.text
+    assert "Versión</dt><dd>#1 · número 1" in detalle.text
+    assert "Ingeniería de Requisitos" in detalle.text
+    assert "Pendiente de asignación" in detalle.text
+    assert "Pendiente de revisión" in detalle.text
+    assert "aún no se publica" in detalle.text
+
+    # Y no muestra hash, referencia de almacenamiento, tipo MIME ni fecha de creación
+    assert "SHA-256" not in detalle.text
+    assert "Referencia de almacenamiento" not in detalle.text
+    assert "Tipo MIME" not in detalle.text
+    assert "Creada" not in detalle.text
+    assert "Tamaño" not in detalle.text

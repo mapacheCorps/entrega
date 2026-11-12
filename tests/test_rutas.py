@@ -110,6 +110,11 @@ def test_envio_valido_redirige_al_detalle(cliente, catalogos, ruta_db):
     assert "Pendiente de asignación" in detalle.text
     assert "Pendiente de revisión" in detalle.text
     assert "aún no se publica" in detalle.text
+    assert "número 1" in detalle.text
+    assert "SHA-256" not in detalle.text
+    assert "Referencia de almacenamiento" not in detalle.text
+    assert "Tipo MIME" not in detalle.text
+    assert "Creada" not in detalle.text
     assert _contar(ruta_db, "aportes") == 1
     assert _contar(ruta_db, "versiones_apunte") == 1
 
@@ -172,7 +177,7 @@ def test_correccion_de_extremo_a_extremo(cliente, catalogos, ruta_db):
     detalle = cliente.get(correccion.headers["location"])
     assert "Pendiente de asignación" in detalle.text
     assert "Pendiente de revisión" in detalle.text
-    assert "Número" in detalle.text
+    assert "número 2" in detalle.text
 
     conexion = conectar(ruta_db)
     try:

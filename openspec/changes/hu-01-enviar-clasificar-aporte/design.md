@@ -89,7 +89,7 @@ Una sola aplicación FastAPI con renderizado en el servidor mediante Jinja2. No 
 | `/aportes/{id}/corregir` | GET | Formulario de corrección de archivo inválido | Informar motivo y solicitar corrección |
 | `/aportes/{id}/correcciones` | POST | Crear la versión corregida | Reenviar versión corregida |
 
-El formulario carga carreras, ramos, períodos y temas desde la base. La relación `ramo → carrera` y `tema → ramo` se valida en el servidor; no se depende de JavaScript. La respuesta exitosa muestra los identificadores, el estado y la aclaración de que el aporte no se publica.
+El formulario carga carreras, ramos, períodos y temas desde la base. La selección se ofrece en cascada: el selector de ramo solo muestra los ramos de la carrera elegida y el de tema solo los temas del ramo elegido; el período académico se elige con independencia del ramo. La relación `ramo → carrera` y `tema → ramo` se valida también en el servidor, de modo que una solicitud manipulada se rechaza aunque se omita la ayuda de JavaScript. La respuesta exitosa muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que el aporte no se publica; no expone hash SHA-256, referencia de almacenamiento, tipo MIME ni fecha de creación.
 
 El selector de rol vive en el layout y guarda una cookie `demo_role`. Tiene dos perfiles: **Estudiante** (autor de los aportes) y **Moderador** (representa a la `ComunidadEstudiantil` del modelo). Para HU-01 solo el rol **Estudiante** puede crear y corregir aportes; el Moderador ve las pantallas sin habilitación. No es autenticación real: la cookie es una herramienta de demostración y se documenta como tal.
 
@@ -119,7 +119,7 @@ El hash se calcula sobre los bytes del archivo. La consulta busca en `versiones_
 
 Se usa pytest con `TestClient` de FastAPI y una base SQLite temporal por prueba. Las pruebas cubren:
 
-- Los tres escenarios Gherkin de HU-01.
+- Los escenarios Gherkin de HU-01, incluidos la clasificación dependiente y la confirmación con información útil.
 - Datos obligatorios faltantes: no se crea nada.
 - Archivo inválido con datos completos: se crea `RequiereCorreccion`.
 - Corrección: nueva versión y anterior en `Final`.
