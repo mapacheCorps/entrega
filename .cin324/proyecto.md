@@ -40,7 +40,7 @@
 ## Historias
 | Historia | Estado | Cambio de OpenSpec | Fecha | Observaciones |
 |----------|--------|--------------------|-------|----------------|
-| HU-01 | implementada · ajustes OBS-1/OBS-2 verificados | `hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Pendiente la validación final del estudiante y archivar el cambio. |
+| HU-01 | hecha · validada y archivada | `openspec/changes/archive/2026-11-12-hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Especificaciones sincronizadas a `openspec/specs/gestion-aportes/spec.md`. |
 | HU-02 | pendiente | — | — | Requiere aportes registrados (HU-01). |
 | HU-03 | pendiente | — | — | Requiere asignación/revisión (HU-02) y versiones. |
 | HU-04 | pendiente | — | — | Requiere una revisión con corrección (HU-03). |
@@ -55,7 +55,7 @@
 ## Validaciones
 | Historia | Informe | Estado | Fecha |
 |----------|---------|--------|-------|
-| HU-01 | `.cin324/validaciones/VAL-HU-01-1.md` | ajustes OBS-1/OBS-2 implementados y verificados | 2026-11-12 |
+| HU-01 | `.cin324/validaciones/VAL-HU-01-1.md` | validada por el estudiante; ajustes implementados y verificados | 2026-11-12 |
 
 ## Cambios posteriores
 | Cambio | Historia afectada | Motivo | Fecha |

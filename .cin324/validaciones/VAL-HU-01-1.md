@@ -1,6 +1,6 @@
 # Informe de validación — HU-01 · Enviar y clasificar un aporte
 
-**Fecha:** 2026-11-12 · **Cambio de OpenSpec validado:** `hu-01-enviar-clasificar-aporte` · **Estado:** ajustes implementados y verificados; pendiente la validación final del estudiante.
+**Fecha:** 2026-11-12 · **Cambio de OpenSpec validado:** `hu-01-enviar-clasificar-aporte` · **Estado:** validado por el estudiante, implementado y archivado.
 
 ## Resumen
 
@@ -53,6 +53,5 @@
 
 ## Siguiente paso
 
-1. Validar la aplicación como cliente, siguiendo los dos recorridos de este informe.
-2. Si no hay observaciones, archivar el cambio `hu-01-enviar-clasificar-aporte`.
-3. Hacer commit de la regeneración y del estado actualizado.
+1. Continuar con la siguiente historia pendiente, o con un ajuste sobre lo ya generado.
+2. Hacer commit del archivo del cambio y de las especificaciones principales sincronizadas.
