@@ -11,6 +11,9 @@ class EstadoAporte(str, Enum):
     PENDIENTE_ASIGNACION = "PendienteAsignacion"
     REQUIERE_CORRECCION = "RequiereCorreccion"
     ASIGNADO = "Asignado"
+    PUBLICADO = "Publicado"
+    RECHAZADO = "Rechazado"
+    CORRECCION_SOLICITADA = "CorreccionSolicitada"
 
 
 class EstadoVersion(str, Enum):
@@ -18,6 +21,16 @@ class EstadoVersion(str, Enum):
     PENDIENTE_REVISION = "PendienteRevision"
     REQUIERE_CORRECCION = "RequiereCorreccion"
     FINAL = "Final"
+    EN_REVISION = "EnRevision"
+    APROBADA = "Aprobada"
+    PUBLICADA = "Publicada"
+    RECHAZADA = "Rechazada"
+
+
+class DecisionRevision(str, Enum):
+    APROBACION = "Aprobacion"
+    RECHAZO = "Rechazo"
+    SOLICITUD_CORRECCION = "SolicitudCorreccion"
 
 
 @dataclass

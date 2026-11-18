@@ -8,9 +8,8 @@ from typing import Protocol
 
 from app.servicios.validacion import ArchivoSubido
 
-
 class ErrorAlmacenamiento(Exception):
-    """El servicio de almacenamiento no pudo resguardar o eliminar el archivo."""
+    """El servicio de almacenamiento no pudo completar la operación."""
 
 
 class AlmacenamientoArchivos(Protocol):
@@ -19,6 +18,8 @@ class AlmacenamientoArchivos(Protocol):
     ) -> str: ...
 
     def eliminar(self, referencia: str) -> None: ...
+
+    def leer(self, referencia: str) -> bytes: ...
 
 
 def nombre_seguro(nombre: str) -> str:
@@ -48,6 +49,16 @@ class AlmacenamientoLocal:
             raise ErrorAlmacenamiento(
                 "El servicio de almacenamiento no pudo resguardar el archivo."
             ) from exc
+
+    def leer(self, referencia: str) -> bytes:
+        try:
+            base = self.base_dir.resolve()
+            ruta = (base / referencia).resolve()
+            if Path(referencia).is_absolute() or base not in ruta.parents:
+                raise ErrorAlmacenamiento("La referencia del archivo no es válida.")
+            return ruta.read_bytes()
+        except (OSError, ValueError, RuntimeError) as exc:
+            raise ErrorAlmacenamiento("El archivo de la versión no está disponible.") from exc
 
     def eliminar(self, referencia: str) -> None:
         try:

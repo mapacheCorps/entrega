@@ -163,7 +163,8 @@ legend { font-weight: 700; padding: 0 0.35rem; }
 }
 
 .campo input,
-.campo select {
+.campo select,
+.campo textarea {
   width: 100%;
   padding: 0.55rem 0.6rem;
   border: 1px solid #b8b0a1;
@@ -204,8 +205,14 @@ legend { font-weight: 700; padding: 0 0.35rem; }
 }
 
 .estado-PendienteAsignacion,
-.estado-PendienteRevision { background: var(--info-claro); color: var(--info); }
-.estado-RequiereCorreccion { background: var(--error-claro); color: var(--error); }
+.estado-PendienteRevision,
+.estado-EnRevision { background: var(--info-claro); color: var(--info); }
+.estado-RequiereCorreccion,
+.estado-CorreccionSolicitada,
+.estado-Rechazada,
+.estado-Rechazado { background: var(--error-claro); color: var(--error); }
+.estado-Publicada,
+.estado-Publicado,
 .estado-Final { background: var(--acento-claro); color: var(--acento); }
 
 .rejilla {

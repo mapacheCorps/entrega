@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block titulo %}Revisión comunitaria — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <div>
+      <h1>Revisión del aporte #{{ revision.aporte_id }}</h1>
+      <p class="estado estado-{{ revision.estado_version }}">
+        {{ 'En revisión' if revision.estado_version == 'EnRevision' else 'Pendiente de revisión' }}
+      </p>
+    </div>
+    <a class="enlace" href="{{ url_for('panel_moderacion') }}">Volver a revisiones</a>
+  </div>
+
+  <dl class="datos">
+    <dt>Versión</dt><dd>{{ revision.numero }}</dd>
+    <dt>Revisor designado</dt><dd>{{ revision.revisor }} (#{{ revision.revisor_id }})</dd>
+    <dt>Archivo</dt>
+    <dd>
+      <a href="{{ url_for('archivo_revision', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
+        Abrir {{ revision.nombre_archivo }} (adjunto)
+      </a>
+    </dd>
+  </dl>
+
+  {% if revision.estado_version == 'PendienteRevision' %}
+    <form class="formulario" method="post" aria-label="Iniciar revisión"
+          action="{{ url_for('iniciar_revision', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
+      <button class="boton boton-asignar" type="submit">Iniciar revisión</button>
+    </form>
+  {% else %}
+    <h2 id="decision-titulo">Decisión académica</h2>
+    {% if errores %}
+      <p class="alerta error" role="alert">Revisa los campos indicados.</p>
+    {% endif %}
+    <form class="formulario" method="post" aria-labelledby="decision-titulo"
+          action="{{ url_for('decidir_revision', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
+      <div class="campo">
+        <label for="decision">Decisión</label>
+        <select id="decision" name="decision" required
+                {% if errores.decision %}aria-invalid="true" aria-describedby="error-decision"{% endif %}>
+          <option value="">Selecciona una decisión</option>
+          {% for decision, etiqueta in decisiones.items() %}
+            <option value="{{ decision.value }}" {% if valores.decision == decision.value %}selected{% endif %}>{{ etiqueta }}</option>
+          {% endfor %}
+        </select>
+        {% if errores.decision %}<p class="error-campo" id="error-decision">{{ errores.decision }}</p>{% endif %}
+      </div>
+      <div class="campo">
+        <label for="alcance">Alcance de la revisión</label>
+        <input id="alcance" name="alcance" type="text" required value="{{ valores.alcance | default('') }}"
+               {% if errores.alcance %}aria-invalid="true" aria-describedby="error-alcance"{% endif %}>
+        {% if errores.alcance %}<p class="error-campo" id="error-alcance">{{ errores.alcance }}</p>{% endif %}
+      </div>
+      <div class="campo">
+        <label for="observaciones">Observaciones</label>
+        <textarea id="observaciones" name="observaciones" rows="5" required
+                  {% if errores.observaciones %}aria-invalid="true" aria-describedby="error-observaciones"{% endif %}>{{ valores.observaciones | default('') }}</textarea>
+        {% if errores.observaciones %}<p class="error-campo" id="error-observaciones">{{ errores.observaciones }}</p>{% endif %}
+      </div>
+      <button class="boton boton-asignar" type="submit">Registrar decisión</button>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block titulo %}Catálogo de apuntes — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <h1>Catálogo de apuntes</h1>
+    <a class="enlace" href="{{ url_for('inicio') }}">Volver al inicio</a>
+  </div>
+
+  {% for version in versiones %}
+    <article class="tarjeta aporte-pendiente">
+      <h2>{{ version.nombre_archivo }}</h2>
+      <p>Versión {{ version.numero }}</p>
+      <dl class="datos">
+        <dt>Carrera</dt><dd>{{ version.carrera }}</dd>
+        <dt>Ramo</dt><dd>{{ version.ramo }}</dd>
+        <dt>Tema o unidad</dt><dd>{{ version.tema }}</dd>
+        <dt>Período académico</dt><dd>{{ version.anio }} · semestre {{ version.semestre }}</dd>
+      </dl>
+    </article>
+  {% else %}
+    <p>Aún no hay versiones publicadas.</p>
+  {% endfor %}
+</section>
+{% endblock %}

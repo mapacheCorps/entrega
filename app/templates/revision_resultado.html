@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block titulo %}Decisión registrada — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <h1>Decisión registrada</h1>
+  <p class="alerta info" role="status">{{ mensaje }}</p>
+  <p><a class="enlace" href="{{ url_for('panel_moderacion') }}">Volver a revisiones</a></p>
+  {% if publicada %}
+    <p><a class="enlace" href="{{ url_for('catalogo') }}">Ver catálogo de apuntes</a></p>
+  {% endif %}
+</section>
+{% endblock %}

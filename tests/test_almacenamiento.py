@@ -19,6 +19,17 @@ def test_guardar_archivo_y_devolver_referencia(tmp_path):
     assert referencia == "7/3_apunte.pdf"
     destino = tmp_path / "archivos" / referencia
     assert destino.read_bytes() == b"contenido del apunte"
+    assert almacenamiento.leer(referencia) == b"contenido del apunte"
+
+
+def test_leer_rechaza_referencias_externas_y_archivos_ausentes(tmp_path):
+    almacenamiento = AlmacenamientoLocal(tmp_path / "archivos")
+    externo = tmp_path / "externo.txt"
+    externo.write_bytes(b"archivo externo")
+
+    for referencia in ("../externo.txt", str(externo), "7/3_ausente.pdf"):
+        with pytest.raises(ErrorAlmacenamiento):
+            almacenamiento.leer(referencia)
 
 
 def test_nombre_seguro_elimina_rutas_y_caracteres_peligrosos():

@@ -1,4 +1,4 @@
-"""Rutas HTTP de HU-01: enviar y clasificar un aporte."""
+"""Rutas HTTP para aportes y catálogo."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from fastapi.responses import RedirectResponse
 
 from app.db.conexion import obtener_conexion
 from app.dominio.repositorios import AporteRepositorio, CatalogoRepositorio
+from app.dominio.revisiones import RevisionAcademicaRepositorio
 from app.rutas.demo import rol_actual
 from app.rutas.paginas import contexto_base as _contexto_base
 from app.rutas.paginas import pagina_error as _error
@@ -20,12 +21,19 @@ ESTADOS_APORTE = {
     "PendienteAsignacion": "Pendiente de asignación",
     "RequiereCorreccion": "Requiere corrección",
     "Asignado": "Asignado",
+    "Publicado": "Publicado",
+    "Rechazado": "Rechazado",
+    "CorreccionSolicitada": "Corrección solicitada",
 }
 ESTADOS_VERSION = {
     "Recibida": "Recibida",
     "PendienteRevision": "Pendiente de revisión",
     "RequiereCorreccion": "Requiere corrección",
     "Final": "Final",
+    "EnRevision": "En revisión",
+    "Aprobada": "Aprobada",
+    "Publicada": "Publicada",
+    "Rechazada": "Rechazada",
 }
 
 router = APIRouter()
@@ -114,6 +122,16 @@ def formulario_aporte(
         }
     )
     return templates.TemplateResponse(request, "aporte_form.html", contexto)
+
+
+@router.get("/catalogo")
+def catalogo(
+    request: Request,
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    contexto = _contexto_base(request)
+    contexto["versiones"] = RevisionAcademicaRepositorio(conexion).listar_publicadas()
+    return templates.TemplateResponse(request, "catalogo.html", contexto)
 
 
 @router.post("/aportes")

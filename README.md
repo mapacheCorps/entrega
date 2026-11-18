@@ -17,7 +17,8 @@ Aplicación de demostración construida con **Python + FastAPI + Jinja2 + SQLite
 Implementa el envío de un apunte con su clasificación, la validación del archivo,
 la detección de duplicados exactos y la corrección de un archivo inválido (HU-01).
 También permite que la comunidad estudiantil asigne un revisor a un aporte
-validado (HU-02).
+validado (HU-02), registre la decisión académica y publique la versión aprobada
+en un catálogo básico (HU-03).
 
 ### Requisitos
 
@@ -72,7 +73,9 @@ Las pruebas usan una base SQLite temporal por prueba y no dependen de `data/app.
 El selector superior guarda el perfil activo en la cookie `demo_role`. Los perfiles
 son **Estudiante** y **Moderador**. El Moderador representa a la **Comunidad
 Estudiantil** del modelo de dominio. Estudiante puede enviar aportes y corregir un
-archivo inválido. Moderador puede abrir **Organizar revisiones** y solicitar la asignación.
+archivo inválido. Moderador puede abrir **Organizar revisiones**, asignar un revisor
+e iniciar y resolver la revisión en su nombre. El selector sirve para recorrer la
+demostración.
 
 ### Probar HU-02 en el navegador
 
@@ -85,6 +88,28 @@ pulsa **Asignar revisor** en el aporte de cada ramo.
 |---|---|---|
 | Estudiante de la comunidad disponible | Ingeniería de Requisitos, Elicitación de requisitos, 2026 · semestre 1 | Se muestra el nombre e identificador del revisor. El aporte pasa a **Asignado** y sale del listado de pendientes. Su versión sigue **Pendiente de revisión**. |
 | Sin estudiantes revisores disponibles | Cálculo I, Límites y continuidad, 2026 · semestre 1 | Se muestra **Sin revisor disponible para este ramo**. El aporte sigue en el panel, pendiente de asignación, sin aprobarse ni publicarse. |
+
+### Probar HU-03 en el navegador
+
+Con el entorno virtual activo, ejecuta `python -m app.db.seed` y
+`python -m uvicorn app.main:app --reload`. Abre <http://localhost:8000>.
+Para cada recorrido, envía un archivo válido distinto como **Estudiante**. Usa
+**Ingeniería Civil Informática → Ingeniería de Requisitos → Elicitación de
+requisitos** y completa el período y la procedencia. Cambia a **Moderador**, abre
+**Organizar revisiones**, pulsa **Asignar revisor** y abre **Revisar versión**.
+La pantalla identifica al revisor designado y permite abrir el archivo adjunto.
+Pulsa **Iniciar revisión** para abrir el formulario de decisión.
+
+| Escenario | Qué hacer | Qué deberías ver |
+|---|---|---|
+| Aprobación de versión revisada | Selecciona **Aprobar y publicar**. Indica el alcance revisado y las observaciones. | La pantalla confirma la publicación y la misma versión aparece en **Ver catálogo de apuntes**. |
+| Rechazo o solicitud de corrección | Selecciona **Rechazar**. Indica el alcance y explica el motivo. | Se confirma el rechazo. El archivo no aparece en el catálogo. |
+| Solicitud de corrección de RP-04 | Selecciona **Solicitar corrección**. Indica el alcance y qué debe corregirse. | Se confirma la solicitud y la versión sigue fuera del catálogo. El detalle indica **Corrección solicitada**. |
+| Intento no autorizado | Deja el formulario abierto. En otra pestaña del mismo navegador, abre el inicio y cambia a **Estudiante**. Vuelve a la primera pestaña e intenta registrar una aprobación. | Se muestra **Revisión no autorizada**. La versión sigue fuera del catálogo y conserva su estado. |
+
+Las decisiones válidas finalizan la asignación. Para ejecutar toda la suite usa
+`python -m pytest`. Para ejecutar los recorridos HTTP de HU-03 usa
+`python -m pytest tests/test_gherkin_hu03.py`.
 
 ### Almacenamiento simulado
 
@@ -102,7 +127,10 @@ confirma el registro.
 
 ### Alcance de esta entrega
 
-- Se implementan el envío y la corrección de archivos inválidos (HU-01) y la asignación de revisores (HU-02).
-- La revisión, la publicación y los demás recorridos corresponden a historias posteriores.
+- Se implementan el envío y la corrección de archivos inválidos (HU-01), la
+  asignación de revisores (HU-02) y la revisión y publicación (HU-03).
+- La entrega de observaciones al autor y el reenvío académico quedan para HU-04.
+  Los avisos, la búsqueda, la ficha, la descarga pública, los reportes y el retiro
+  de versiones se desarrollan en las historias siguientes.
 - Los requisitos no funcionales se documentan, pero no se implementan como pruebas de
   rendimiento o usabilidad.
