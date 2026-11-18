@@ -1,10 +1,12 @@
-"""Rutas HTTP para aportes y catálogo."""
+"""Rutas HTTP para aportes, catálogo y reenvío académico."""
 
 from __future__ import annotations
 
 import sqlite3
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Path, Request, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import RedirectResponse
 
 from app.db.conexion import obtener_conexion
@@ -37,6 +39,8 @@ ESTADOS_VERSION = {
 }
 
 router = APIRouter()
+Identificador = Annotated[int, Path(ge=1, le=2**63 - 1)]
+RUTA_REENVIO = "/aportes/{aporte_id}/versiones/{version_id}/reenviar"
 
 
 def _catalogos(conexion: sqlite3.Connection) -> dict[str, object]:
@@ -255,6 +259,18 @@ def detalle_aporte(
             "es_duplicado": False,
         }
     )
+    if contexto["es_estudiante"]:
+        estudiante = CatalogoRepositorio(conexion).obtener_estudiante_por_rol("Estudiante")
+        if estudiante is not None:
+            feedback = RevisionAcademicaRepositorio(conexion).listar_feedback_autor(
+                aporte_id, estudiante["id"]
+            )
+            contexto["feedback_academico"] = feedback
+            if any(revision["version_id"] == aporte["version_id"] for revision in feedback):
+                servicio = ServicioAportes(conexion, request.app.state.almacenamiento)
+                contexto["puede_reenviar"] = not isinstance(
+                    servicio.consultar_reenvio(aporte_id, aporte["version_id"]), Resultado
+                )
     return templates.TemplateResponse(request, "aporte_detalle.html", contexto)
 
 
@@ -409,3 +425,90 @@ async def corregir_aporte(
     return templates.TemplateResponse(
         request, "aporte_corregir.html", contexto, status_code=502
     )
+
+
+def _reenvio_no_autorizado(request: Request):
+    return _error(
+        request, 403, "Reenvío no autorizado",
+        "Solo el autor del aporte puede reenviar una versión corregida.",
+    )
+
+
+def _reenvio_no_disponible(request: Request, resultado: Resultado):
+    if resultado.tipo is TipoResultado.NO_AUTORIZADO:
+        return _reenvio_no_autorizado(request)
+    if resultado.tipo is TipoResultado.NO_ENCONTRADO:
+        return _error(
+            request, 404, "Aporte no encontrado", "No existe un aporte con ese identificador."
+        )
+    return _error(
+        request, 409, "Versión no disponible para reenviar",
+        "Abre el detalle del aporte para consultar la versión vigente.",
+    )
+
+
+def _formulario_reenvio(
+    request: Request,
+    servicio: ServicioAportes,
+    aporte_id: int,
+    version_id: int,
+    resultado: Resultado | None = None,
+):
+    version = servicio.consultar_reenvio(aporte_id, version_id)
+    if isinstance(version, Resultado):
+        return _reenvio_no_disponible(request, version)
+
+    feedback = RevisionAcademicaRepositorio(servicio.conexion).listar_feedback_autor(
+        aporte_id, servicio.autor["id"]
+    )
+    contexto = _contexto_base(request)
+    contexto.update(
+        aporte_id=aporte_id,
+        version=version,
+        revision=next((fila for fila in feedback if fila["version_id"] == version_id), None),
+        resultado=resultado,
+    )
+    codigos = {
+        TipoResultado.ARCHIVO_INVALIDO: 400,
+        TipoResultado.DUPLICADO: 409,
+        TipoResultado.ERROR_ALMACENAMIENTO: 502,
+    }
+    codigo = codigos[resultado.tipo] if resultado else 200
+    return templates.TemplateResponse(
+        request, "aporte_reenviar.html", contexto, status_code=codigo
+    )
+
+
+@router.get(RUTA_REENVIO)
+def formulario_reenvio(
+    aporte_id: Identificador,
+    version_id: Identificador,
+    request: Request,
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    if rol_actual(request) != "Estudiante":
+        return _reenvio_no_autorizado(request)
+    servicio = ServicioAportes(conexion, request.app.state.almacenamiento)
+    return _formulario_reenvio(request, servicio, aporte_id, version_id)
+
+
+@router.post(RUTA_REENVIO)
+async def reenviar_aporte(
+    aporte_id: Identificador,
+    version_id: Identificador,
+    request: Request,
+    archivo: UploadFile | None = File(None),
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    if rol_actual(request) != "Estudiante":
+        return _reenvio_no_autorizado(request)
+    servicio = ServicioAportes(conexion, request.app.state.almacenamiento)
+    archivo_subido = await _leer_archivo(archivo)
+    resultado = await run_in_threadpool(servicio.reenviar, aporte_id, version_id, archivo_subido)
+    if resultado.tipo is TipoResultado.REGISTRADO:
+        return RedirectResponse(url=f"/aportes/{aporte_id}", status_code=303)
+    if resultado.tipo in (
+        TipoResultado.NO_AUTORIZADO, TipoResultado.NO_ENCONTRADO, TipoResultado.NO_CORREGIBLE,
+    ):
+        return _reenvio_no_disponible(request, resultado)
+    return _formulario_reenvio(request, servicio, aporte_id, version_id, resultado)

@@ -1,0 +1,6 @@
+<dl class="datos">
+  <dt>Decisión</dt>
+  <dd>{{ 'Rechazo' if revision.decision == 'Rechazo' else 'Solicitud de corrección' }}</dd>
+  <dt>Alcance</dt><dd>{{ revision.alcance }}</dd>
+  <dt>Observaciones</dt><dd>{{ revision.observaciones }}</dd>
+</dl>

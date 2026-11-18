@@ -78,3 +78,16 @@ def test_guardar_falla_si_la_base_es_un_archivo(tmp_path):
 
     with pytest.raises(ErrorAlmacenamiento):
         almacenamiento.guardar(ArchivoSubido("apunte.pdf", b"contenido"), 1, 1)
+
+
+def test_guardado_fallido_limpia_el_temporal(tmp_path, monkeypatch):
+    almacenamiento = AlmacenamientoLocal(tmp_path / "archivos")
+
+    def interrumpir_confirmacion(temporal, destino):
+        assert temporal.read_bytes() == b"contenido"
+        raise OSError("fallo simulado de almacenamiento")
+
+    monkeypatch.setattr(type(tmp_path), "replace", interrumpir_confirmacion)
+    with pytest.raises(ErrorAlmacenamiento):
+        almacenamiento.guardar(ArchivoSubido("apunte.pdf", b"contenido"), 1, 1)
+    assert list((tmp_path / "archivos" / "1").iterdir()) == []

@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Protocol
 
 from app.servicios.validacion import ArchivoSubido
+
+logger = logging.getLogger(__name__)
+
 
 class ErrorAlmacenamiento(Exception):
     """El servicio de almacenamiento no pudo completar la operación."""
@@ -39,16 +44,27 @@ class AlmacenamientoLocal:
     def guardar(
         self, archivo: ArchivoSubido, aporte_id: int, version_id: int
     ) -> str:
+        temporal: Path | None = None
         try:
             carpeta = self.base_dir / str(aporte_id)
             carpeta.mkdir(parents=True, exist_ok=True)
             destino = carpeta / f"{version_id}_{nombre_seguro(archivo.nombre)}"
-            destino.write_bytes(archivo.contenido)
+            with NamedTemporaryFile(dir=carpeta, delete=False) as salida:
+                temporal = Path(salida.name)
+                salida.write(archivo.contenido)
+            temporal.replace(destino)
+            temporal = None
             return destino.relative_to(self.base_dir).as_posix()
         except OSError as exc:
             raise ErrorAlmacenamiento(
                 "El servicio de almacenamiento no pudo resguardar el archivo."
             ) from exc
+        finally:
+            if temporal is not None:
+                try:
+                    temporal.unlink(missing_ok=True)
+                except OSError:
+                    logger.exception("No se pudo eliminar el archivo temporal de almacenamiento")
 
     def leer(self, referencia: str) -> bytes:
         try:

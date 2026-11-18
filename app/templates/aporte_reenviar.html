@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block titulo %}Reenviar versión corregida — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <div>
+      <h1 id="titulo-reenvio">Reenviar versión corregida</h1>
+      <p>Aporte #{{ aporte_id }} · versión {{ version.numero }}</p>
+    </div>
+    <a class="enlace" href="{{ url_for('detalle_aporte', aporte_id=aporte_id) }}">Volver al aporte</a>
+  </div>
+
+  {% if revision %}
+    <h2>Observaciones de la versión {{ revision.numero }}</h2>
+    {% include "feedback_academico.html" %}
+  {% endif %}
+
+  <p>Archivo anterior: <strong>{{ version.nombre_archivo }}</strong>.</p>
+  <p>Si el archivo es válido, se guardará como versión {{ version.numero + 1 }} del mismo aporte.</p>
+
+  <form method="post" action="{{ url_for('reenviar_aporte', aporte_id=aporte_id, version_id=version.id) }}"
+        enctype="multipart/form-data" class="formulario" aria-labelledby="titulo-reenvio">
+    {% if resultado %}
+      <div id="error-reenvio" class="alerta error" role="alert">
+        {% if resultado.mensaje %}<p>{{ resultado.mensaje }}</p>{% endif %}
+        {% if resultado.errores_archivo %}
+          <ul>{% for error in resultado.errores_archivo %}<li>{{ error }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+    {% endif %}
+    <div class="campo">
+      <label for="archivo">Archivo corregido</label>
+      <input type="file" id="archivo" name="archivo" accept=".pdf,.docx,.pptx,.png,.jpg" required
+             aria-describedby="formatos-reenvio{% if resultado %} error-reenvio{% endif %}"
+             {% if resultado and resultado.tipo.value != 'error_almacenamiento' %}aria-invalid="true" autofocus{% endif %}>
+      <p id="formatos-reenvio" class="ayuda">Formatos aceptados: .pdf, .docx, .pptx, .png y .jpg. Máximo 10 MB.</p>
+    </div>
+    <button class="boton boton-asignar" type="submit">Enviar versión corregida</button>
+  </form>
+</section>
+{% endblock %}

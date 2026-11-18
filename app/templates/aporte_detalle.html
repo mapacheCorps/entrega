@@ -72,6 +72,22 @@
       </dl>
     </section>
   </div>
+  {% if feedback_academico %}
+    <section>
+      <h2>Observaciones de revisión</h2>
+      {% for revision in feedback_academico %}
+        <article class="tarjeta aporte-pendiente">
+          <h3>Versión {{ revision.numero }}</h3>
+          {% include "feedback_academico.html" %}
+        </article>
+      {% endfor %}
+      {% if puede_reenviar %}
+        <p><a class="boton" href="{{ url_for('formulario_reenvio', aporte_id=aporte.id, version_id=aporte.version_id) }}">
+          Reenviar versión corregida
+        </a></p>
+      {% endif %}
+    </section>
+  {% endif %}
 </section>
 {% else %}
 <section class="panel">

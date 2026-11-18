@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
+from contextlib import nullcontext
 from typing import Any
 
 TABLAS_CON_ID = {"aportes", "versiones_apunte"}
@@ -174,8 +175,9 @@ class AporteRepositorio:
         estado_version: str,
         estado_aporte: str,
         fecha_creacion: str,
+        confirmar: bool = True,
     ) -> int:
-        with self.conexion:
+        with self.conexion if confirmar else nullcontext():
             self.conexion.execute(
                 "UPDATE versiones_apunte SET estado = 'Final' WHERE id = ?",
                 (version_anterior_id,),

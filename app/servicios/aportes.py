@@ -1,4 +1,4 @@
-"""Servicio de aplicación para enviar y corregir aportes (HU-01)."""
+"""Envío de aportes y sus correcciones (HU-01 y HU-04)."""
 
 from __future__ import annotations
 
@@ -8,8 +8,9 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 
-from app.dominio.entidades import EstadoAporte, EstadoVersion
+from app.dominio.entidades import DecisionRevision, EstadoAporte, EstadoVersion
 from app.dominio.repositorios import AporteRepositorio, CatalogoRepositorio
+from app.dominio.revisiones import RevisionAcademicaRepositorio
 from app.integraciones.almacenamiento import (
     AlmacenamientoArchivos,
     ErrorAlmacenamiento,
@@ -33,6 +34,15 @@ class TipoResultado(str, Enum):
     ERROR_ALMACENAMIENTO = "error_almacenamiento"
     NO_ENCONTRADO = "no_encontrado"
     NO_CORREGIBLE = "no_corregible"
+    NO_AUTORIZADO = "no_autorizado"
+
+
+DECISIONES_REENVIABLES = {
+    EstadoAporte.RECHAZADO: (EstadoVersion.RECHAZADA, DecisionRevision.RECHAZO),
+    EstadoAporte.CORRECCION_SOLICITADA: (
+        EstadoVersion.REQUIERE_CORRECCION, DecisionRevision.SOLICITUD_CORRECCION,
+    ),
+}
 
 
 @dataclass
@@ -252,6 +262,7 @@ class ServicioAportes:
                 hash_archivo=hash_archivo,
                 estado_version=EstadoVersion.PENDIENTE_REVISION.value,
                 estado_aporte=EstadoAporte.PENDIENTE_ASIGNACION.value,
+                nueva_version_id=nueva_version_id,
             )
         except Exception:
             logger.exception(
@@ -269,6 +280,88 @@ class ServicioAportes:
 
         return Resultado(TipoResultado.REGISTRADO, aporte_id=aporte_id)
 
+    def consultar_reenvio(
+        self, aporte_id: int, version_id: int
+    ) -> sqlite3.Row | Resultado:
+        aporte = self.repo.obtener_aporte(aporte_id)
+        if aporte is None:
+            return Resultado(TipoResultado.NO_ENCONTRADO, aporte_id=aporte_id)
+        if self.autor["rol"] != "Estudiante" or aporte["autor_id"] != self.autor["id"]:
+            return Resultado(TipoResultado.NO_AUTORIZADO, aporte_id=aporte_id)
+
+        version = self.repo.obtener_ultima_version(aporte_id)
+        requerida = DECISIONES_REENVIABLES.get(aporte["estado"])
+        if (
+            version is None or version["id"] != version_id
+            or requerida is None or version["estado"] != requerida[0]
+            or RevisionAcademicaRepositorio(self.conexion).obtener_decision(version_id)
+            != requerida[1]
+        ):
+            return Resultado(
+                TipoResultado.NO_CORREGIBLE,
+                aporte_id=aporte_id,
+                mensaje="Esta versión ya no está disponible para reenviar.",
+            )
+        return version
+
+    def reenviar(
+        self, aporte_id: int, version_id: int, archivo: ArchivoSubido | None
+    ) -> Resultado:
+        errores = validar_archivo(archivo)
+        try:
+            with self.conexion:
+                self.conexion.execute("BEGIN IMMEDIATE")
+                version = self.consultar_reenvio(aporte_id, version_id)
+                if isinstance(version, Resultado):
+                    return version
+                if errores:
+                    return Resultado(
+                        TipoResultado.ARCHIVO_INVALIDO,
+                        aporte_id=aporte_id,
+                        errores_archivo=errores,
+                    )
+
+                assert archivo is not None
+                huella = calcular_hash(archivo.contenido)
+                if self.repo.buscar_version_por_hash(huella) is not None:
+                    return Resultado(
+                        TipoResultado.DUPLICADO,
+                        aporte_id=aporte_id,
+                        mensaje="Ya existe un archivo idéntico registrado. Adjunta una versión corregida.",
+                    )
+
+                nueva_version_id = self.repo.siguiente_id("versiones_apunte")
+                referencia = self.almacenamiento.guardar(archivo, aporte_id, nueva_version_id)
+                try:
+                    self._registrar_correccion(
+                        aporte_id=aporte_id,
+                        version_anterior_id=version_id,
+                        numero=version["numero"] + 1,
+                        archivo=archivo,
+                        referencia=referencia,
+                        hash_archivo=huella,
+                        estado_version=EstadoVersion.PENDIENTE_REVISION.value,
+                        estado_aporte=EstadoAporte.PENDIENTE_ASIGNACION.value,
+                        nueva_version_id=nueva_version_id,
+                        confirmar=False,
+                    )
+                    self.conexion.commit()
+                except Exception:
+                    self._eliminar_sin_fallar(referencia)
+                    raise
+        except ErrorAlmacenamiento as exc:
+            return Resultado(
+                TipoResultado.ERROR_ALMACENAMIENTO, aporte_id=aporte_id, mensaje=str(exc)
+            )
+        except sqlite3.Error:
+            logger.exception("Falló el registro del reenvío académico")
+            return Resultado(
+                TipoResultado.ERROR_ALMACENAMIENTO,
+                aporte_id=aporte_id,
+                mensaje="No fue posible confirmar el reenvío. Intenta nuevamente.",
+            )
+        return Resultado(TipoResultado.REGISTRADO, aporte_id=aporte_id)
+
     def _registrar_correccion(
         self,
         *,
@@ -280,11 +373,15 @@ class ServicioAportes:
         hash_archivo: str | None,
         estado_version: str,
         estado_aporte: str,
+        nueva_version_id: int | None = None,
+        confirmar: bool = True,
     ) -> None:
+        if nueva_version_id is None:
+            nueva_version_id = self.repo.siguiente_id("versiones_apunte")
         self.repo.crear_version_corregida(
             aporte_id=aporte_id,
             version_anterior_id=version_anterior_id,
-            nueva_version_id=self.repo.siguiente_id("versiones_apunte"),
+            nueva_version_id=nueva_version_id,
             numero=numero,
             nombre_archivo=archivo.nombre or "archivo",
             referencia_archivo=referencia,
@@ -294,6 +391,7 @@ class ServicioAportes:
             estado_version=estado_version,
             estado_aporte=estado_aporte,
             fecha_creacion=_ahora(),
+            confirmar=confirmar,
         )
 
     def _eliminar_sin_fallar(self, referencia: str) -> None:

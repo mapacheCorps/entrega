@@ -111,6 +111,25 @@ Las decisiones válidas finalizan la asignación. Para ejecutar toda la suite us
 `python -m pytest`. Para ejecutar los recorridos HTTP de HU-03 usa
 `python -m pytest tests/test_gherkin_hu03.py`.
 
+### Probar HU-04 en el navegador
+
+Con el entorno virtual activo, ejecuta `python -m app.db.seed` y
+`python -m uvicorn app.main:app --reload`. Abre <http://localhost:8000>.
+Envía un aporte para **Ingeniería de Requisitos** como Estudiante y guarda la
+dirección de su detalle (`/aportes/{id}`). Sigue el recorrido de HU-03 como
+Moderador y registra un **Rechazo** o una **Solicitud de corrección** con alcance
+y observaciones. Vuelve al perfil **Estudiante**, abre el detalle del mismo
+aporte y revisa **Observaciones de revisión**. Luego pulsa
+**Reenviar versión corregida**.
+
+| Escenario | Qué hacer | Qué deberías ver |
+|---|---|---|
+| Corrección inválida | Intenta adjuntar un archivo `.txt`. Si el selector lo filtra, muestra todos los archivos. | El formulario informa el error de formato y permite reintentar. El aporte conserva su estado, versión y observaciones. |
+| Nueva versión del mismo aporte | Adjunta un archivo permitido, con contenido distinto al anterior, y pulsa **Enviar versión corregida**. | El detalle conserva el ID del aporte, muestra el siguiente número de versión en **Pendiente de revisión** y conserva las observaciones bajo la versión anterior. El Moderador puede volver a asignar el aporte. |
+
+Ejecuta `python -m pytest tests/test_gherkin_hu04.py` para correr los recorridos
+HTTP de esta historia. `python -m pytest` ejecuta toda la suite.
+
 ### Almacenamiento simulado
 
 Los archivos se guardan en `data/archivos/{aporte_id}/`. El servicio de
@@ -128,9 +147,9 @@ confirma el registro.
 ### Alcance de esta entrega
 
 - Se implementan el envío y la corrección de archivos inválidos (HU-01), la
-  asignación de revisores (HU-02) y la revisión y publicación (HU-03).
-- La entrega de observaciones al autor y el reenvío académico quedan para HU-04.
-  Los avisos, la búsqueda, la ficha, la descarga pública, los reportes y el retiro
+  asignación de revisores (HU-02), la revisión y publicación (HU-03) y la consulta
+  del feedback por el autor con reenvío académico (HU-04).
+- Los avisos, la búsqueda, la ficha, la descarga pública, los reportes y el retiro
   de versiones se desarrollan en las historias siguientes.
 - Los requisitos no funcionales se documentan, pero no se implementan como pruebas de
   rendimiento o usabilidad.

@@ -43,7 +43,7 @@
 | HU-01 | hecha · validada y archivada | `openspec/changes/archive/2026-11-12-hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Especificaciones sincronizadas a `openspec/specs/gestion-aportes/spec.md`. |
 | HU-02 | implementada · pendiente de validación por el estudiante | `hu-02-asignar-responsable-revision` | 2026-11-18 | P05 / RP-03 / CU-02. Panel del Moderador y asignación transaccional. Suite completa con 75 pruebas aprobadas, incluidos ambos escenarios Gherkin. |
 | HU-03 | implementada · pendiente de validación por el estudiante | `hu-03-registrar-revision-comunitaria` | 2026-11-18 | P06/P09/P10 · CU-03. Revisión comunitaria, tres decisiones y catálogo de versiones publicadas. Suite completa con 90 pruebas aprobadas. |
-| HU-04 | pendiente | — | — | Requiere una revisión con corrección (HU-03). |
+| HU-04 | implementada · pendiente de validación por el estudiante | `hu-04-enviar-version-corregida` | 2026-11-18 | C04 / RP-05 / RP-14 / CU-04. Feedback por versión y reenvío al mismo aporte. Suite completa con 100 pruebas aprobadas. |
 | HU-05 | pendiente | — | — | Requiere decisiones de revisión (HU-03). |
 | HU-06 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
 | HU-07 | pendiente | — | — | Requiere versiones publicadas y revisión (HU-03). |

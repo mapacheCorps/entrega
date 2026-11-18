@@ -11,6 +11,26 @@ class RevisionAcademicaRepositorio:
     def __init__(self, conexion: sqlite3.Connection):
         self.conexion = conexion
 
+    def listar_feedback_autor(self, aporte_id: int, autor_id: int) -> list[sqlite3.Row]:
+        return self.conexion.execute(
+            """
+            SELECT v.id AS version_id, v.numero, ra.decision, ra.alcance, ra.observaciones
+            FROM revisiones_academicas ra
+            JOIN versiones_apunte v ON v.id = ra.version_id
+            JOIN aportes a ON a.id = v.aporte_id
+            WHERE a.id = ? AND a.autor_id = ?
+              AND ra.decision IN ('Rechazo', 'SolicitudCorreccion')
+            ORDER BY v.numero DESC
+            """,
+            (aporte_id, autor_id),
+        ).fetchall()
+
+    def obtener_decision(self, version_id: int) -> str | None:
+        fila = self.conexion.execute(
+            "SELECT decision FROM revisiones_academicas WHERE version_id = ?", (version_id,)
+        ).fetchone()
+        return fila["decision"] if fila is not None else None
+
     def listar_asignadas(self, comunidad_id: int) -> list[sqlite3.Row]:
         return self.conexion.execute(
             """
