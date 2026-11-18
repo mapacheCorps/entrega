@@ -1,9 +1,9 @@
 # Criterios de aceptación (Gherkin)
 
-Se especifican las once historias existentes en [Entrega 1](./04-historias-usuario.md). Los escenarios describen comportamientos del dominio; no prueban que el software esté implementado. Los servicios externos de almacenamiento/correo son propuestas de diseño.
+Se especifican las doce historias existentes en [Entrega 1](./04-historias-usuario.md). Los escenarios describen comportamientos del dominio; no prueban que el software esté implementado. Los servicios externos de almacenamiento/correo son propuestas de diseño.
 
 ## HU-01 : Enviar y clasificar un aporte
-**Historia:** Como estudiante que aporta material, quiero adjuntar y clasificar mi apunte, para que la comunidad lo reciba con la información necesaria.
+**Historia:** Como usuario con cuenta institucional que aporta material, quiero adjuntar y clasificar mi apunte, para que la comunidad lo reciba con la información necesaria.
 
 **Origen:** [HU-01 en Entrega 1](./04-historias-usuario.md#hu-01).
 
@@ -11,17 +11,26 @@ Se especifican las once historias existentes en [Entrega 1](./04-historias-usuar
 Característica: Recepción de aporte
 
   Escenario: Registro de aporte completo
-    Dado existe un estudiante autor que aporta un archivo no vacío
+    Dado existe un autor con cuenta @estudiantes.uv.cl que aporta un archivo no vacío
     Y el archivo cumple el formato y tamaño configurados y se declara carrera, ramo, período académico, tema y procedencia
     Cuando el autor presenta el aporte
     Entonces el sistema registra el aporte y su primera versión
     Y la versión queda pendiente de asignación o revisión, sin publicarse
 
+  Escenario: Publicación directa de un aporte con cuenta @uv.cl
+    Dado existe un autor con cuenta @uv.cl que aporta un archivo no vacío
+    Y el archivo cumple el formato y tamaño configurados y se declara carrera, ramo, período académico, tema y procedencia
+    Cuando el autor presenta el aporte
+    Entonces el sistema registra el aporte y su primera versión
+    Y la versión queda publicada de inmediato
+    Y no se crea una asignación ni una revisión académica
+    Y la confirmación no muestra el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión
+
   Escenario: Datos de aporte inválidos
     Dado el autor presenta un aporte con datos obligatorios faltantes o archivo inválido
     Cuando el autor presenta el aporte
     Entonces se identifica la causa del incumplimiento
-    Y no se remite la versión a revisión hasta corregirla
+    Y no se publica ni se remite a revisión hasta corregirla
 
   Escenario: Archivo duplicado exacto
     Dado existe un archivo idéntico ya registrado
@@ -37,7 +46,7 @@ Característica: Recepción de aporte
     Y el período académico se puede elegir con independencia del ramo
 
   Escenario: Confirmación con información útil para el autor
-    Dado el autor presenta un aporte válido
+    Dado un autor con cuenta @estudiantes.uv.cl presenta un aporte válido
     Cuando el sistema confirma el registro
     Entonces muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que aún no se publica
     Y no muestra el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión
@@ -300,6 +309,34 @@ Característica: Mantenimiento de versiones
     Cuando la persona intenta retirar la versión
     Entonces el sistema rechaza la operación
     Y la versión conserva su estado
+
+```
+
+## HU-12 : Iniciar sesión con cuenta institucional
+**Historia:** Como integrante de la comunidad universitaria, quiero iniciar sesión con mi cuenta institucional, para acceder al sistema con el tipo de cuenta que me corresponde.
+
+**Origen:** [HU-12 en Entrega 1](./04-historias-usuario.md#hu-12).
+
+```gherkin
+Característica: Acceso con cuenta institucional
+
+  Escenario: Inicio de sesión con dominio permitido
+    Dado un correo @uv.cl o @estudiantes.uv.cl con credenciales válidas
+    Cuando la persona inicia sesión
+    Entonces se crea la sesión
+    Y el sistema identifica si la cuenta es de estudiante o académica
+
+  Escenario: Dominio no permitido
+    Dado un correo con un dominio distinto de @uv.cl y @estudiantes.uv.cl
+    Cuando la persona intenta iniciar sesión
+    Entonces se rechaza el acceso
+    Y no se crea la sesión
+
+  Escenario: Acceso sin sesión
+    Dado que no hay una sesión iniciada
+    Cuando la persona intenta enviar un aporte
+    Entonces el sistema rechaza la operación
+    Y solicita iniciar sesión
 
 ```
 

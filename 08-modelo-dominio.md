@@ -4,7 +4,7 @@ El modelo representa **conceptos del negocio** y no componentes técnicos. Se si
 
 ## Diagramas UML
 
-Para evitar cruces de relaciones y mejorar la lectura, el modelo se presenta en **tres vistas UML del mismo dominio**. El núcleo incluye cinco clases y las otras vistas desarrollan el seguimiento y la clasificación académica. Todas tienen su fuente PlantUML editable.
+Para evitar cruces de relaciones y mejorar la lectura, el modelo se presenta en **tres vistas UML del mismo dominio**. El núcleo incluye seis clases y las otras vistas desarrollan el seguimiento y la clasificación académica. Todas tienen su fuente PlantUML editable.
 
 ### 1. Aporte y revisión comunitaria
 
@@ -28,9 +28,10 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 
 | Clase | Significado | Atributos |
 |---|---|---|
-| `Estudiante` | Persona que puede aportar, consultar o participar en la revisión comunitaria, según el contexto. | identificador, nombre, correo |
+| `Estudiante` | Persona con cuenta `@estudiantes.uv.cl` que puede aportar, consultar o participar en la revisión comunitaria. Sus aportes pasan por revisión. | identificador, nombre, correo |
+| `Academico` | Persona con cuenta `@uv.cl` que puede aportar material y publicarlo directamente después de la validación, sin revisión comunitaria. | identificador, nombre, correo |
 | `ComunidadEstudiantil` | Colectivo de estudiantes que organiza las revisiones y decide sobre el material. | identificador, nombre |
-| `Aporte` | Envío de apuntes realizado por un estudiante para revisión. | identificador, fechaEnvio, procedenciaDeclarada, estado |
+| `Aporte` | Envío de apuntes realizado por un estudiante o académico, para publicación directa o revisión. | identificador, fechaEnvio, procedenciaDeclarada, estado |
 | `VersionApunte` | Archivo concreto presentado, aprobado, rechazado o reemplazado. | numero, nombreArchivo, referenciaArchivo, estado |
 | `AsignacionRevision` | Registro de organización de la revisión por un estudiante de la comunidad. | identificador, fechaAsignacion, estado |
 | `RevisionAcademica` | Decisión de la comunidad sobre una versión, con fundamento y feedback. | identificador, fecha, decision, retroalimentacion |
@@ -46,7 +47,8 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 | Relación | Multiplicidades | Símbolo y justificación |
 |---|---|---|
 | ComunidadEstudiantil agrupa Estudiante | ComunidadEstudiantil `1`, Estudiante `1..*` | **Agregación (rombo vacío):** los estudiantes existen con independencia del colectivo. |
-| Estudiante presenta Aporte | Estudiante `1`, Aporte `0..*` | Asociación: un aporte pertenece a un autor. |
+| Estudiante presenta Aporte | Estudiante `0..1`, Aporte `0..*` | Asociación: un aporte puede tener como autor a un estudiante. |
+| Academico presenta Aporte | Academico `0..1`, Aporte `0..*` | Asociación con restricción `{xor}`: cada aporte tiene exactamente un autor, estudiante o académico. |
 | Aporte contiene VersionApunte | Aporte `1`, VersionApunte `1..*` | **Composición (rombo lleno):** las versiones pertenecen a su aporte e historial. |
 | AsignacionRevision se refiere a Aporte | AsignacionRevision `0..*`, Aporte `1` | Asociación: se registran asignaciones de una revisión. |
 | Estudiante asume AsignacionRevision | Estudiante `1`, AsignacionRevision `0..*` | Asociación: un integrante de la comunidad puede asumir revisiones. |
@@ -64,8 +66,9 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 
 ## Decisiones de modelado
 
-- **Roles, no clases distintas:** `Estudiante autor`, `Estudiante consultante` y `Comunidad estudiantil` son actores del diagrama de casos de uso. En el modelo de dominio, los individuos son instancias de `Estudiante`. La comunidad se representa como un colectivo asociado a esos estudiantes.
+- **Roles y tipos de cuenta:** `Estudiante autor`, `Estudiante consultante` y `Comunidad estudiantil` son actores del diagrama de casos de uso; no crean clases por sí solos. El tipo de cuenta institucional sí se distingue: `Estudiante` (`@estudiantes.uv.cl`) y `Academico` (`@uv.cl`). La comunidad se representa como un colectivo asociado a los estudiantes.
+- **Publicación directa:** un `Aporte` de `Academico` se publica después de la validación, sin `AsignacionRevision` ni `RevisionAcademica`; un `Aporte` de `Estudiante` requiere revisión comunitaria. Un aporte tiene exactamente un autor (`{xor}`).
 - **Revisión comunitaria:** la comunidad es el colectivo que organiza y modera. No se crean cargos independientes de los estudiantes. El modelo no presupone una votación ni un mecanismo de consenso no especificado.
-- **Resultado de revisión:** la comunidad aprueba una versión y entonces se publica, o la rechaza con retroalimentación y no se publica. Una versión corregida requiere revisión nueva; no hereda la aprobación de versiones anteriores.
+- **Resultado de revisión:** en un `Aporte` de `Estudiante`, la comunidad aprueba una versión y entonces se publica, o la rechaza con retroalimentación y no se publica. Una versión corregida requiere revisión nueva; no hereda la aprobación de versiones anteriores. Los aportes de `Academico` no pasan por esta decisión.
 - **Integraciones externas:** almacenamiento de archivos y correo no son entidades del dominio; figuran únicamente en los diagramas donde interactúan con el sistema.
 - **Símbolos UML:** no se fuerza herencia porque la información disponible no justifica subclases diferentes de estudiante. Sí se justifican agregación de la comunidad y composición del aporte y sus versiones.

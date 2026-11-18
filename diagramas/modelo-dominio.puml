@@ -17,6 +17,12 @@ class Estudiante {
   correo: texto
 }
 
+class Academico {
+  identificador: texto
+  nombre: texto
+  correo: texto
+}
+
 class Aporte {
   identificador: texto
   fechaEnvio: fecha
@@ -39,8 +45,14 @@ class RevisionAcademica {
 }
 
 ComunidadEstudiantil "1" o-- "1..*" Estudiante : agrupa
-Estudiante "1" -- "0..*" Aporte : presenta
+Estudiante "0..1" -- "0..*" Aporte : presenta
+Academico "0..1" -- "0..*" Aporte : presenta
 Aporte "1" *-- "1..*" VersionApunte : contiene
 VersionApunte "1" *-- "0..*" RevisionAcademica : conserva
 ComunidadEstudiantil "1" -- "0..*" RevisionAcademica : decide
+
+note bottom of Aporte
+  Cada Aporte tiene exactamente un autor:
+  un Estudiante o un Academico (restriccion xor).
+end note
 @enduml

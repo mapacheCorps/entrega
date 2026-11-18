@@ -2,7 +2,8 @@
 skinparam shadowing false
 title EST-01: Ciclo de vida de VersionApunte
 [*] --> Recibida : registrarVersion
-Recibida --> PendienteRevision : validarAporte [archivo y clasificacion validos]
+Recibida --> Publicada : publicarDirecto [cuenta @uv.cl y archivo valido]
+Recibida --> PendienteRevision : validarAporte [archivo y clasificacion validos y cuenta @estudiantes.uv.cl]
 Recibida --> RequiereCorreccion : validarAporte [archivo o clasificacion invalidos]
 PendienteRevision --> EnRevision : iniciarRevisionComunitaria
 EnRevision --> Aprobada : registrarDecision [comunidad aprueba]

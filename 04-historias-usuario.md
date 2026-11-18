@@ -4,11 +4,11 @@ Las historias corresponden a la propuesta TO-BE. Cada una identifica las activid
 
 ## HU-01
 
-Como **estudiante que aporta material**, quiero **adjuntar y clasificar mi apunte**, para **que la comunidad lo reciba con la información necesaria**.
+Como **usuario con cuenta institucional que aporta material**, quiero **adjuntar y clasificar mi apunte**, para **que la comunidad lo reciba con la información necesaria**.
 
-**Actividades TO-BE:** P01–P04, P07.  
-**Cambios AS-IS → TO-BE:** C01, C02.  
-**Requisitos:** RP-01, RP-02, RP-16.
+**Actividades TO-BE:** P00–P04, P07.  
+**Cambios AS-IS → TO-BE:** C01, C02, C11.  
+**Requisitos:** RP-01, RP-02, RP-16, RP-19, RP-20.
 
 **Criterios de aceptación:**
 
@@ -16,7 +16,8 @@ Como **estudiante que aporta material**, quiero **adjuntar y clasificar mi apunt
 - **HU-01-CA2:** Si falta un campo obligatorio o el archivo incumple una regla configurada, se identifica el problema y no se remite a revisión hasta corregirlo.
 - **HU-01-CA3:** La coincidencia con un archivo idéntico se comunica para resolver el duplicado; no se presenta como aprobación académica.
 - **HU-01-CA4:** Las opciones de ramo corresponden a la carrera seleccionada y las de tema al ramo seleccionado; el período académico se elige con independencia del ramo.
-- **HU-01-CA5:** La confirmación muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que no se publica; no muestra hash, referencia de almacenamiento, tipo MIME ni fecha de creación.
+- **HU-01-CA5:** La confirmación muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que no se publica cuando la cuenta es `@estudiantes.uv.cl`; cuando la cuenta es `@uv.cl`, indica que la versión quedó publicada. No muestra hash, referencia de almacenamiento, tipo MIME ni fecha de creación.
+- **HU-01-CA6:** Dado un usuario autenticado con correo `@uv.cl` y un archivo que cumple las reglas configuradas, al enviar se registra el aporte y la versión se publica de inmediato, sin asignación ni revisión académica.
 
 ## HU-02
 
@@ -158,3 +159,17 @@ Como **moderador habilitado**, quiero **corregir o retirar una versión con erro
 - **HU-11-CA2:** Si el equipo puede corregirlo, la nueva versión se revisa antes de publicarse y conserva el historial.
 - **HU-11-CA3:** Si no puede corregirlo, se retira la versión afectada y se registra el motivo.
 - **HU-11-CA4:** La resolución se notifica; una persona sin autorización no puede publicar ni retirar versiones.
+
+## HU-12
+
+Como **integrante de la comunidad universitaria**, quiero **iniciar sesión con mi cuenta institucional**, para **acceder al sistema con el tipo de cuenta que me corresponde**.
+
+**Actividades TO-BE:** P00.  
+**Cambios AS-IS → TO-BE:** C11.  
+**Requisitos:** RP-19, RP-20.
+
+**Criterios de aceptación:**
+
+- **HU-12-CA1:** Dado un correo `@uv.cl` o `@estudiantes.uv.cl` con credenciales válidas, al iniciar sesión se crea la sesión y el sistema identifica si la cuenta es de estudiante o académica.
+- **HU-12-CA2:** Dado un correo de otro dominio, al intentar iniciar sesión se rechaza el acceso sin crear sesión y se informa el motivo.
+- **HU-12-CA3:** Sin sesión iniciada no se puede enviar un aporte ni acceder a las funciones que requieren cuenta institucional.
