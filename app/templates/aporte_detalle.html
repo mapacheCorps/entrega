@@ -28,9 +28,15 @@
   {% endif %}
 
   <div class="alerta info">
-    Este aporte <strong>aún no se publica</strong>. Queda pendiente de asignación y revisión.
     {% if aporte.estado_aporte == 'RequiereCorreccion' %}
+      Este aporte <strong>aún no se publica</strong>.
       <a href="{{ url_for('formulario_correccion', aporte_id=aporte.id) }}">Subir un archivo corregido</a>.
+    {% elif aporte.estado_aporte == 'Asignado' %}
+      Este aporte <strong>aún no se publica</strong>.
+      Ya tiene un responsable y sigue pendiente de revisión.
+    {% else %}
+      Este aporte <strong>aún no se publica</strong>.
+      Queda pendiente de asignación y revisión.
     {% endif %}
   </div>
 

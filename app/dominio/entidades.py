@@ -1,4 +1,4 @@
-"""Entidades y estados del dominio usados por HU-01."""
+"""Entidades y estados del dominio de aportes."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from enum import Enum
 class EstadoAporte(str, Enum):
     PENDIENTE_ASIGNACION = "PendienteAsignacion"
     REQUIERE_CORRECCION = "RequiereCorreccion"
+    ASIGNADO = "Asignado"
 
 
 class EstadoVersion(str, Enum):

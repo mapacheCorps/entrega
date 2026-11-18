@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from app.db.conexion import aplicar_migraciones, conectar
+from app.db.conexion import MIGRACIONES_DIR, aplicar_migraciones, conectar
 from app.db.seed import sembrar
 
 
@@ -14,13 +14,13 @@ def test_migracion_se_aplica_una_sola_vez(tmp_path):
     try:
         primeras = aplicar_migraciones(conexion)
         segundas = aplicar_migraciones(conexion)
-        filas = conexion.execute("SELECT version FROM schema_migrations").fetchall()
+        filas = conexion.execute("SELECT version FROM schema_migrations ORDER BY version").fetchall()
     finally:
         conexion.close()
 
-    assert primeras == ["001_inicial.sql"]
+    assert primeras == ["001_inicial.sql", "002_asignacion_revision.sql"]
     assert segundas == []
-    assert [fila["version"] for fila in filas] == ["001_inicial.sql"]
+    assert [fila["version"] for fila in filas] == primeras
 
 
 def _insertar_aporte(conexion, catalogos, aporte_id: int) -> None:
@@ -62,6 +62,69 @@ def _insertar_version(
     conexion.commit()
 
 
+def test_migracion_hu02_conserva_un_aporte_corregido_y_su_historial(tmp_path):
+    ruta = tmp_path / "app.db"
+    migraciones_hu01 = tmp_path / "hu01"
+    migraciones_hu01.mkdir()
+    inicial = "001_inicial.sql"
+    (migraciones_hu01 / inicial).write_bytes((MIGRACIONES_DIR / inicial).read_bytes())
+    conexion = conectar(ruta)
+    try:
+        aplicar_migraciones(conexion, migraciones_hu01)
+        with conexion:
+            conexion.executescript("""
+                INSERT INTO estudiantes VALUES (1, 'Autor', 'autor@demo.cl', 'Estudiante');
+                INSERT INTO carreras VALUES (1, 'ICI', 'Informática');
+                INSERT INTO ramos VALUES (1, 'REQ', 'Requisitos', 1);
+                INSERT INTO periodos_academicos VALUES (1, 2026, 1);
+                INSERT INTO temas_unidad VALUES (1, 1, 1, 'Elicitación');
+                """)
+        catalogos = {"ramo_id": 1, "periodo_id": 1, "tema_id": 1}
+        _insertar_aporte(conexion, catalogos, aporte_id=42)
+        _insertar_version(conexion, version_id=10, aporte_id=42, numero=1)
+        _insertar_version(
+            conexion, version_id=11, aporte_id=42, numero=2, hash_archivo="corregido"
+        )
+        with conexion:
+            conexion.execute("UPDATE versiones_apunte SET estado = 'Final' WHERE id = 10")
+
+        assert aplicar_migraciones(conexion) == ["002_asignacion_revision.sql"]
+        assert conexion.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+        assert conexion.execute("PRAGMA foreign_key_check").fetchall() == []
+        aporte = conexion.execute("SELECT id, autor_id, estado FROM aportes").fetchone()
+        assert tuple(aporte) == (42, 1, "PendienteAsignacion")
+        versiones = conexion.execute(
+            "SELECT id, numero, estado, hash_archivo FROM versiones_apunte ORDER BY numero"
+        ).fetchall()
+        assert list(map(tuple, versiones)) == [
+            (10, 1, "Final", None),
+            (11, 2, "PendienteRevision", "corregido"),
+        ]
+        with conexion:
+            conexion.execute("UPDATE aportes SET estado = 'Asignado' WHERE id = 42")
+    finally:
+        conexion.close()
+
+
+def test_migracion_fallida_revierte_los_cambios_y_restaura_claves_foraneas(tmp_path):
+    migraciones = tmp_path / "migrations"
+    migraciones.mkdir()
+    (migraciones / "001_prueba.sql").write_text(
+        "CREATE TABLE padre (id INTEGER PRIMARY KEY);\n"
+        "CREATE TABLE hijo (padre_id INTEGER REFERENCES padre(id));\n"
+        "INSERT INTO hijo VALUES (1);", encoding="utf-8"
+    )
+    conexion = conectar(tmp_path / "app.db")
+    try:
+        with pytest.raises(sqlite3.IntegrityError, match="clave foránea inválida en hijo"):
+            aplicar_migraciones(conexion, migraciones)
+        assert conexion.execute("SELECT version FROM schema_migrations").fetchall() == []
+        assert conexion.execute("SELECT name FROM sqlite_master WHERE name = 'padre'").fetchone() is None
+        assert conexion.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+    finally:
+        conexion.close()
+
+
 @pytest.fixture
 def db_sembrada(tmp_path):
     ruta = tmp_path / "app.db"
@@ -73,6 +136,28 @@ def db_sembrada(tmp_path):
     catalogos = obtener_catalogos(ruta)
     yield conexion, catalogos
     conexion.close()
+
+
+def test_seed_conserva_perfiles_y_revisores_al_repetirlo(db_sembrada):
+    conexion, catalogos = db_sembrada
+    antes = conexion.execute("SELECT * FROM estudiantes ORDER BY id").fetchall()
+    sembrar(conexion)
+    despues = conexion.execute("SELECT * FROM estudiantes ORDER BY id").fetchall()
+    assert despues == antes
+    perfiles = {fila["rol"]: fila for fila in despues if fila["rol"]}
+    assert set(perfiles) == {"Estudiante", "Moderador"}
+    comunidad = perfiles["Moderador"]["comunidad_id"]
+    ramos_habilitados = conexion.execute(
+        """
+        SELECT h.ramo_id FROM estudiantes_ramos_habilitados h
+        JOIN estudiantes e ON e.id = h.estudiante_id
+        WHERE e.comunidad_id = ? AND e.disponible = 1
+        """,
+        (comunidad,),
+    ).fetchall()
+    assert [fila[0] for fila in ramos_habilitados].count(catalogos["ramo_id"]) == 2
+    assert catalogos["otro_ramo_id"] not in {fila[0] for fila in ramos_habilitados}
+    assert conexion.execute("SELECT count(*) FROM comunidades_estudiantiles").fetchone()[0] == 1
 
 
 def test_aporte_sin_ramo_es_rechazado(db_sembrada):

@@ -42,28 +42,47 @@ def aplicar_migraciones(
     )
     conexion.commit()
 
-    aplicadas = {
-        fila["version"]
-        for fila in conexion.execute("SELECT version FROM schema_migrations")
-    }
     nuevas: list[str] = []
 
-    for archivo in sorted(directorio.glob("*.sql")):
-        if archivo.name in aplicadas:
-            continue
-        sql = archivo.read_text(encoding="utf-8")
-        try:
-            conexion.executescript(sql)
-            conexion.execute(
-                "INSERT INTO schema_migrations (version) VALUES (?)", (archivo.name,)
-            )
-            conexion.commit()
-        except Exception:
-            conexion.rollback()
-            raise
-        nuevas.append(archivo.name)
+    claves_foraneas = conexion.execute("PRAGMA foreign_keys").fetchone()[0]
+    # La reconstrucción de tablas padre debe conservar sus filas dependientes.
+    conexion.execute("PRAGMA foreign_keys = OFF")
+    try:
+        for archivo in sorted(directorio.glob("*.sql")):
+            with conexion:
+                conexion.execute("BEGIN IMMEDIATE")
+                aplicada = conexion.execute(
+                    "SELECT 1 FROM schema_migrations WHERE version = ?", (archivo.name,)
+                ).fetchone()
+                if aplicada:
+                    continue
+
+                _ejecutar_sql_migracion(conexion, archivo.read_text(encoding="utf-8"))
+                violacion = conexion.execute("PRAGMA foreign_key_check").fetchone()
+                if violacion:
+                    raise sqlite3.IntegrityError(
+                        f"{archivo.name}: clave foránea inválida en {violacion[0]}"
+                    )
+                conexion.execute(
+                    "INSERT INTO schema_migrations (version) VALUES (?)", (archivo.name,)
+                )
+            nuevas.append(archivo.name)
+    finally:
+        if claves_foraneas:
+            conexion.execute("PRAGMA foreign_keys = ON")
 
     return nuevas
+
+
+def _ejecutar_sql_migracion(conexion: sqlite3.Connection, sql: str) -> None:
+    """Ejecuta el script sin el commit implícito de executescript."""
+    inicio = 0
+    for indice, caracter in enumerate(sql):
+        if caracter == ";" and sqlite3.complete_statement(sql[inicio : indice + 1]):
+            conexion.execute(sql[inicio : indice + 1])
+            inicio = indice + 1
+    if sql[inicio:].strip():
+        conexion.execute(sql[inicio:])
 
 
 def obtener_conexion(request: Request):

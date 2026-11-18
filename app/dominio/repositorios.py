@@ -78,7 +78,8 @@ class CatalogoRepositorio:
 
     def obtener_estudiante_por_rol(self, rol: str) -> sqlite3.Row | None:
         return self.conexion.execute(
-            "SELECT id, nombre, correo, rol FROM estudiantes WHERE rol = ?", (rol,)
+            "SELECT id, nombre, correo, rol, comunidad_id FROM estudiantes WHERE rol = ?",
+            (rol,),
         ).fetchone()
 
 
@@ -275,3 +276,71 @@ class AporteRepositorio:
             self.conexion.execute(
                 "UPDATE aportes SET estado = ? WHERE id = ?", (estado, aporte_id)
             )
+
+
+class AsignacionRevisionRepositorio:
+    def __init__(self, conexion: sqlite3.Connection):
+        self.conexion = conexion
+
+    def listar_aportes_pendientes(self) -> list[sqlite3.Row]:
+        return self.conexion.execute(
+            """
+            SELECT a.id, r.nombre AS ramo, t.nombre AS tema, p.anio, p.semestre
+            FROM aportes a
+            JOIN ramos r ON r.id = a.ramo_id
+            JOIN temas_unidad t ON t.id = a.tema_id
+            JOIN periodos_academicos p ON p.id = a.periodo_id
+            WHERE a.estado = 'PendienteAsignacion'
+              AND (SELECT v.estado FROM versiones_apunte v
+                   WHERE v.aporte_id = a.id ORDER BY v.numero DESC LIMIT 1)
+                  = 'PendienteRevision'
+            ORDER BY a.fecha_envio, a.id
+            """
+        ).fetchall()
+
+    def buscar_vigente(self, aporte_id: int) -> sqlite3.Row | None:
+        return self.conexion.execute(
+            """
+            SELECT ar.id, ar.aporte_id, ar.revisor_id, ar.comunidad_id,
+                   ar.fecha_asignacion, ar.estado, e.nombre AS revisor
+            FROM asignaciones_revision ar
+            JOIN estudiantes e ON e.id = ar.revisor_id
+            WHERE ar.aporte_id = ? AND ar.estado = 'Asignada'
+            """,
+            (aporte_id,),
+        ).fetchone()
+
+    def elegir_revisor(
+        self, comunidad_id: int, ramo_id: int, autor_id: int
+    ) -> sqlite3.Row | None:
+        return self.conexion.execute(
+            """
+            SELECT e.id, e.nombre
+            FROM estudiantes e
+            JOIN estudiantes_ramos_habilitados h ON h.estudiante_id = e.id
+            WHERE e.comunidad_id = ? AND h.ramo_id = ?
+              AND e.disponible = 1 AND e.id <> ?
+            ORDER BY (
+                SELECT COUNT(*) FROM asignaciones_revision ar
+                WHERE ar.revisor_id = e.id AND ar.estado = 'Asignada'
+            ), e.id
+            LIMIT 1
+            """,
+            (comunidad_id, ramo_id, autor_id),
+        ).fetchone()
+
+    def registrar(
+        self, aporte_id: int, revisor_id: int, comunidad_id: int, fecha_asignacion: str
+    ) -> None:
+        # La transacción es responsabilidad del servicio.
+        self.conexion.execute(
+            """
+            INSERT INTO asignaciones_revision
+                (aporte_id, revisor_id, comunidad_id, fecha_asignacion, estado)
+            VALUES (?, ?, ?, ?, 'Asignada')
+            """,
+            (aporte_id, revisor_id, comunidad_id, fecha_asignacion),
+        )
+        self.conexion.execute(
+            "UPDATE aportes SET estado = 'Asignado' WHERE id = ?", (aporte_id,)
+        )

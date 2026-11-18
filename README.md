@@ -1,7 +1,8 @@
 # Torpedos universitarios
 
-Documentación de Ingeniería de Requisitos, CIN324, Entrega 1.
-- [Documentación de la entrega](./IngReq-Entrega%201.md)
+Documentación de Ingeniería de Requisitos, CIN324.
+- [Entrega 1](./IngReq-Entrega%201.md)
+- [Entrega 2](./IngReq-Entrega%202.md)
 
 ## Integrantes
 - Ignacio Rivera
@@ -10,12 +11,13 @@ Documentación de Ingeniería de Requisitos, CIN324, Entrega 1.
 - Rodrigo Sances
 - Benjamín Isasmendi
 
-## Aplicación web — HU-01 Enviar y clasificar un aporte
+## Aplicación web
 
 Aplicación de demostración construida con **Python + FastAPI + Jinja2 + SQLite**.
 Implementa el envío de un apunte con su clasificación, la validación del archivo,
-la detección de duplicados exactos y la corrección de un archivo inválido.
-No incluye autenticación real ni publicación automática.
+la detección de duplicados exactos y la corrección de un archivo inválido (HU-01).
+También permite que la comunidad estudiantil asigne un revisor a un aporte
+validado (HU-02).
 
 ### Requisitos
 
@@ -26,8 +28,8 @@ No incluye autenticación real ni publicación automática.
 
 ```powershell
 py -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+. .venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
 En macOS o Linux:
@@ -35,23 +37,24 @@ En macOS o Linux:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ### Crear la base y los datos de ejemplo
 
 ```powershell
-py -m app.db.seed
+python -m app.db.seed
 ```
 
 El comando crea `data/app.db`, aplica las migraciones pendientes y carga carreras,
-ramos, períodos, temas y los dos perfiles de demostración. Es idempotente: se
-puede ejecutar varias veces sin duplicar filas.
+ramos, períodos, temas, los dos perfiles de demostración y los revisores con
+sus habilitaciones. Ejecuta el mismo comando si ya tenías la base de HU-01.
+Puedes volver a ejecutarlo sin duplicar filas.
 
 ### Ejecutar la aplicación
 
 ```powershell
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
 Abre <http://localhost:8000>.
@@ -59,7 +62,7 @@ Abre <http://localhost:8000>.
 ### Probar
 
 ```powershell
-pytest
+python -m pytest
 ```
 
 Las pruebas usan una base SQLite temporal por prueba y no dependen de `data/app.db`.
@@ -68,9 +71,20 @@ Las pruebas usan una base SQLite temporal por prueba y no dependen de `data/app.
 
 El selector superior guarda el perfil activo en la cookie `demo_role`. Los perfiles
 son **Estudiante** y **Moderador**. El Moderador representa a la **Comunidad
-Estudiantil** del modelo de dominio. En HU-01 solo el perfil Estudiante puede enviar
-y corregir aportes; el Moderador ve las pantallas sin habilitación. No es
-autenticación real: es una herramienta para recorrer la demostración.
+Estudiantil** del modelo de dominio. Estudiante puede enviar aportes y corregir un
+archivo inválido. Moderador puede abrir **Organizar revisiones** y solicitar la asignación.
+
+### Probar HU-02 en el navegador
+
+Con el perfil **Estudiante**, envía dos archivos válidos distintos y completa
+todos los campos de clasificación. Usa la carrera **Ingeniería Civil Informática**
+para ambos aportes. Luego cambia a **Moderador**, abre **Organizar revisiones** y
+pulsa **Asignar revisor** en el aporte de cada ramo.
+
+| Escenario | Clasificación sugerida | Qué deberías ver |
+|---|---|---|
+| Estudiante de la comunidad disponible | Ingeniería de Requisitos, Elicitación de requisitos, 2026 · semestre 1 | Se muestra el nombre e identificador del revisor. El aporte pasa a **Asignado** y sale del listado de pendientes. Su versión sigue **Pendiente de revisión**. |
+| Sin estudiantes revisores disponibles | Cálculo I, Límites y continuidad, 2026 · semestre 1 | Se muestra **Sin revisor disponible para este ramo**. El aporte sigue en el panel, pendiente de asignación, sin aprobarse ni publicarse. |
 
 ### Almacenamiento simulado
 
@@ -80,7 +94,7 @@ Para recorrer el camino de error de DSS-01, inicia el servidor con:
 
 ```powershell
 $env:APP_SIMULAR_FALLO_ALMACENAMIENTO = "1"
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
 Con esa variable activa, el envío de un archivo válido responde con un error y no
@@ -88,8 +102,7 @@ confirma el registro.
 
 ### Alcance de esta entrega
 
-- Se implementan P01–P04 y P07 del TO-BE; P13–P14 se usan para corregir un archivo inválido.
-- Quedan fuera: asignación de revisores (HU-02), revisión (HU-03), corrección tras un
-  rechazo (HU-04), notificaciones, búsqueda, ficha, descarga, reportes y retiro de versiones.
+- Se implementan el envío y la corrección de archivos inválidos (HU-01) y la asignación de revisores (HU-02).
+- La revisión, la publicación y los demás recorridos corresponden a historias posteriores.
 - Los requisitos no funcionales se documentan, pero no se implementan como pruebas de
   rendimiento o usabilidad.

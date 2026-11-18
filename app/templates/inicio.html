@@ -19,7 +19,8 @@
       cambia al perfil <strong>Estudiante</strong> en el selector superior.
     </p>
     {% if rol_actual == 'Moderador' %}
-      <p class="ayuda">El perfil Moderador representa a la Comunidad Estudiantil.</p>
+      <p>El perfil Moderador representa a la Comunidad Estudiantil.</p>
+      <a class="boton" href="{{ url_for('panel_moderacion') }}">Organizar revisiones</a>
     {% endif %}
   {% endif %}
 </section>
@@ -36,7 +37,7 @@
   </article>
   <article class="tarjeta">
     <h2>Sin publicación automática</h2>
-    <p>Todo aporte queda pendiente de asignación y revisión.</p>
+    <p>Los aportes validados pasan al panel de la comunidad para su asignación.</p>
   </article>
 </section>
 {% endblock %}

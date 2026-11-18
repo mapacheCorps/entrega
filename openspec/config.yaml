@@ -14,7 +14,7 @@ context: |
   Fichas confirmadas de cada historia en .cin324/historias/HU-xx.md: son el insumo de cada propuesta.
   Alcance: una historia por cambio. No se implementan requisitos no funcionales ni autenticación real
   (usar selector de rol de demostración). Los sistemas externos se simulan mediante adaptadores.
-  Roles de demostración: Estudiante, Ayudante, Coordinador y Moderador.
+  Perfiles de demostración: Estudiante (autor) y Moderador (representa a la ComunidadEstudiantil).
 
 rules:
   proposal:

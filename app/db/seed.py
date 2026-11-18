@@ -35,9 +35,15 @@ PERFILES = [
     ("Comunidad Estudiantil", "comunidad@demo.cl", "Moderador"),
 ]
 
+COMUNIDAD_DEMO = "Comunidad Estudiantil"
+REVISORES = [
+    ("Revisor Demo 1", "revisor1@demo.cl", ("REQ", "EDD")),
+    ("Revisor Demo 2", "revisor2@demo.cl", ("REQ",)),
+]
+
 
 def sembrar(conexion: sqlite3.Connection) -> None:
-    """Inserta catálogos y perfiles sin duplicar filas si se ejecuta otra vez."""
+    """Inserta catálogos, perfiles y revisores sin duplicarlos."""
     with conexion:
         for codigo, nombre in CARRERAS:
             conexion.execute(
@@ -91,25 +97,50 @@ def sembrar(conexion: sqlite3.Connection) -> None:
                     (ramo["id"], numero, nombre),
                 )
 
-        # Limpia perfiles de versiones anteriores que ya no se usan y que no
-        # tengan aportes asociados. Así el seed sigue siendo idempotente.
         conexion.execute(
-            """
-            DELETE FROM estudiantes
-            WHERE rol NOT IN ('Estudiante', 'Moderador')
-              AND id NOT IN (SELECT autor_id FROM aportes)
-            """
+            "INSERT INTO comunidades_estudiantiles (nombre) VALUES (?) "
+            "ON CONFLICT(nombre) DO NOTHING",
+            (COMUNIDAD_DEMO,),
         )
+        comunidad_id = conexion.execute(
+            "SELECT id FROM comunidades_estudiantiles WHERE nombre = ?",
+            (COMUNIDAD_DEMO,),
+        ).fetchone()["id"]
 
         for nombre, correo, rol in PERFILES:
             conexion.execute(
                 """
-                INSERT INTO estudiantes (nombre, correo, rol) VALUES (?, ?, ?)
+                INSERT INTO estudiantes (nombre, correo, rol, comunidad_id)
+                VALUES (?, ?, ?, ?)
                 ON CONFLICT(correo) DO UPDATE
-                    SET nombre = excluded.nombre, rol = excluded.rol
+                    SET nombre = excluded.nombre, rol = excluded.rol,
+                        comunidad_id = COALESCE(excluded.comunidad_id, estudiantes.comunidad_id)
                 """,
-                (nombre, correo, rol),
+                (nombre, correo, rol, comunidad_id if rol == "Moderador" else None),
             )
+
+        for nombre, correo, codigos_ramo in REVISORES:
+            conexion.execute(
+                """
+                INSERT INTO estudiantes (nombre, correo, comunidad_id, disponible)
+                VALUES (?, ?, ?, 1)
+                ON CONFLICT(correo) DO UPDATE
+                    SET nombre = excluded.nombre, comunidad_id = excluded.comunidad_id
+                """,
+                (nombre, correo, comunidad_id),
+            )
+            for codigo_ramo in codigos_ramo:
+                conexion.execute(
+                    """
+                    INSERT INTO estudiantes_ramos_habilitados (estudiante_id, ramo_id)
+                    SELECT e.id, r.id FROM estudiantes e
+                    JOIN ramos r ON r.codigo = ?
+                    JOIN carreras c ON c.id = r.carrera_id AND c.codigo = 'ICI'
+                    WHERE e.correo = ?
+                    ON CONFLICT(estudiante_id, ramo_id) DO NOTHING
+                    """,
+                    (codigo_ramo, correo),
+                )
 
 
 def main() -> None:
@@ -126,6 +157,8 @@ def main() -> None:
                 "periodos_academicos",
                 "temas_unidad",
                 "estudiantes",
+                "comunidades_estudiantiles",
+                "estudiantes_ramos_habilitados",
             )
         }
     finally:

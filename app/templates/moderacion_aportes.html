@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block titulo %}Organizar revisiones — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <h1>Organizar revisiones</h1>
+    <a class="enlace" href="{{ url_for('inicio') }}">Volver al inicio</a>
+  </div>
+
+  {% if asignacion %}
+    <div class="alerta info" role="status">
+      <strong>{% if ya_asignado %}El aporte #{{ aporte_id }} ya tiene un revisor asignado.{% else %}Aporte #{{ aporte_id }} asignado.{% endif %}</strong>
+      <p>Responsable: {{ asignacion.revisor }} (#{{ asignacion.revisor_id }}). Estado del aporte: <strong>Asignado</strong>.</p>
+    </div>
+  {% elif sin_revisor %}
+    <div class="alerta" role="status">
+      <strong>Sin revisor disponible para este ramo</strong>
+      <p>El aporte #{{ aporte_id }} sigue pendiente de asignación. El material sigue sin aprobarse ni publicarse.</p>
+    </div>
+  {% endif %}
+
+  <h2>Aportes pendientes de asignación</h2>
+  {% for aporte in aportes %}
+    <article class="tarjeta aporte-pendiente">
+      <h3 id="aporte-{{ aporte.id }}">Aporte #{{ aporte.id }}</h3>
+      <dl class="datos">
+        <dt>Ramo</dt><dd>{{ aporte.ramo }}</dd>
+        <dt>Tema o unidad</dt><dd>{{ aporte.tema }}</dd>
+        <dt>Período académico</dt><dd>{{ aporte.anio }} · semestre {{ aporte.semestre }}</dd>
+      </dl>
+      <form class="formulario" method="post" aria-labelledby="aporte-{{ aporte.id }}"
+            action="{{ url_for('asignar_revision', aporte_id=aporte.id) }}">
+        <button class="boton boton-asignar" type="submit">Asignar revisor</button>
+      </form>
+    </article>
+  {% else %}
+    <p>No hay aportes pendientes de asignación.</p>
+  {% endfor %}
+</section>
+{% endblock %}

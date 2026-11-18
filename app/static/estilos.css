@@ -98,6 +98,10 @@ a { color: var(--acento); }
 
 .boton:hover { background: #166534; }
 
+.boton-asignar { min-height: 3rem; font: inherit; font-weight: 600; }
+.aporte-pendiente + .aporte-pendiente { margin-top: 0.75rem; }
+.aporte-pendiente h3 { margin-top: 0; }
+
 .tarjetas {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

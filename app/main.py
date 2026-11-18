@@ -14,7 +14,7 @@ from app.integraciones.almacenamiento import (
     AlmacenamientoConFallo,
     AlmacenamientoLocal,
 )
-from app.rutas import aportes, demo
+from app.rutas import aportes, demo, moderacion
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -47,6 +47,7 @@ def create_app(
     )
     aplicacion.include_router(demo.router)
     aplicacion.include_router(aportes.router)
+    aplicacion.include_router(moderacion.router)
     return aplicacion
 
 

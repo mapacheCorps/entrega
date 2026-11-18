@@ -3,24 +3,23 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
 
 from app.db.conexion import obtener_conexion
 from app.dominio.repositorios import AporteRepositorio, CatalogoRepositorio
-from app.rutas.demo import ROLES_DEMO, rol_actual
+from app.rutas.demo import rol_actual
+from app.rutas.paginas import contexto_base as _contexto_base
+from app.rutas.paginas import pagina_error as _error
+from app.rutas.paginas import templates
 from app.servicios.aportes import Resultado, ServicioAportes, TipoResultado
 from app.servicios.validacion import ArchivoSubido
-
-BASE_DIR = Path(__file__).resolve().parents[1]
-templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 ESTADOS_APORTE = {
     "PendienteAsignacion": "Pendiente de asignación",
     "RequiereCorreccion": "Requiere corrección",
+    "Asignado": "Asignado",
 }
 ESTADOS_VERSION = {
     "Recibida": "Recibida",
@@ -30,16 +29,6 @@ ESTADOS_VERSION = {
 }
 
 router = APIRouter()
-
-
-def _contexto_base(request: Request) -> dict[str, object]:
-    rol = rol_actual(request)
-    return {
-        "request": request,
-        "rol_actual": rol,
-        "roles_demo": ROLES_DEMO,
-        "es_estudiante": rol == "Estudiante",
-    }
 
 
 def _catalogos(conexion: sqlite3.Connection) -> dict[str, object]:
@@ -71,19 +60,6 @@ def _detalle(conexion: sqlite3.Connection, aporte_id: int) -> dict[str, object] 
         str(datos.get("estado_version")), str(datos.get("estado_version"))
     )
     return datos
-
-
-def _error(
-    request: Request,
-    codigo: int,
-    titulo: str,
-    mensaje: str,
-):
-    contexto = _contexto_base(request)
-    contexto.update({"codigo": codigo, "titulo": titulo, "mensaje": mensaje})
-    return templates.TemplateResponse(
-        request, "error.html", contexto, status_code=codigo
-    )
 
 
 async def _leer_archivo(archivo: UploadFile | None) -> ArchivoSubido | None:
