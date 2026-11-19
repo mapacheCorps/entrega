@@ -20,7 +20,7 @@
     </p>
     {% if rol_actual == 'Moderador' %}
       <p>El perfil Moderador representa a la Comunidad Estudiantil.</p>
-      <a class="boton" href="{{ url_for('panel_moderacion') }}">Organizar revisiones</a>
+      <a class="boton" href="{{ url_for('panel_moderacion') }}">Revisar aportes</a>
     {% endif %}
   {% endif %}
   <p><a class="enlace" href="{{ url_for('catalogo') }}">Ver catálogo de apuntes</a></p>
@@ -38,7 +38,7 @@
   </article>
   <article class="tarjeta">
     <h2>Sin publicación automática</h2>
-    <p>Los aportes validados pasan al panel de la comunidad para su asignación.</p>
+    <p>Los aportes validados quedan disponibles para el equipo de moderación.</p>
   </article>
 </section>
 {% endblock %}

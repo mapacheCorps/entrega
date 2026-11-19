@@ -37,7 +37,7 @@ def test_crear_aporte_con_version_y_consultar_detalle(conexion, catalogos):
         tema_id=catalogos["tema_id"],
         procedencia="Apuntes de clase",
         fecha_envio="2026-11-05T10:00:00",
-        estado_aporte="PendienteAsignacion",
+        estado_aporte="PendienteRevision",
         version_id=repo.siguiente_id("versiones_apunte"),
         nombre_archivo="apunte.pdf",
         referencia_archivo="1/1_apunte.pdf",
@@ -49,7 +49,7 @@ def test_crear_aporte_con_version_y_consultar_detalle(conexion, catalogos):
     )
 
     detalle = repo.obtener_detalle(aporte_id)
-    assert detalle["estado_aporte"] == "PendienteAsignacion"
+    assert detalle["estado_aporte"] == "PendienteRevision"
     assert detalle["estado_version"] == "PendienteRevision"
     assert detalle["numero"] == 1
     assert detalle["hash_archivo"] == "hash-apunte"
@@ -68,7 +68,7 @@ def test_creacion_de_aporte_es_transaccional(conexion, catalogos):
             tema_id=catalogos["tema_id"],
             procedencia="Apuntes de clase",
             fecha_envio="2026-11-05T10:00:00",
-            estado_aporte="PendienteAsignacion",
+            estado_aporte="PendienteRevision",
             version_id=repo.siguiente_id("versiones_apunte"),
             nombre_archivo="apunte.pdf",
             referencia_archivo="1/1_apunte.pdf",
@@ -117,7 +117,7 @@ def test_correccion_es_transaccional(conexion, catalogos):
             tamano_bytes=100,
             tipo_mime="application/pdf",
             estado_version="EstadoInvalido",
-            estado_aporte="PendienteAsignacion",
+            estado_aporte="PendienteRevision",
             fecha_creacion="2026-11-05T10:05:00",
         )
 
@@ -135,7 +135,7 @@ def test_correccion_es_transaccional(conexion, catalogos):
         tamano_bytes=100,
         tipo_mime="application/pdf",
         estado_version="PendienteRevision",
-        estado_aporte="PendienteAsignacion",
+        estado_aporte="PendienteRevision",
         fecha_creacion="2026-11-05T10:05:00",
     )
 
@@ -147,4 +147,4 @@ def test_correccion_es_transaccional(conexion, catalogos):
         (1, "Final"),
         (2, "PendienteRevision"),
     ]
-    assert repo.obtener_aporte(aporte_id)["estado"] == "PendienteAsignacion"
+    assert repo.obtener_aporte(aporte_id)["estado"] == "PendienteRevision"

@@ -131,7 +131,7 @@ class ServicioAportes:
                 tema_id=entero(datos.get("tema_id")) or 0,
                 procedencia=str(datos.get("procedencia") or "").strip(),
                 fecha_envio=_ahora(),
-                estado_aporte=EstadoAporte.PENDIENTE_ASIGNACION.value,
+                estado_aporte=EstadoAporte.PENDIENTE_REVISION.value,
                 version_id=version_id,
                 nombre_archivo=archivo.nombre,
                 referencia_archivo=referencia,
@@ -261,7 +261,7 @@ class ServicioAportes:
                 referencia=referencia,
                 hash_archivo=hash_archivo,
                 estado_version=EstadoVersion.PENDIENTE_REVISION.value,
-                estado_aporte=EstadoAporte.PENDIENTE_ASIGNACION.value,
+                estado_aporte=EstadoAporte.PENDIENTE_REVISION.value,
                 nueva_version_id=nueva_version_id,
             )
         except Exception:
@@ -341,7 +341,7 @@ class ServicioAportes:
                         referencia=referencia,
                         hash_archivo=huella,
                         estado_version=EstadoVersion.PENDIENTE_REVISION.value,
-                        estado_aporte=EstadoAporte.PENDIENTE_ASIGNACION.value,
+                        estado_aporte=EstadoAporte.PENDIENTE_REVISION.value,
                         nueva_version_id=nueva_version_id,
                         confirmar=False,
                     )

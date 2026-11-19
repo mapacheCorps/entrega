@@ -3,15 +3,17 @@
 from __future__ import annotations
 
 import sqlite3
+from pathlib import PurePath
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Form, Path, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 
 from app.db.conexion import obtener_conexion
 from app.dominio.repositorios import AporteRepositorio, CatalogoRepositorio
 from app.dominio.revisiones import RevisionAcademicaRepositorio
+from app.integraciones.almacenamiento import ErrorAlmacenamiento, nombre_seguro
 from app.rutas.demo import rol_actual
 from app.rutas.paginas import contexto_base as _contexto_base
 from app.rutas.paginas import pagina_error as _error
@@ -20,9 +22,8 @@ from app.servicios.aportes import Resultado, ServicioAportes, TipoResultado
 from app.servicios.validacion import ArchivoSubido
 
 ESTADOS_APORTE = {
-    "PendienteAsignacion": "Pendiente de asignación",
+    "PendienteRevision": "Pendiente de revisión",
     "RequiereCorreccion": "Requiere corrección",
-    "Asignado": "Asignado",
     "Publicado": "Publicado",
     "Rechazado": "Rechazado",
     "CorreccionSolicitada": "Corrección solicitada",
@@ -136,6 +137,89 @@ def catalogo(
     contexto = _contexto_base(request)
     contexto["versiones"] = RevisionAcademicaRepositorio(conexion).listar_publicadas()
     return templates.TemplateResponse(request, "catalogo.html", contexto)
+
+
+FORMATOS_VISTA_PREVIA = {
+    ".pdf": ("application/pdf", b"%PDF-"),
+    ".png": ("image/png", b"\x89PNG\r\n\x1a\n"),
+    ".jpg": ("image/jpeg", b"\xff\xd8\xff"),
+}
+
+
+def _catalogo_no_disponible(request: Request):
+    return templates.TemplateResponse(
+        request, "catalogo_no_disponible.html", _contexto_base(request), status_code=404,
+        headers={"Cache-Control": "no-store"},
+    )
+
+
+def _leer_archivo_publicado(request: Request, conexion: sqlite3.Connection, version_id: int):
+    version = RevisionAcademicaRepositorio(conexion).obtener_publicada(version_id)
+    if version is None or not version["referencia_archivo"]:
+        return None
+    try:
+        return version, request.app.state.almacenamiento.leer(version["referencia_archivo"])
+    except ErrorAlmacenamiento:
+        return None
+
+
+def _tipo_vista_previa(nombre: str, archivo: bytes) -> str | None:
+    formato = FORMATOS_VISTA_PREVIA.get(PurePath(nombre).suffix.lower())
+    return formato[0] if formato and archivo.startswith(formato[1]) else None
+
+
+@router.get("/catalogo/{version_id}")
+def ficha_publicada(
+    version_id: Identificador,
+    request: Request,
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    publicacion = _leer_archivo_publicado(request, conexion, version_id)
+    if publicacion is None:
+        return _catalogo_no_disponible(request)
+    version, archivo = publicacion
+    contexto = _contexto_base(request)
+    contexto.update(version=version, tipo_vista=_tipo_vista_previa(version["nombre_archivo"], archivo))
+    return templates.TemplateResponse(
+        request, "catalogo_ficha.html", contexto, headers={"Cache-Control": "no-store"},
+    )
+
+
+def _archivo_publicado(request: Request, conexion: sqlite3.Connection, version_id: int, inline: bool):
+    publicacion = _leer_archivo_publicado(request, conexion, version_id)
+    if publicacion is None:
+        return _catalogo_no_disponible(request)
+    version, archivo = publicacion
+
+    nombre = version["nombre_archivo"]
+    tipo = _tipo_vista_previa(nombre, archivo) if inline else "application/octet-stream"
+    if tipo is None:
+        return Response(status_code=415, headers={"Cache-Control": "no-store"})
+    disposicion = "inline" if inline else "attachment"
+    return Response(
+        archivo, media_type=tipo,
+        headers={
+            "Content-Disposition": f'{disposicion}; filename="{nombre_seguro(nombre)}"',
+            "X-Content-Type-Options": "nosniff",
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@router.get("/catalogo/{version_id}/vista-previa")
+def vista_previa_publicada(
+    version_id: Identificador, request: Request,
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    return _archivo_publicado(request, conexion, version_id, inline=True)
+
+
+@router.get("/catalogo/{version_id}/descargar")
+def descargar_publicada(
+    version_id: Identificador, request: Request,
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    return _archivo_publicado(request, conexion, version_id, inline=False)
 
 
 @router.post("/aportes")

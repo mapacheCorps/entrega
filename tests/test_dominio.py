@@ -10,7 +10,7 @@ from app.dominio.entidades import (
 )
 
 
-def test_aporte_nuevo_queda_pendiente_de_asignacion():
+def test_aporte_nuevo_queda_pendiente_de_revision():
     aporte = Aporte(
         id=None,
         autor_id=1,
@@ -20,7 +20,7 @@ def test_aporte_nuevo_queda_pendiente_de_asignacion():
         procedencia="Apuntes propios",
         fecha_envio=datetime.now(timezone.utc),
     )
-    assert aporte.estado is EstadoAporte.PENDIENTE_ASIGNACION
+    assert aporte.estado is EstadoAporte.PENDIENTE_REVISION
     assert aporte.esta_pendiente()
     assert not aporte.requiere_correccion()
 

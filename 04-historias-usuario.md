@@ -17,11 +17,11 @@ Como **usuario con cuenta institucional que aporta material**, quiero **adjuntar
 - **HU-01-CA3:** La coincidencia con un archivo idéntico se comunica para resolver el duplicado; no se presenta como aprobación académica.
 - **HU-01-CA4:** Las opciones de ramo corresponden a la carrera seleccionada y las de tema al ramo seleccionado; el período académico se elige con independencia del ramo.
 - **HU-01-CA5:** La confirmación muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que no se publica cuando la cuenta es `@estudiantes.uv.cl`; cuando la cuenta es `@uv.cl`, indica que la versión quedó publicada. No muestra hash, referencia de almacenamiento, tipo MIME ni fecha de creación.
-- **HU-01-CA6:** Dado un usuario autenticado con correo `@uv.cl` y un archivo que cumple las reglas configuradas, al enviar se registra el aporte y la versión se publica de inmediato, sin asignación ni revisión académica.
+- **HU-01-CA6:** Dado un usuario autenticado con correo `@uv.cl` y un archivo que cumple las reglas configuradas, al enviar se registra el aporte y la versión se publica de inmediato, sin revisión académica.
 
 ## HU-02
 
-Como **coordinador de la comunidad**, quiero **que cada aporte tenga un ayudante competente asignado**, para **evitar solicitudes sin responsable**.
+Como **Moderador**, quiero **abrir cualquier aporte pendiente desde una cola compartida**, para **revisarlo en cuanto esté disponible**.
 
 **Actividades TO-BE:** P05.  
 **Cambios AS-IS → TO-BE:** C02.  
@@ -29,13 +29,13 @@ Como **coordinador de la comunidad**, quiero **que cada aporte tenga un ayudante
 
 **Criterios de aceptación:**
 
-- **HU-02-CA1:** Si existe un ayudante habilitado para el ramo y disponible, el aporte queda asignado a uno de ellos.
-- **HU-02-CA2:** Si no existe uno disponible, el aporte permanece pendiente de asignación y visible a coordinación.
-- **HU-02-CA3:** La falta de ayudante no publica ni aprueba el material.
+- **HU-02-CA1:** La cola ofrece la versión vigente y validada de cada aporte pendiente a cualquier Moderador.
+- **HU-02-CA2:** Abrir un aporte no lo reserva ni impide que otro Moderador lo consulte.
+- **HU-02-CA3:** Un Estudiante no puede abrir la cola de moderación.
 
 ## HU-03
 
-Como **ayudante habilitado**, quiero **registrar una decisión fundamentada sobre una versión del apunte**, para **publicar material con evidencia de revisión**.
+Como **Moderador**, quiero **registrar una decisión fundamentada sobre una versión del apunte**, para **publicar material con evidencia de revisión**.
 
 **Actividades TO-BE:** P06, P09, P10.  
 **Cambios AS-IS → TO-BE:** C03, C05.  
@@ -43,7 +43,7 @@ Como **ayudante habilitado**, quiero **registrar una decisión fundamentada sobr
 
 **Criterios de aceptación:**
 
-- **HU-03-CA1:** La decisión registra responsable, fecha, versión, alcance y observaciones.
+- **HU-03-CA1:** La decisión registra al Moderador que la tomó, fecha, versión, alcance y observaciones. Se registra una sola decisión sobre la versión.
 - **HU-03-CA2:** Solo una decisión de aprobación permite publicar esa versión; corrección o rechazo mantienen el aporte fuera del catálogo publicado.
 - **HU-03-CA3:** Un estudiante sin rol habilitado no puede registrar una decisión de revisión ni cambiar el estado de publicación.
 
@@ -59,7 +59,7 @@ Como **autor de un aporte**, quiero **recibir observaciones y enviar una versió
 
 - **HU-04-CA1:** Una solicitud de corrección entrega observaciones específicas al autor.
 - **HU-04-CA2:** El reenvío conserva el identificador del aporte y crea una versión distinguible de la anterior.
-- **HU-04-CA3:** La nueva versión vuelve a validación y revisión y no hereda una aprobación anterior.
+- **HU-04-CA3:** La nueva versión vuelve a validación y a la cola compartida de revisión y no hereda una aprobación anterior.
 
 ## HU-05
 
@@ -91,7 +91,7 @@ Como **estudiante que busca material**, quiero **filtrar los apuntes publicados 
 
 ## HU-07
 
-Como **estudiante que consulta un apunte**, quiero **ver su procedencia y la revisión de la versión disponible**, para **valorar su pertinencia y confiabilidad**.
+Como **estudiante que consulta un apunte**, quiero **ver su procedencia, revisión y vista previa de la versión disponible**, para **valorar su pertinencia y confiabilidad**.
 
 **Actividades TO-BE:** B05.  
 **Cambios AS-IS → TO-BE:** C07.  
@@ -99,8 +99,8 @@ Como **estudiante que consulta un apunte**, quiero **ver su procedencia y la rev
 
 **Criterios de aceptación:**
 
-- **HU-07-CA1:** La ficha muestra procedencia declarada, período, versión, fecha, responsable y alcance de revisión.
-- **HU-07-CA2:** La evidencia mostrada corresponde a la misma versión que se ofrece para descargar.
+- **HU-07-CA1:** La ficha muestra procedencia declarada, período, versión, fecha, responsable y alcance de revisión cuando corresponde. Si la publicación fue directa, identifica ese origen.
+- **HU-07-CA2:** La evidencia, la vista previa de PDF, PNG o JPG y la descarga corresponden a la misma versión seleccionada.
 - **HU-07-CA3:** Una comprobación técnica del archivo no se etiqueta como revisión académica ni como garantía absoluta de corrección.
 
 ## HU-08
@@ -114,7 +114,7 @@ Como **estudiante que consulta material**, quiero **obtener el archivo que selec
 **Criterios de aceptación:**
 
 - **HU-08-CA1:** Si la versión sigue publicada y disponible, se entrega el archivo correspondiente.
-- **HU-08-CA2:** Si fue retirada o ya no está disponible, se informa y se permite volver a la búsqueda.
+- **HU-08-CA2:** Si fue retirada o ya no está disponible, se informa y se permite volver al catálogo.
 - **HU-08-CA3:** No se entrega silenciosamente una versión diferente a la seleccionada.
 
 ## HU-09
@@ -141,9 +141,9 @@ Como **coordinador de la comunidad**, quiero **recibir una alerta de revisiones 
 
 **Criterios de aceptación:**
 
-- **HU-10-CA1:** Al superarse el plazo configurado en una revisión en curso, se genera recordatorio al ayudante y alerta a coordinación.
+- **HU-10-CA1:** Al superarse el plazo desde que una versión ingresó en la cola sin resolverse, se alerta a la comunidad.
 - **HU-10-CA2:** La alerta no interrumpe la revisión ni cambia el resultado a aprobado o rechazado.
-- **HU-10-CA3:** Con el plazo de 48 horas representado en el modelo, una revisión que supera ese tiempo genera el recordatorio y la alerta.
+- **HU-10-CA3:** Con el plazo de 48 horas representado en el modelo, una versión pendiente que supera ese tiempo genera la alerta.
 
 ## HU-11
 

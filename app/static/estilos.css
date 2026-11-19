@@ -98,7 +98,10 @@ a { color: var(--acento); }
 
 .boton:hover { background: #166534; }
 
-.boton-asignar { min-height: 3rem; font: inherit; font-weight: 600; }
+.vista-pdf { width: 100%; min-height: 28rem; border: 1px solid var(--borde); }
+.vista-imagen { max-width: 100%; height: auto; }
+
+.boton-accion { min-height: 3rem; font: inherit; font-weight: 600; }
 .aporte-pendiente + .aporte-pendiente { margin-top: 0.75rem; }
 .aporte-pendiente h3 { margin-top: 0; }
 
@@ -204,7 +207,6 @@ legend { font-weight: 700; padding: 0 0.35rem; }
   background: #e2e8f0;
 }
 
-.estado-PendienteAsignacion,
 .estado-PendienteRevision,
 .estado-EnRevision { background: var(--info-claro); color: var(--info); }
 .estado-RequiereCorreccion,

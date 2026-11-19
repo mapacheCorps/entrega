@@ -21,10 +21,10 @@
 ## Supuestos acordados (por elementos faltantes o dudosos)
 - 2026-11-05 — Confirmado por el estudiante al responder «continuamos»:
   - **Casos de uso:** `09-casos-de-uso.md` y `diagramas/casos-de-uso.png` son la fuente de verdad. `08-diagramas-casos-uso-secuencia.md`, `casos-de-uso.puml` y `casos-de-uso.svg` quedan como evidencia histórica y no se usan para generar.
-  - **Roles:** selector de rol de demostración con dos perfiles: **Estudiante** (autor) y **Moderador** (representa a la `ComunidadEstudiantil` del modelo). Sin autenticación real. Ayudante y Coordinador no se incluyen por ahora; se incorporarán cuando sus historias los requieran.
+  - **Roles:** selector de rol de demostración con dos perfiles: **Estudiante** (autor) y **Moderador** (representa a la `ComunidadEstudiantil` del modelo). Sin autenticación real. El flujo de revisión directa usa esos dos perfiles.
   - **Huecos del modelo:** se implementan como atributos y estados de base de datos: `Estudiante.disponible`, `Estudiante.ramosHabilitados`, `RevisionAcademica.alcance`, `ReporteError.resultado`, `ReporteError.accionTomada`, `ReporteError.fechaResolucion`; estados de `Aporte` y `ReporteError`. Si se desea, se actualizarán los documentos del curso mediante `cin324-validar-sistema`.
   - **Archivos:** se aceptan `.pdf`, `.docx`, `.pptx`, `.png`, `.jpg`; máximo 10 MB; el archivo no puede estar vacío; duplicado exacto por SHA-256.
-  - **Plazo de 48 horas:** se evalúa al abrir el panel de coordinación o al pulsar «Evaluar plazos»; no hay proceso en segundo plano.
+  - **Plazo de 48 horas:** se cuenta desde el ingreso de la versión en la cola compartida y se evalúa desde el panel de moderación; no hay proceso en segundo plano.
   - **Servicios externos:** almacenamiento de archivos y correo se simulan. Los archivos se guardan localmente y las notificaciones quedan en una bandeja/registro visible.
   - **Requisitos no funcionales:** RP-15, RP-16 y RP-17 se leen pero no se implementan como pruebas de rendimiento o usabilidad. RP-18 se cubre funcionalmente con el selector de rol y los escenarios de intento no autorizado.
 
@@ -41,15 +41,15 @@
 | Historia | Estado | Cambio de OpenSpec | Fecha | Observaciones |
 |----------|--------|--------------------|-------|----------------|
 | HU-01 | hecha · validada y archivada | `openspec/changes/archive/2026-11-12-hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Especificaciones sincronizadas a `openspec/specs/gestion-aportes/spec.md`. |
-| HU-02 | implementada · pendiente de validación por el estudiante | `hu-02-asignar-responsable-revision` | 2026-11-18 | P05 / RP-03 / CU-02. Panel del Moderador y asignación transaccional. Suite completa con 75 pruebas aprobadas, incluidos ambos escenarios Gherkin. |
-| HU-03 | implementada · pendiente de validación por el estudiante | `hu-03-registrar-revision-comunitaria` | 2026-11-18 | P06/P09/P10 · CU-03. Revisión comunitaria, tres decisiones y catálogo de versiones publicadas. Suite completa con 90 pruebas aprobadas. |
-| HU-04 | implementada · pendiente de validación por el estudiante | `hu-04-enviar-version-corregida` | 2026-11-18 | C04 / RP-05 / RP-14 / CU-04. Feedback por versión y reenvío al mismo aporte. Suite completa con 100 pruebas aprobadas. |
+| HU-02 | revisión directa implementada | ajuste-hu-02-revision-directa | 2026-11-19 | Cola compartida. El cambio inicial de asignación queda como historial. |
+| HU-03 | revisión directa implementada | ajuste-hu-02-revision-directa | 2026-11-19 | Se registra al Moderador que confirma la primera decisión de la versión. |
+| HU-04 | implementada | hu-04-enviar-version-corregida | 2026-11-19 | El reenvío válido vuelve a la cola de revisión directa. |
 | HU-05 | pendiente | — | — | Requiere decisiones de revisión (HU-03). |
 | HU-06 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
-| HU-07 | pendiente | — | — | Requiere versiones publicadas y revisión (HU-03). |
-| HU-08 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
+| HU-07 | implementada para el flujo de revisión comunitaria | hu-07-hu-08-ficha-y-archivo | 2026-11-19 | Ficha por versión y vista previa de PDF, PNG y JPG. |
+| HU-08 | implementada para el flujo de revisión comunitaria | hu-07-hu-08-ficha-y-archivo | 2026-11-19 | Descarga de la versión exacta con comprobación de publicación y disponibilidad. |
 | HU-09 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
-| HU-10 | pendiente | — | — | Requiere asignaciones y revisiones en curso (HU-02/HU-03). |
+| HU-10 | pendiente | — | — | Mide la espera desde el ingreso de la versión a la cola (HU-02). |
 | HU-11 | pendiente | — | — | Requiere reportes confirmados (HU-09). |
 
 ## Validaciones

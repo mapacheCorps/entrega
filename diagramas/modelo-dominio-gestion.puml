@@ -1,4 +1,5 @@
 @startuml
+!pragma layout smetana
 !theme plain
 skinparam shadowing false
 skinparam classAttributeIconSize 0
@@ -12,28 +13,10 @@ class Estudiante {
   correo: texto
 }
 
-class ComunidadEstudiantil {
-  identificador: texto
-  nombre: texto
-}
-
-class Aporte {
-  identificador: texto
-  fechaEnvio: fecha
-  procedenciaDeclarada: texto
-  estado: texto
-}
-
 class VersionApunte {
   numero: entero
   nombreArchivo: texto
   referenciaArchivo: texto
-  estado: texto
-}
-
-class AsignacionRevision {
-  identificador: texto
-  fechaAsignacion: fecha
   estado: texto
 }
 
@@ -49,9 +32,6 @@ class ReporteError {
   estado: texto
 }
 
-ComunidadEstudiantil "1" -- "0..*" AsignacionRevision : organiza
-AsignacionRevision "0..*" -- "1" Aporte : se refiere a
-Estudiante "1" -- "0..*" AsignacionRevision : asume
 VersionApunte "1" -- "0..*" Notificacion : origina
 Estudiante "1" -- "0..*" Notificacion : recibe
 VersionApunte "1" -- "0..*" ReporteError : recibe

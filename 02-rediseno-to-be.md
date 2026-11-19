@@ -2,7 +2,7 @@
 
 ## Alcance
 
-Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimiento de apuntes, con revisión académica antes de publicar. Los participantes son Estudiante, Académico y Comunidad estudiantil; esta última representa a la administración, los ayudantes y la operación de los servicios automáticos. El acceso exige una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl`: los aportes de `@estudiantes.uv.cl` pasan por revisión comunitaria y los de `@uv.cl` se publican directamente después de la validación.
+Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimiento de apuntes, con revisión académica antes de publicar. Los participantes son Estudiante, Académico y Comunidad estudiantil; esta última representa al equipo de moderación y la operación de los servicios automáticos. El acceso exige una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl`: los aportes de `@estudiantes.uv.cl` pasan por revisión comunitaria y los de `@uv.cl` se publican directamente después de la validación.
 
 ## Mejoras identificadas por participante
 
@@ -10,14 +10,14 @@ Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimien
 |---|---|---|---|
 | Estudiante que consulta | Encontrar material pertinente y evaluar su confiabilidad. | PR-01, PR-02, PR-03. | Catálogo filtrable, ficha de revisión y descarga de la versión seleccionada. |
 | Autor del aporte | Compartir y conocer el resultado. | PR-03, PR-05. | Formulario claro, observaciones, correcciones y resolución identificable. |
-| Comunidad estudiantil | Organizar y revisar con responsabilidades claras. | PR-04 y PR-05 (hipótesis). | Validación inicial, asignación, historial y seguimiento. |
+| Comunidad estudiantil | Organizar y revisar con responsabilidades claras. | PR-04 y PR-05 (hipótesis). | Validación inicial, cola compartida, historial y seguimiento. |
 
 ## Criterios de la propuesta
 
 | ID | Criterio                                                                                                             |
 |---|----------------------------------------------------------------------------------------------------------------------|
 | D01 | Revisar antes de publicar; solo la versión aprobada o publicada directamente por una cuenta `@uv.cl` entra al catálogo.                                               |
-| D02 | Asignar la revisión a ayudantes habilitados por ramo; coordinación gestiona disponibilidad y autorización.           |
+| D02 | Ofrecer los aportes validados a todos los moderadores en una cola compartida.           |
 | D03 | Clasificar por carrera, ramo, período académico y tema o unidad.                                                     |
 | D04 | Aplicar controles de archivo, formatos y tamaño configurables, y detección de duplicados.                            |
 | D05 | Generar un recordatorio  a las 48 horas desde el inicio de la revisión de un apunte que no ha sido revisado todavía. |
@@ -43,7 +43,7 @@ Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimien
 - Actividades AS-IS afectadas: A04: recepción y organización del apunte; el modelo actual no representa un control académico formal.
 - Heurísticas: **Control addition, Resequencing y Knock-out**.
 - Cambio propuesto: Validar primero la entrada y después realizar una revisión académica documentada.
-- Efecto esperado y costo de la mejora: Mejora esperada de calidad; puede aumentar la espera y carga del ayudante.
+- Efecto esperado y costo de la mejora: Mejora esperada de calidad; puede aumentar la espera y carga de moderación.
 - Cambios trazables: C02, C03, C07.
 
 ### I03
@@ -51,7 +51,7 @@ Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimien
 - Objetivo y problema: Comunidad y autor: resolver cada aporte; PR-05.
 - Actividades AS-IS afectadas: A03–A04: envío y organización del apunte.
 - Heurísticas: **Split responsibilities, Order assignment y Contact reduction**.
-- Cambio propuesto: Asignar responsable, devolver observaciones consolidadas y mantener versiones del mismo caso.
+- Cambio propuesto: Registrar quién toma la decisión, devolver observaciones consolidadas y mantener versiones del mismo caso.
 - Efecto esperado y costo de la mejora: Menos pérdida de contexto; la disponibilidad del mismo revisor puede limitar la rapidez.
 - Cambios trazables: C02, C04, C05.
 
@@ -69,7 +69,7 @@ Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimien
 - Objetivo y problema: Comunidad: dar seguimiento a aportes; PR-05.
 - Actividades AS-IS afectadas: A03–A04: envío y organización, sin seguimiento representado en el modelo.
 - Heurísticas: **Task automation y Case manager**.
-- Cambio propuesto: Generar recordatorios y alertar a coordinación para gestionar demoras.
+- Cambio propuesto: Alertar a la comunidad sobre versiones demoradas en la cola.
 - Efecto esperado y costo de la mejora: Mayor visibilidad de pendientes; un plazo inadecuado genera alertas innecesarias.
 - Cambios trazables: C09.
 
@@ -106,21 +106,21 @@ Las heurísticas proceden de Reijers, H. A. y Liman Mansar, S. (2005), *Best pra
 
 Los marcadores distinguen tareas de usuario, de servicio y manuales según su ejecución. Las decisiones académicas corresponden a personas. Validar campos, buscar el catálogo y publicar después de una aprobación son servicios automáticos. Definir la necesidad de estudio se modela como tarea manual.
 
-El temporizador de publicación es no interruptivo: genera una alerta y permite que continúe la revisión. Las esperas de corrección pueden permanecer pendientes si el autor no responde. En búsqueda, los dos inicios por mensaje de la comunidad representan solicitudes independientes de consulta y descarga, cada una con su respuesta. P05 no debe completarse mientras el caso no tenga responsable disponible.
+El temporizador de publicación es no interruptivo: genera una alerta y permite que continúe la revisión. Las esperas de corrección pueden permanecer pendientes si el autor no responde. En búsqueda, los dos inicios por mensaje de la comunidad representan solicitudes independientes de consulta y descarga, cada una con su respuesta. P05 deja la versión disponible en la cola compartida. Abrir un aporte no bloquea su revisión para otros moderadores.
 
 ## Actividades que cambian del AS-IS al TO-BE
 
 | Cambio | Actividad AS-IS | Actividad TO-BE | Qué cambia | Decisión |
 |---|---|---|---|---|
 | C01 | A01–A03: elegir y enviar un archivo por chat | P01–P03: adjuntar, clasificar y enviar aporte | Archivo y datos estructurados se reciben en una solicitud. | D03 |
-| C02 | A04: guardar y organizar con intervención humana | P04–P05: validar entrada y asignar revisión | Controles automáticos y responsable competente. | D02, D04 |
+| C02 | A04: guardar y organizar con intervención humana | P04–P05: validar entrada y poner el aporte en la cola de revisión | Controles automáticos y revisión directa por cualquier Moderador. | D02, D04 |
 | C03 | Control académico formal no representado en el modelo AS-IS | P06 y P10: revisar y registrar rechazo | Se introduce revisión documentada antes de publicar. | D01, D02 |
 | C04 | Ciclo formal de correcciones no representado en el modelo AS-IS | P07, P08, P13 y P14: solicitar y recibir correcciones | Se mantiene el mismo caso y se revisa una nueva versión. | D01, D06 |
 | C05 | A04: archivo guardado por la comunidad | P09 y P11: publicar y notificar | Solo se publica la versión aprobada o publicada directamente por una cuenta `@uv.cl`; se comunica el resultado. | D01 |
 | C06 | A06, A07 y A10: buscar en chats y pedir ayuda | B01–B04 y B10: filtrar y devolver resultados | Consulta autónoma de apuntes publicados mediante catálogo. | D03 |
-| C07 | Ficha de revisión no representada en el modelo AS-IS | B05: consultar procedencia, versión y revisión | La información de revisión se hace visible al estudiante. | D01, D02 |
-| C08 | A08, A09 y A11: recibir respuesta y guardar archivo | B06–B09: solicitar y atender descarga | Se verifica disponibilidad al descargar y se informa si falta. | D03 |
-| C09 | Seguimiento de solicitudes no representado en el modelo AS-IS | P12: recordar y alertar coordinación | Seguimiento automático de una revisión demorada. | D05 |
+| C07 | Ficha de revisión no representada en el modelo AS-IS | B05: consultar procedencia, versión, revisión y vista previa | La información de revisión se hace visible al estudiante. | D01, D02 |
+| C08 | A08, A09 y A11: recibir respuesta y guardar archivo | B06–B09: verificar y entregar vista previa o descarga | Se verifica disponibilidad al descargar y se informa si falta. | D03 |
+| C09 | Seguimiento de solicitudes no representado en el modelo AS-IS | P12: alertar a la comunidad | Seguimiento automático de una revisión demorada. | D05 |
 | C10 | Proceso de reportes no representado en el modelo AS-IS | E01–E11: reportar, investigar, corregir o retirar y comunicar | Se propone mantenimiento posterior a la publicación. | D07 |
 | C11 | Acceso no representado en el AS-IS: el intercambio ocurre en chats sin cuentas institucionales ni control de acceso | P00: iniciar sesión con cuenta institucional; compuerta de ruta después de P04 | Se exige una cuenta `@uv.cl` o `@estudiantes.uv.cl`; el dominio decide si el aporte se publica directamente o pasa a revisión. | D09 |
 
@@ -137,25 +137,25 @@ Los códigos figuran en las tareas de los diagramas. Los identificadores interno
 | P13 | Corregir archivo o datos | [Fuente](./diagramas/to-be-publicacion.bpmn) | fix |
 | P14 | Enviar versión corregida | [Fuente](./diagramas/to-be-publicacion.bpmn) | resend |
 | P04 | Validar archivo, datos y duplicados exactos | [Fuente](./diagramas/to-be-publicacion.bpmn) | check |
-| P05 | Asignar ayudante competente y disponible | [Fuente](./diagramas/to-be-publicacion.bpmn) | assign |
+| P05 | Dejar el aporte en la cola de revisión | [Fuente](./diagramas/to-be-publicacion.bpmn) | queue |
 | P06 | Revisar contenido y registrar evidencia | [Fuente](./diagramas/to-be-publicacion.bpmn) | review |
 | P09 | Publicar versión aprobada y su revisión | [Fuente](./diagramas/to-be-publicacion.bpmn) | publish |
 | P10 | Registrar rechazo fundamentado | [Fuente](./diagramas/to-be-publicacion.bpmn) | reject |
 | P11 | Notificar resultado y enlace o motivo | [Fuente](./diagramas/to-be-publicacion.bpmn) | notify |
 | P07 | Solicitar correcciones consolidadas | [Fuente](./diagramas/to-be-publicacion.bpmn) | request |
 | P08 | Recibir nueva versión del mismo aporte | [Fuente](./diagramas/to-be-publicacion.bpmn) | corrected |
-| P12 | Recordar al ayudante y alertar coordinación | [Fuente](./diagramas/to-be-publicacion.bpmn) | remind |
+| P12 | Alertar a la comunidad por una versión demorada | [Fuente](./diagramas/to-be-publicacion.bpmn) | remind |
 | B01 | Indicar ramo, carrera, período y tema | [Fuente](./diagramas/to-be-busqueda.bpmn) | filters |
 | B02 | Solicitar búsqueda | [Fuente](./diagramas/to-be-busqueda.bpmn) | send |
 | B10 | Recibir resultados y fichas | [Fuente](./diagramas/to-be-busqueda.bpmn) | results |
-| B05 | Consultar procedencia, versión y revisión | [Fuente](./diagramas/to-be-busqueda.bpmn) | inspect |
-| B06 | Solicitar descarga del apunte elegido | [Fuente](./diagramas/to-be-busqueda.bpmn) | download |
+| B05 | Consultar ficha y vista previa de la versión | [Fuente](./diagramas/to-be-busqueda.bpmn) | inspect |
+| B06 | Solicitar vista previa o descarga de la versión | [Fuente](./diagramas/to-be-busqueda.bpmn) | download |
 | B09 | Recibir archivo o aviso de indisponibilidad | [Fuente](./diagramas/to-be-busqueda.bpmn) | file |
 | B00 | Definir materia y unidad que necesita repasar | [Fuente](./diagramas/to-be-busqueda.bpmn) | prep |
 | B03 | Buscar apuntes publicados y sus revisiones | [Fuente](./diagramas/to-be-busqueda.bpmn) | query |
 | B04 | Devolver resultados y fichas | [Fuente](./diagramas/to-be-busqueda.bpmn) | reply |
 | B07 | Verificar disponibilidad y preparar respuesta | [Fuente](./diagramas/to-be-busqueda.bpmn) | serve |
-| B08 | Entregar archivo o informar indisponibilidad | [Fuente](./diagramas/to-be-busqueda.bpmn) | sendfile |
+| B08 | Entregar versión seleccionada o informar indisponibilidad | [Fuente](./diagramas/to-be-busqueda.bpmn) | sendfile |
 | E01 | Identificar apunte, versión y explicar el error | [Fuente](./diagramas/to-be-reportes.bpmn) | detail |
 | E02 | Enviar reporte | [Fuente](./diagramas/to-be-reportes.bpmn) | send |
 | E10 | Recibir resolución y enlace o motivo | [Fuente](./diagramas/to-be-reportes.bpmn) | receive |

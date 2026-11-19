@@ -84,7 +84,7 @@
         <bpmn:flowNodeRef>c0</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>check</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>valid</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>assign</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>queue</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>review</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>decision</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>publish</bpmn:flowNodeRef>
@@ -113,7 +113,7 @@
       <bpmn:outgoing>Flow_19</bpmn:outgoing>
       <bpmn:outgoing>Flow_20</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="assign" name="P05 · Asignar ayudante competente y disponible">
+    <bpmn:serviceTask id="queue" name="P05 · Dejar aporte en la cola compartida">
       <bpmn:incoming>Flow_19</bpmn:incoming>
       <bpmn:outgoing>Flow_10</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -156,15 +156,15 @@
       <bpmn:incoming>Flow_14</bpmn:incoming>
       <bpmn:outgoing>Flow_26</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="remind" name="P12 · Recordar al ayudante y alertar coordinación">
+    <bpmn:serviceTask id="remind" name="P12 · Alertar a la comunidad por demora">
       <bpmn:incoming>Flow_27</bpmn:incoming>
       <bpmn:outgoing>Flow_15</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:endEvent id="re" name="Seguimiento registrado">
       <bpmn:incoming>Flow_15</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:boundaryEvent id="timer" name="48 h sin resolución" cancelActivity="false" attachedToRef="review">
-      <bpmn:documentation>Plazo ilustrativo de 48 horas; debe acordarse con la comunidad. Recordatorio no interruptivo: la revisión continúa.</bpmn:documentation>
+    <bpmn:boundaryEvent id="timer" name="48 h en cola sin resolución" cancelActivity="false" attachedToRef="review">
+      <bpmn:documentation>Plazo ilustrativo de 48 horas; debe acordarse con la comunidad. La alerta no cambia el estado.</bpmn:documentation>
       <bpmn:outgoing>Flow_27</bpmn:outgoing>
       <bpmn:timerEventDefinition id="timer_timer">
         <bpmn:timeDuration>PT48H</bpmn:timeDuration>
@@ -172,13 +172,13 @@
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_8" sourceRef="c0" targetRef="check" />
     <bpmn:sequenceFlow id="Flow_9" sourceRef="check" targetRef="valid" />
-    <bpmn:sequenceFlow id="Flow_10" sourceRef="assign" targetRef="review" />
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="queue" targetRef="review" />
     <bpmn:sequenceFlow id="Flow_11" sourceRef="review" targetRef="decision" />
     <bpmn:sequenceFlow id="Flow_12" sourceRef="merge" targetRef="notify" />
     <bpmn:sequenceFlow id="Flow_13" sourceRef="notify" targetRef="ce" />
     <bpmn:sequenceFlow id="Flow_14" sourceRef="request" targetRef="corrected" />
     <bpmn:sequenceFlow id="Flow_15" sourceRef="remind" targetRef="re" />
-    <bpmn:sequenceFlow id="Flow_19" name="Sí" sourceRef="valid" targetRef="assign" />
+    <bpmn:sequenceFlow id="Flow_19" name="Sí" sourceRef="valid" targetRef="queue" />
     <bpmn:sequenceFlow id="Flow_20" name="No: corregir" sourceRef="valid" targetRef="request" />
     <bpmn:sequenceFlow id="Flow_21" name="Aprobado" sourceRef="decision" targetRef="publish" />
     <bpmn:sequenceFlow id="Flow_22" name="Rechazado" sourceRef="decision" targetRef="reject" />
@@ -309,7 +309,7 @@
           <dc:Bounds x="985" y="561" width="140" height="42" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="assign_di" bpmnElement="assign">
+      <bpmndi:BPMNShape id="queue_di" bpmnElement="queue">
         <dc:Bounds x="1220" y="488" width="160" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="review_di" bpmnElement="review">

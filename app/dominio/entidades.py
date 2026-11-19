@@ -8,9 +8,8 @@ from enum import Enum
 
 
 class EstadoAporte(str, Enum):
-    PENDIENTE_ASIGNACION = "PendienteAsignacion"
+    PENDIENTE_REVISION = "PendienteRevision"
     REQUIERE_CORRECCION = "RequiereCorreccion"
-    ASIGNADO = "Asignado"
     PUBLICADO = "Publicado"
     RECHAZADO = "Rechazado"
     CORRECCION_SOLICITADA = "CorreccionSolicitada"
@@ -42,10 +41,10 @@ class Aporte:
     tema_id: int
     procedencia: str
     fecha_envio: datetime
-    estado: EstadoAporte = EstadoAporte.PENDIENTE_ASIGNACION
+    estado: EstadoAporte = EstadoAporte.PENDIENTE_REVISION
 
     def esta_pendiente(self) -> bool:
-        return self.estado is EstadoAporte.PENDIENTE_ASIGNACION
+        return self.estado is EstadoAporte.PENDIENTE_REVISION
 
     def requiere_correccion(self) -> bool:
         return self.estado is EstadoAporte.REQUIERE_CORRECCION

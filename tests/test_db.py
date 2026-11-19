@@ -19,24 +19,25 @@ def test_migracion_se_aplica_una_sola_vez(tmp_path):
         conexion.close()
 
     assert primeras == [
-        "001_inicial.sql", "002_asignacion_revision.sql", "003_revision_comunitaria.sql"
+        "001_inicial.sql", "002_asignacion_revision.sql", "003_revision_comunitaria.sql", "004_revision_directa.sql"
     ]
     assert segundas == []
     assert [fila["version"] for fila in filas] == primeras
 
 
-def _insertar_aporte(conexion, catalogos, aporte_id: int) -> None:
+def _insertar_aporte(conexion, catalogos, aporte_id: int, estado="PendienteRevision") -> None:
     conexion.execute(
         """
         INSERT INTO aportes
             (id, autor_id, ramo_id, periodo_id, tema_id, procedencia, fecha_envio, estado)
-        VALUES (?, 1, ?, ?, ?, 'Procedencia de prueba', '2026-11-05T10:00:00', 'PendienteAsignacion')
+        VALUES (?, 1, ?, ?, ?, 'Procedencia de prueba', '2026-11-05T10:00:00', ?)
         """,
         (
             aporte_id,
             catalogos["ramo_id"],
             catalogos["periodo_id"],
             catalogos["tema_id"],
+            estado,
         ),
     )
     conexion.commit()
@@ -82,7 +83,7 @@ def test_migracion_hu02_conserva_un_aporte_corregido_y_su_historial(tmp_path):
                 INSERT INTO temas_unidad VALUES (1, 1, 1, 'Elicitación');
                 """)
         catalogos = {"ramo_id": 1, "periodo_id": 1, "tema_id": 1}
-        _insertar_aporte(conexion, catalogos, aporte_id=42)
+        _insertar_aporte(conexion, catalogos, aporte_id=42, estado="PendienteAsignacion")
         _insertar_version(conexion, version_id=10, aporte_id=42, numero=1)
         _insertar_version(
             conexion, version_id=11, aporte_id=42, numero=2, hash_archivo="corregido"
@@ -91,12 +92,12 @@ def test_migracion_hu02_conserva_un_aporte_corregido_y_su_historial(tmp_path):
             conexion.execute("UPDATE versiones_apunte SET estado = 'Final' WHERE id = 10")
 
         assert aplicar_migraciones(conexion) == [
-            "002_asignacion_revision.sql", "003_revision_comunitaria.sql"
+            "002_asignacion_revision.sql", "003_revision_comunitaria.sql", "004_revision_directa.sql"
         ]
         assert conexion.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         assert conexion.execute("PRAGMA foreign_key_check").fetchall() == []
         aporte = conexion.execute("SELECT id, autor_id, estado FROM aportes").fetchone()
-        assert tuple(aporte) == (42, 1, "PendienteAsignacion")
+        assert tuple(aporte) == (42, 1, "PendienteRevision")
         versiones = conexion.execute(
             "SELECT id, numero, estado, hash_archivo FROM versiones_apunte ORDER BY numero"
         ).fetchall()
@@ -104,41 +105,41 @@ def test_migracion_hu02_conserva_un_aporte_corregido_y_su_historial(tmp_path):
             (10, 1, "Final", None),
             (11, 2, "PendienteRevision", "corregido"),
         ]
-        with conexion:
-            conexion.execute("UPDATE aportes SET estado = 'Asignado' WHERE id = 42")
     finally:
         conexion.close()
 
 
-def test_migracion_hu03_conserva_version_y_asignacion_de_hu02(tmp_path):
-    migraciones_hu02 = tmp_path / "hu02"
-    migraciones_hu02.mkdir()
-    for nombre in ("001_inicial.sql", "002_asignacion_revision.sql"):
-        (migraciones_hu02 / nombre).write_bytes((MIGRACIONES_DIR / nombre).read_bytes())
+def test_revision_directa_migra_un_aporte_asignado_y_conserva_su_historial(tmp_path):
+    migraciones_hu03 = tmp_path / "hu03"
+    migraciones_hu03.mkdir()
+    for nombre in ("001_inicial.sql", "002_asignacion_revision.sql", "003_revision_comunitaria.sql"):
+        (migraciones_hu03 / nombre).write_bytes((MIGRACIONES_DIR / nombre).read_bytes())
 
     conexion = conectar(tmp_path / "app.db")
     try:
-        aplicar_migraciones(conexion, migraciones_hu02)
+        aplicar_migraciones(conexion, migraciones_hu03)
         sembrar(conexion)
         from tests.conftest import obtener_catalogos
 
         catalogos = obtener_catalogos(tmp_path / "app.db")
-        _insertar_aporte(conexion, catalogos, aporte_id=42)
+        _insertar_aporte(conexion, catalogos, aporte_id=42, estado="PendienteAsignacion")
         _insertar_version(
             conexion, version_id=11, aporte_id=42, numero=1, hash_archivo="vigente"
         )
         with conexion:
             conexion.execute("UPDATE aportes SET estado = 'Asignado' WHERE id = 42")
+            conexion.execute("UPDATE versiones_apunte SET estado = 'EnRevision' WHERE id = 11")
             conexion.execute("""
                 INSERT INTO asignaciones_revision (aporte_id, revisor_id, comunidad_id, fecha_asignacion, estado)
                 SELECT 42, id, comunidad_id, '2026-11-18', 'Asignada'
                 FROM estudiantes WHERE correo = 'revisor1@demo.cl'
                 """)
         asignacion = conexion.execute("SELECT * FROM asignaciones_revision").fetchone()
-        assert aplicar_migraciones(conexion) == ["003_revision_comunitaria.sql"]
+        assert aplicar_migraciones(conexion) == ["004_revision_directa.sql"]
         assert conexion.execute("PRAGMA foreign_key_check").fetchall() == []
         assert conexion.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         assert conexion.execute("SELECT * FROM asignaciones_revision").fetchone() == asignacion
+        assert conexion.execute("SELECT estado FROM aportes WHERE id = 42").fetchone()[0] == "PendienteRevision"
         assert tuple(conexion.execute(
             "SELECT id, aporte_id, hash_archivo, estado FROM versiones_apunte"
         ).fetchone()) == (11, 42, "vigente", "PendienteRevision")
@@ -212,7 +213,7 @@ def test_aporte_sin_ramo_es_rechazado(db_sembrada):
             """
             INSERT INTO aportes
                 (autor_id, ramo_id, periodo_id, tema_id, procedencia, fecha_envio, estado)
-            VALUES (1, NULL, ?, ?, 'Procedencia', '2026-11-05T10:00:00', 'PendienteAsignacion')
+            VALUES (1, NULL, ?, ?, 'Procedencia', '2026-11-05T10:00:00', 'PendienteRevision')
             """,
             (catalogos["periodo_id"], catalogos["tema_id"]),
         )

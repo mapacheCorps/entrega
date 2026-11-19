@@ -48,11 +48,11 @@
       <bpmn:outgoing>Flow_14</bpmn:outgoing>
       <bpmn:outgoing>Flow_15</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="inspect" name="B05 · Consultar procedencia, versión y revisión">
+    <bpmn:userTask id="inspect" name="B05 · Abrir ficha de la versión">
       <bpmn:incoming>Flow_14</bpmn:incoming>
       <bpmn:outgoing>Flow_5</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="download" name="B06 · Solicitar descarga del apunte elegido">
+    <bpmn:userTask id="download" name="B06 · Previsualizar o descargar la versión">
       <bpmn:incoming>Flow_5</bpmn:incoming>
       <bpmn:outgoing>Flow_6</bpmn:outgoing>
     </bpmn:userTask>
@@ -126,7 +126,7 @@
     <bpmn:endEvent id="ce" name="Consulta respondida">
       <bpmn:incoming>Flow_10</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:startEvent id="d0" name="Descarga solicitada">
+    <bpmn:startEvent id="d0" name="Archivo solicitado">
       <bpmn:outgoing>Flow_11</bpmn:outgoing>
       <bpmn:messageEventDefinition id="d0_message" />
     </bpmn:startEvent>
@@ -138,7 +138,7 @@
       <bpmn:incoming>Flow_12</bpmn:incoming>
       <bpmn:outgoing>Flow_13</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:endEvent id="de" name="Descarga atendida">
+    <bpmn:endEvent id="de" name="Solicitud atendida">
       <bpmn:incoming>Flow_13</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_8" sourceRef="c0" targetRef="query" />

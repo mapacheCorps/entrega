@@ -35,7 +35,7 @@ def test_escenario_registro_de_aporte_completo(cliente, catalogos, ruta_db):
     assert versiones[0]["numero"] == 1
 
     # Y la versión queda pendiente de asignación o revisión, sin publicarse
-    assert aportes[0]["estado"] == "PendienteAsignacion"
+    assert aportes[0]["estado"] == "PendienteRevision"
     assert versiones[0]["estado"] == "PendienteRevision"
     assert versiones[0]["referencia_archivo"]
 
@@ -155,7 +155,7 @@ def test_escenario_confirmacion_con_informacion_util(cliente, catalogos, ruta_db
     assert "Aporte</dt><dd>#1" in detalle.text
     assert "Versión</dt><dd>#1 · número 1" in detalle.text
     assert "Ingeniería de Requisitos" in detalle.text
-    assert "Pendiente de asignación" in detalle.text
+    assert "Pendiente de revisión" in detalle.text
     assert "Pendiente de revisión" in detalle.text
     assert "aún no se publica" in detalle.text
 

@@ -7,16 +7,13 @@
   <div class="encabezado-panel">
     <div>
       <h1>Revisión del aporte #{{ revision.aporte_id }}</h1>
-      <p class="estado estado-{{ revision.estado_version }}">
-        {{ 'En revisión' if revision.estado_version == 'EnRevision' else 'Pendiente de revisión' }}
-      </p>
+      <p class="estado estado-PendienteRevision">Pendiente de revisión</p>
     </div>
     <a class="enlace" href="{{ url_for('panel_moderacion') }}">Volver a revisiones</a>
   </div>
 
   <dl class="datos">
     <dt>Versión</dt><dd>{{ revision.numero }}</dd>
-    <dt>Revisor designado</dt><dd>{{ revision.revisor }} (#{{ revision.revisor_id }})</dd>
     <dt>Archivo</dt>
     <dd>
       <a href="{{ url_for('archivo_revision', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
@@ -25,13 +22,7 @@
     </dd>
   </dl>
 
-  {% if revision.estado_version == 'PendienteRevision' %}
-    <form class="formulario" method="post" aria-label="Iniciar revisión"
-          action="{{ url_for('iniciar_revision', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
-      <button class="boton boton-asignar" type="submit">Iniciar revisión</button>
-    </form>
-  {% else %}
-    <h2 id="decision-titulo">Decisión académica</h2>
+  <h2 id="decision-titulo">Decisión académica</h2>
     {% if errores %}
       <p class="alerta error" role="alert">Revisa los campos indicados.</p>
     {% endif %}
@@ -60,8 +51,7 @@
                   {% if errores.observaciones %}aria-invalid="true" aria-describedby="error-observaciones"{% endif %}>{{ valores.observaciones | default('') }}</textarea>
         {% if errores.observaciones %}<p class="error-campo" id="error-observaciones">{{ errores.observaciones }}</p>{% endif %}
       </div>
-      <button class="boton boton-asignar" type="submit">Registrar decisión</button>
+      <button class="boton boton-accion" type="submit">Registrar decisión</button>
     </form>
-  {% endif %}
 </section>
 {% endblock %}

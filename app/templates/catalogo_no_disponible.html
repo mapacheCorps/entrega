@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Versión no disponible — Catálogo de apuntes{% endblock %}
+{% block contenido %}
+<section class="panel">
+  <h1>Versión no disponible</h1>
+  <p>La versión ya no está publicada o su archivo no está disponible.</p>
+  <a href="{{ url_for('catalogo') }}">Volver al catálogo</a>
+</section>
+{% endblock %}

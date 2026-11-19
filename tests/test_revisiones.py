@@ -8,36 +8,31 @@ import pytest
 from app.db.conexion import conectar
 from app.dominio.revisiones import RevisionAcademicaRepositorio
 from app.servicios.aportes import ServicioAportes
-from app.servicios.asignaciones import ServicioAsignaciones, TipoAsignacion
 from app.servicios.revisiones import DatosRevisionInvalidos, ErrorRevision, MotivoRevision, ServicioRevisiones
 from tests.conftest import archivo_pdf, datos_aporte
 
 
 @pytest.fixture
-def asignada(ruta_db, almacenamiento, catalogos):
+def pendiente(ruta_db, almacenamiento, catalogos):
     with closing(conectar(ruta_db)) as conexion:
         aporte_id = ServicioAportes(conexion, almacenamiento).enviar(
             datos_aporte(catalogos), archivo_pdf()
         ).aporte_id
-        comunidad_id = conexion.execute(
-            "SELECT comunidad_id FROM estudiantes WHERE rol = 'Moderador'"
-        ).fetchone()[0]
-        resultado = ServicioAsignaciones(conexion).asignar(aporte_id, comunidad_id)
-        assert resultado.tipo is TipoAsignacion.ASIGNADO
+        moderador = conexion.execute(
+            "SELECT * FROM estudiantes WHERE rol = 'Moderador'"
+        ).fetchone()
         version_id = conexion.execute(
             "SELECT id FROM versiones_apunte WHERE aporte_id = ?", (aporte_id,)
         ).fetchone()[0]
-    return aporte_id, version_id, comunidad_id
+    return aporte_id, version_id, moderador
 
 
-def test_consulta_filtra_por_comunidad_y_mantiene_revisor_de_la_ultima_version(ruta_db, asignada):
-    aporte_id, version_id, comunidad_id = asignada
+def test_consulta_muestra_la_ultima_version(ruta_db, pendiente):
+    aporte_id, version_id, _ = pendiente
     with closing(conectar(ruta_db)) as conexion:
         repo = RevisionAcademicaRepositorio(conexion)
-        assert repo.listar_asignadas(comunidad_id + 1) == []
-        revision, = repo.listar_asignadas(comunidad_id)
+        revision, = repo.listar_pendientes()
         assert revision["version_id"] == version_id
-        assert revision["revisor"] == "Revisor Demo 1"
         with conexion:
             conexion.execute(
                 """
@@ -48,7 +43,7 @@ def test_consulta_filtra_por_comunidad_y_mantiene_revisor_de_la_ultima_version(r
             )
         assert repo.obtener_contexto(aporte_id)["version_id"] != version_id
         with pytest.raises(ErrorRevision) as error:
-            ServicioRevisiones(conexion).iniciar(*asignada)
+            ServicioRevisiones(conexion).consultar(aporte_id, version_id)
         assert error.value.motivo is MotivoRevision.ESTADO_INCOMPATIBLE
 
 
@@ -60,57 +55,45 @@ def test_consulta_filtra_por_comunidad_y_mantiene_revisor_de_la_ultima_version(r
         ("SolicitudCorreccion", "RequiereCorreccion", "CorreccionSolicitada"),
     ],
 )
-def test_decision_actualiza_version_aporte_y_asignacion(
-    ruta_db, asignada, decision, estado_version, estado_aporte
-):
+def test_decision_actualiza_version_y_aporte(ruta_db, pendiente, decision, estado_version, estado_aporte):
     with closing(conectar(ruta_db)) as conexion:
         servicio = ServicioRevisiones(conexion)
-        with pytest.raises(ErrorRevision) as error:
-            servicio.decidir(*asignada, decision, "Capítulo", "Observaciones")
-        assert error.value.motivo is MotivoRevision.ESTADO_INCOMPATIBLE
-        servicio.iniciar(*asignada)
         with pytest.raises(DatosRevisionInvalidos) as invalidos:
-            servicio.decidir(*asignada, decision, " ", "")
+            servicio.decidir(*pendiente, decision, " ", "")
         assert invalidos.value.errores.keys() == {"alcance", "observaciones"}
         assert conexion.execute("SELECT count(*) FROM revisiones_academicas").fetchone()[0] == 0
-        assert conexion.execute("SELECT estado FROM versiones_apunte").fetchone()[0] == "EnRevision"
+        assert conexion.execute("SELECT estado FROM versiones_apunte").fetchone()[0] == "PendienteRevision"
 
-        servicio.decidir(*asignada, decision, " Capítulo ", " Observaciones ")
+        servicio.decidir(*pendiente, decision, " Capítulo ", " Observaciones ")
 
         assert conexion.execute("SELECT estado FROM versiones_apunte").fetchone()[0] == estado_version
         assert conexion.execute("SELECT estado FROM aportes").fetchone()[0] == estado_aporte
-        asignacion = conexion.execute("SELECT * FROM asignaciones_revision").fetchone()
         revision = conexion.execute("SELECT * FROM revisiones_academicas").fetchone()
-        assert asignacion["estado"] == "Finalizada"
-        assert revision["version_id"] == asignada[1]
-        assert revision["revisor_id"] == asignacion["revisor_id"]
-        assert revision["comunidad_id"] == asignada[2]
+        assert revision["version_id"] == pendiente[1]
+        assert revision["revisor_id"] == pendiente[2]["id"]
+        assert revision["comunidad_id"] == pendiente[2]["comunidad_id"]
         assert revision["decision"] == decision
         assert revision["alcance"] == "Capítulo"
         assert revision["observaciones"] == "Observaciones"
 
 
-def test_fallo_en_el_cierre_revierte_decision_y_estados(ruta_db, asignada):
+def test_fallo_en_el_cierre_revierte_decision_y_estados(ruta_db, pendiente):
     with closing(conectar(ruta_db)) as conexion:
         servicio = ServicioRevisiones(conexion)
-        servicio.iniciar(*asignada)
         conexion.execute("""
-            CREATE TEMP TRIGGER fallo_cierre BEFORE UPDATE ON asignaciones_revision
+            CREATE TEMP TRIGGER fallo_cierre BEFORE UPDATE ON aportes
             BEGIN
                 SELECT RAISE(ABORT, 'fallo simulado');
             END
             """)
         with pytest.raises(sqlite3.IntegrityError, match="fallo simulado"):
-            servicio.decidir(*asignada, "Aprobacion", "Capítulo", "Observaciones")
+            servicio.decidir(*pendiente, "Aprobacion", "Capítulo", "Observaciones")
         assert conexion.execute("SELECT count(*) FROM revisiones_academicas").fetchone()[0] == 0
-        assert conexion.execute("SELECT estado FROM versiones_apunte").fetchone()[0] == "EnRevision"
-        assert conexion.execute("SELECT estado FROM aportes").fetchone()[0] == "Asignado"
-        assert conexion.execute("SELECT estado FROM asignaciones_revision").fetchone()[0] == "Asignada"
+        assert conexion.execute("SELECT estado FROM versiones_apunte").fetchone()[0] == "PendienteRevision"
+        assert conexion.execute("SELECT estado FROM aportes").fetchone()[0] == "PendienteRevision"
 
 
-def test_decisiones_simultaneas_conservan_un_solo_resultado(ruta_db, asignada):
-    with closing(conectar(ruta_db)) as conexion:
-        ServicioRevisiones(conexion).iniciar(*asignada)
+def test_decisiones_simultaneas_conservan_un_solo_resultado(ruta_db, pendiente):
     inicio = Barrier(2, timeout=5)
 
     def decidir():
@@ -118,7 +101,7 @@ def test_decisiones_simultaneas_conservan_un_solo_resultado(ruta_db, asignada):
             inicio.wait()
             try:
                 return ServicioRevisiones(conexion).decidir(
-                    *asignada, "Aprobacion", "Capítulo", "Observaciones"
+                    *pendiente, "Aprobacion", "Capítulo", "Observaciones"
                 )
             except ErrorRevision as exc:
                 return exc.motivo
@@ -126,7 +109,7 @@ def test_decisiones_simultaneas_conservan_un_solo_resultado(ruta_db, asignada):
     with ThreadPoolExecutor(max_workers=2) as ejecutor:
         resultados = [ejecutor.submit(decidir), ejecutor.submit(decidir)]
         assert {resultado.result() for resultado in resultados} == {
-            "Aprobacion", MotivoRevision.ESTADO_INCOMPATIBLE,
+            "Aprobacion", MotivoRevision.YA_RESUELTA,
         }
     with closing(conectar(ruta_db)) as conexion:
         assert conexion.execute("SELECT count(*) FROM revisiones_academicas").fetchone()[0] == 1

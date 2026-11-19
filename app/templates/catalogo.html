@@ -11,7 +11,7 @@
 
   {% for version in versiones %}
     <article class="tarjeta aporte-pendiente">
-      <h2>{{ version.nombre_archivo }}</h2>
+      <h2><a href="{{ url_for('ficha_publicada', version_id=version.version_id) }}">{{ version.nombre_archivo }}</a></h2>
       <p>Versión {{ version.numero }}</p>
       <dl class="datos">
         <dt>Carrera</dt><dd>{{ version.carrera }}</dd>

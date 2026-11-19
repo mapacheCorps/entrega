@@ -1,4 +1,5 @@
 @startuml
+!pragma layout smetana
 !theme plain
 skinparam shadowing false
 skinparam classAttributeIconSize 0
@@ -41,6 +42,7 @@ class RevisionAcademica {
   identificador: texto
   fecha: fecha
   decision: texto
+  alcance: texto
   retroalimentacion: texto
 }
 
@@ -50,6 +52,7 @@ Academico "0..1" -- "0..*" Aporte : presenta
 Aporte "1" *-- "1..*" VersionApunte : contiene
 VersionApunte "1" *-- "0..*" RevisionAcademica : conserva
 ComunidadEstudiantil "1" -- "0..*" RevisionAcademica : decide
+Estudiante "1" -- "0..*" RevisionAcademica : registra como Moderador
 
 note bottom of Aporte
   Cada Aporte tiene exactamente un autor:

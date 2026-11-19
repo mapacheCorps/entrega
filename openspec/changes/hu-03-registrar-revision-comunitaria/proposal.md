@@ -1,5 +1,7 @@
 # HU-03 Registrar revisión comunitaria
 
+> Registro del ciclo original. El flujo vigente de revisión se especifica en [el ajuste de revisión directa](../ajuste-hu-02-revision-directa/proposal.md).
+
 ## Por qué
 
 HU-02 deja el aporte validado con un revisor designado. HU-03 permite registrar la evaluación de una versión concreta y publicar únicamente la versión aprobada, según CU-03, RP-04 y RP-06. El cambio cubre P06, P09 y P10 del TO-BE.

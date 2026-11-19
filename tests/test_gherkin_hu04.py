@@ -50,8 +50,6 @@ def revisado(cliente, ruta_db, catalogos, request):
 
     base = f"{PANEL}/{aporte_id}/versiones/{version_id}/revision"
     _perfil(cliente, "Moderador")
-    assert cliente.post(f"{PANEL}/{aporte_id}/asignar").status_code == 200
-    assert cliente.post(base + "/iniciar").status_code == 200
     decision = getattr(request, "param", "Rechazo")
     respuesta = cliente.post(
         base + "/decision",
@@ -97,20 +95,19 @@ def test_nueva_version_del_mismo_aporte(cliente, ruta_db, almacenamiento, revisa
     assert "número 2" in respuesta.text and OBSERVACIONES in respuesta.text
     assert revisado.reenvio not in respuesta.text
     aporte, (anterior, nueva), asignaciones = _historial(ruta_db, revisado.id)
-    assert aporte == {**antes[0], "estado": "PendienteAsignacion"}
+    assert aporte == {**antes[0], "estado": "PendienteRevision"}
     assert anterior == {**antes[1][0], "estado": "Final"}
     assert almacenamiento.leer(anterior["referencia_archivo"]) == ORIGINAL[1]
     assert almacenamiento.leer(nueva["referencia_archivo"]) == CORREGIDO[1]
     assert nueva["id"] != revisado.version_id and nueva["numero"] == 2
     assert nueva["estado"] == "PendienteRevision" and nueva["decision"] is None
-    assert asignaciones == antes[2] and asignaciones[0]["estado"] == "Finalizada"
+    assert asignaciones == antes[2] == []
     assert "corregido.pdf" not in cliente.get("/catalogo").text
     assert cliente.post(revisado.reenvio, files={"archivo": CORREGIDO}).status_code == 409
 
     _perfil(cliente, "Moderador")
-    assert f"{PANEL}/{revisado.id}/asignar" in cliente.get(PANEL).text
-    assert cliente.post(f"{PANEL}/{revisado.id}/asignar").status_code == 200
-    assert _historial(ruta_db, revisado.id)[2][-1]["estado"] == "Asignada"
+    _, versiones, _ = _historial(ruta_db, revisado.id)
+    assert f"{PANEL}/{revisado.id}/versiones/{versiones[-1]['id']}/revision" in cliente.get(PANEL).text
 
 
 def test_correccion_invalida(cliente, ruta_db, revisado):
@@ -126,7 +123,7 @@ def test_correccion_invalida(cliente, ruta_db, revisado):
     assert OBSERVACIONES in respuesta.text and "Enviar versión corregida" in respuesta.text
     assert _historial(ruta_db, revisado.id) == antes
     _perfil(cliente, "Moderador")
-    assert f"{PANEL}/{revisado.id}/asignar" not in cliente.get(PANEL).text
+    assert f"{PANEL}/{revisado.id}/versiones/{revisado.version_id}/revision" not in cliente.get(PANEL).text
 
 
 @pytest.mark.parametrize("revisado", ["SolicitudCorreccion"], indirect=True)
@@ -135,7 +132,7 @@ def test_reenvio_tras_solicitud_de_correccion(cliente, ruta_db, revisado):
     respuesta = cliente.post(revisado.reenvio, files={"archivo": CORREGIDO})
     assert respuesta.status_code == 200
     aporte, (anterior, nueva), _ = _historial(ruta_db, revisado.id)
-    assert aporte["estado"] == "PendienteAsignacion"
+    assert aporte["estado"] == "PendienteRevision"
     assert anterior["decision"] == "SolicitudCorreccion" and anterior["estado"] == "Final"
     assert nueva["decision"] is None and nueva["estado"] == "PendienteRevision"
 
@@ -182,7 +179,7 @@ def test_el_reenvio_exige_version_vigente_y_decision_coherente(cliente, ruta_db,
         )
     assert cliente.get(revisado.reenvio).status_code == 409
     with closing(conectar(ruta_db)) as conexion, conexion:
-        conexion.execute("UPDATE aportes SET estado = 'Asignado' WHERE id = ?", (revisado.id,))
+        conexion.execute("UPDATE aportes SET estado = 'Publicado' WHERE id = ?", (revisado.id,))
     assert cliente.post(revisado.reenvio, files={"archivo": CORREGIDO}).status_code == 409
 
 
@@ -204,7 +201,7 @@ def test_fallo_de_registro_revierte_el_reenvio_y_retira_solo_el_archivo_nuevo(
     with closing(conectar(ruta_db)) as conexion, conexion:
         conexion.execute("""
             CREATE TRIGGER fallo_confirmacion BEFORE UPDATE ON aportes
-            WHEN NEW.estado = 'PendienteAsignacion'
+            WHEN NEW.estado = 'PendienteRevision'
             BEGIN
                 SELECT RAISE(ABORT, 'fallo simulado');
             END

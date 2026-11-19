@@ -1,13 +1,15 @@
 @startuml
+!pragma layout smetana
 skinparam shadowing false
 title EST-01: Ciclo de vida de VersionApunte
 [*] --> Recibida : registrarVersion
 Recibida --> Publicada : publicarDirecto [cuenta @uv.cl y archivo valido]
 Recibida --> PendienteRevision : validarAporte [archivo y clasificacion validos y cuenta @estudiantes.uv.cl]
 Recibida --> RequiereCorreccion : validarAporte [archivo o clasificacion invalidos]
-PendienteRevision --> EnRevision : iniciarRevisionComunitaria
+PendienteRevision --> EnRevision : registrarDecision [version vigente y Moderador autorizado]
 EnRevision --> Aprobada : registrarDecision [comunidad aprueba]
 EnRevision --> Rechazada : registrarDecision [comunidad rechaza] / guardarFeedback
+EnRevision --> RequiereCorreccion : registrarDecision [solicitud de correccion] / guardarFeedback
 Aprobada --> Publicada : publicarVersion
 Publicada --> BajoInvestigacion : confirmarReporteDeError
 BajoInvestigacion --> Retirada : retirarVersion [error no corregible]

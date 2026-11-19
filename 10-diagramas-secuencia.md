@@ -34,7 +34,7 @@ Fuente editable: [`dss-01.puml`](./diagramas/dss-01.puml)
 
 Fuente editable: [`dss-02.puml`](./diagramas/dss-02.puml)
 
-**Escenario principal:** la comunidad estudiantil registra su decisión. Una aprobación habilita la publicación de esa versión; un rechazo impide la publicación y debe ir acompañado de retroalimentación que el autor pueda consultar.
+**Escenario principal:** cualquier Moderador abre una versión pendiente, revisa el archivo y registra la decisión. Se guarda su identidad y solo se confirma la primera decisión válida. Una aprobación habilita la publicación de esa versión; un rechazo impide la publicación y debe ir acompañado de retroalimentación que el autor pueda consultar.
 
 **Variantes `alt`:** aprobación o rechazo fundamentado; servicio de correo acepta el aviso o registra un fallo. La falla del correo no modifica la decisión guardada.
 

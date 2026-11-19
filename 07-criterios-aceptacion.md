@@ -15,7 +15,7 @@ Característica: Recepción de aporte
     Y el archivo cumple el formato y tamaño configurados y se declara carrera, ramo, período académico, tema y procedencia
     Cuando el autor presenta el aporte
     Entonces el sistema registra el aporte y su primera versión
-    Y la versión queda pendiente de asignación o revisión, sin publicarse
+    Y la versión queda pendiente de revisión en la cola compartida, sin publicarse
 
   Escenario: Publicación directa de un aporte con cuenta @uv.cl
     Dado existe un autor con cuenta @uv.cl que aporta un archivo no vacío
@@ -23,7 +23,7 @@ Característica: Recepción de aporte
     Cuando el autor presenta el aporte
     Entonces el sistema registra el aporte y su primera versión
     Y la versión queda publicada de inmediato
-    Y no se crea una asignación ni una revisión académica
+    Y no se crea una revisión académica
     Y la confirmación no muestra el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión
 
   Escenario: Datos de aporte inválidos
@@ -53,27 +53,24 @@ Característica: Recepción de aporte
 
 ```
 
-## HU-02 : Asignar responsable de revisión
-**Historia:** Como integrante de la comunidad estudiantil, quiero organizar las revisiones de aportes, para que ningún envío quede sin evaluación.
+## HU-02 : Consultar aportes pendientes de revisión
+**Historia:** Como Moderador, quiero abrir cualquier aporte pendiente desde una cola compartida, para revisar directamente su versión vigente.
 
 **Origen:** [HU-02 en Entrega 1](./04-historias-usuario.md#hu-02).
 
 ```gherkin
-Característica: Asignación de revisiones
+Característica: Cola compartida de revisión
 
-  Escenario: Estudiante de la comunidad disponible
-    Dado existe un aporte pendiente de asignación
-    Y existe un estudiante de la comunidad disponible para revisar el ramo
-    Cuando la comunidad organiza su revisión
-    Entonces el aporte queda asignado a un estudiante de la comunidad
-    Y se conserva la identificación del responsable
+  Escenario: Consultar un aporte pendiente
+    Dado existe un aporte validado cuya versión vigente está pendiente de revisión
+    Cuando un Moderador abre la cola y selecciona el aporte
+    Entonces puede abrir la versión y registrar una decisión sin asignación previa
+    Y otro Moderador puede consultar el mismo aporte mientras siga pendiente
 
-  Escenario: Sin estudiantes revisores disponibles
-    Dado existe un aporte pendiente de asignación
-    Y no hay estudiantes de la comunidad disponibles para revisar el ramo
-    Cuando la comunidad organiza su revisión
-    Entonces el aporte permanece pendiente de asignación
-    Y la comunidad puede conocer la falta de revisor sin aprobación automática
+  Escenario: Acceso a la cola desde el perfil Estudiante
+    Dado existe una versión pendiente
+    Cuando un Estudiante intenta entrar a la cola de moderación
+    Entonces el sistema deniega el acceso
 
 ```
 
@@ -87,24 +84,30 @@ Característica: Decisión de revisión académica
 
   Escenario: Aprobación de versión revisada
     Dado existe una versión pendiente de decisión con revisión realizada
-    Y el estudiante designado representa a la comunidad en la revisión
+    Y el Moderador que revisa puede tomar una decisión sobre esa versión
     Cuando la comunidad registra la aprobación con observaciones
     Entonces queda asociada a la versión la fecha y la identidad del revisor
     Y esa versión aprobada se publica
 
   Escenario: Rechazo o solicitud de corrección
-    Dado existe una versión en revisión
-    Y el estudiante designado representa a la comunidad en la revisión
+    Dado existe una versión pendiente de decisión
+    Y el Moderador que revisa puede tomar una decisión sobre esa versión
     Cuando la comunidad registra rechazo con retroalimentación concreta para el autor
     Entonces queda documentada la decisión sobre la versión
     Y la versión rechazada no se publica
 
   Escenario: Intento no autorizado
     Dado existe una versión pendiente de revisión
-    Y el interesado no pertenece a la comunidad responsable de la revisión
+    Y el interesado no tiene el perfil Moderador
     Cuando el interesado intenta registrar aprobación
     Entonces se rechaza la decisión por falta de autorización
     Y no cambia el estado de publicación
+
+  Escenario: Decisiones simultáneas
+    Dado dos moderadores abrieron la misma versión pendiente
+    Cuando ambos registran una decisión válida
+    Entonces se confirma solo la primera decisión y se identifica al Moderador que la registró
+    Y el segundo recibe un aviso de que la versión ya fue resuelta
 
 ```
 
@@ -121,7 +124,7 @@ Característica: Corrección del aporte
     Y el autor puede consultar el motivo y las observaciones
     Cuando el autor envía una nueva versión corregida
     Entonces se crea una nueva versión ligada al identificador del aporte
-    Y la nueva versión inicia validación y revisión sin heredar aprobaciones
+    Y la nueva versión vuelve a la cola compartida tras validarse sin heredar aprobaciones
 
   Escenario: Corrección inválida
     Dado existe un aporte con rechazo y retroalimentación
@@ -199,6 +202,16 @@ Característica: Consulta de ficha de apunte
     Entonces se informa procedencia, período, número de versión, fecha, responsable y alcance de revisión
     Y la información corresponde a la versión ofrecida
 
+  Escenario: Previsualización del archivo publicado
+    Dado el estudiante abre una versión publicada y disponible con archivo PDF, PNG o JPG
+    Cuando consulta la ficha del apunte
+    Entonces puede ver una previsualización de esa versión o descargarla
+
+  Escenario: Archivo de Office
+    Dado el estudiante abre una versión publicada con archivo DOCX o PPTX
+    Cuando consulta la ficha
+    Entonces se ofrece la descarga de esa versión
+
   Escenario: Ausencia de certificación académica
     Dado existe un archivo que superó controles técnicos sin revisión académica
     Cuando el estudiante consulta la información del material
@@ -218,15 +231,15 @@ Característica: Obtención de una versión
   Escenario: Versión publicada y disponible
     Dado existe una versión seleccionada que sigue publicada
     Y su archivo está disponible
-    Cuando el estudiante solicita obtener esa versión
+    Cuando el estudiante solicita descargar esa versión
     Entonces se entrega el archivo que corresponde exactamente a la versión seleccionada
     Y no se sustituye silenciosamente por otra versión
 
   Escenario: Versión retirada o ausente
     Dado el estudiante seleccionó una versión no disponible o retirada
-    Cuando el estudiante solicita obtener el archivo
+    Cuando el estudiante solicita abrir o descargar el archivo
     Entonces se informa la indisponibilidad de la versión
-    Y el estudiante puede volver a buscar material
+    Y el estudiante puede volver al catálogo
 
 ```
 
@@ -269,13 +282,13 @@ Característica: Reporte de errores
 Característica: Seguimiento de revisiones
 
   Escenario: Revisión supera el plazo
-    Dado existe una revisión en curso cuyo tiempo supera 48 horas desde su inicio
+    Dado existe una versión pendiente cuyo ingreso a la cola fue hace más de 48 horas
     Cuando vence el plazo de seguimiento configurado
-    Entonces se genera recordatorio para quien revisa y alerta a la comunidad estudiantil
-    Y la revisión continúa en curso sin aprobación ni rechazo automáticos
+    Entonces se alerta a la comunidad estudiantil
+    Y la versión sigue pendiente sin aprobación ni rechazo automáticos
 
   Escenario: Revisión aún dentro del plazo
-    Dado existe una revisión en curso sin plazo excedido
+    Dado existe una versión pendiente sin plazo excedido
     Cuando se evalúa el plazo de seguimiento
     Entonces no se genera una alerta de demora por ese evento
     Y el estado de revisión se conserva

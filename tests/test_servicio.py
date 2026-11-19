@@ -44,7 +44,7 @@ def test_envio_valido_registra_aporte_y_primera_version(
     assert resultado.tipo is TipoResultado.REGISTRADO
     aporte = conexion.execute("SELECT * FROM aportes").fetchone()
     version = conexion.execute("SELECT * FROM versiones_apunte").fetchone()
-    assert aporte["estado"] == "PendienteAsignacion"
+    assert aporte["estado"] == "PendienteRevision"
     assert version["numero"] == 1
     assert version["estado"] == "PendienteRevision"
     assert version["referencia_archivo"]
@@ -116,7 +116,7 @@ def test_correccion_valida_crea_nueva_version_y_cierra_la_anterior(
         (2, "PendienteRevision"),
     ]
     assert conexion.execute("SELECT estado FROM aportes").fetchone()["estado"] == (
-        "PendienteAsignacion"
+        "PendienteRevision"
     )
     assert (almacenamiento.base_dir / versiones[1]["referencia_archivo"]).exists()
 

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}{{ version.nombre_archivo }} — Catálogo de apuntes{% endblock %}
+{% block contenido %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <h1>{{ version.nombre_archivo }}</h1>
+    <a href="{{ url_for('catalogo') }}">Volver al catálogo</a>
+  </div>
+  <dl class="datos">
+    <dt>Versión</dt><dd>{{ version.numero }}</dd>
+    <dt>Carrera</dt><dd>{{ version.carrera }}</dd>
+    <dt>Ramo</dt><dd>{{ version.ramo }}</dd>
+    <dt>Tema</dt><dd>{{ version.tema }}</dd>
+    <dt>Período</dt><dd>{{ version.anio }} · semestre {{ version.semestre }}</dd>
+    <dt>Procedencia</dt><dd>{{ version.procedencia }}</dd>
+    <dt>Revisión</dt><dd>Aprobada por {{ version.revisor }}</dd>
+    <dt>Fecha</dt><dd>{{ version.fecha }}</dd>
+    <dt>Alcance</dt><dd>{{ version.alcance }}</dd>
+  </dl>
+  <p><a class="boton" href="{{ url_for('descargar_publicada', version_id=version.version_id) }}">Descargar</a></p>
+  {% if tipo_vista %}
+    <h2>Vista previa</h2>
+    {% set vista = url_for('vista_previa_publicada', version_id=version.version_id) %}
+    {% if tipo_vista == 'application/pdf' %}
+      <iframe class="vista-pdf" src="{{ vista }}" title="Vista previa de {{ version.nombre_archivo }}"></iframe>
+    {% else %}
+      <img class="vista-imagen" src="{{ vista }}" alt="Vista previa de {{ version.nombre_archivo }}">
+    {% endif %}
+  {% else %}
+    <p>Descarga el archivo para abrirlo en una aplicación compatible.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -107,7 +107,6 @@ def test_envio_valido_redirige_al_detalle(cliente, catalogos, ruta_db):
 
     detalle = cliente.get(respuesta.headers["location"])
     assert detalle.status_code == 200
-    assert "Pendiente de asignación" in detalle.text
     assert "Pendiente de revisión" in detalle.text
     assert "aún no se publica" in detalle.text
     assert "número 1" in detalle.text
@@ -175,7 +174,6 @@ def test_correccion_de_extremo_a_extremo(cliente, catalogos, ruta_db):
     assert correccion.status_code == 303
 
     detalle = cliente.get(correccion.headers["location"])
-    assert "Pendiente de asignación" in detalle.text
     assert "Pendiente de revisión" in detalle.text
     assert "número 2" in detalle.text
 

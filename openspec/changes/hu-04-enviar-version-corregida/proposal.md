@@ -1,5 +1,7 @@
 # HU-04 Enviar una versión corregida
 
+> Registro del ciclo original. El flujo vigente de revisión se especifica en [el ajuste de revisión directa](../ajuste-hu-02-revision-directa/proposal.md).
+
 ## Por qué
 
 HU-03 conserva el rechazo o la solicitud de corrección de una versión. HU-04 permite al autor consultar las observaciones y devolver el mismo aporte al flujo de revisión con un archivo corregido. El cambio se deriva de CU-04, RP-05 y RP-14, y cubre P07, P08, P13 y P14 del TO-BE dentro de C04.

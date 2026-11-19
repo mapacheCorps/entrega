@@ -16,8 +16,8 @@ Documentación de Ingeniería de Requisitos, CIN324.
 Aplicación de demostración construida con **Python + FastAPI + Jinja2 + SQLite**.
 Implementa el envío de un apunte con su clasificación, la validación del archivo,
 la detección de duplicados exactos y la corrección de un archivo inválido (HU-01).
-También permite que la comunidad estudiantil asigne un revisor a un aporte
-validado (HU-02), registre la decisión académica y publique la versión aprobada
+También permite que la comunidad estudiantil revise cualquier aporte
+validado desde una cola compartida (HU-02), registre la decisión académica y publique la versión aprobada
 en un catálogo básico (HU-03).
 
 ### Requisitos
@@ -48,8 +48,7 @@ python -m app.db.seed
 ```
 
 El comando crea `data/app.db`, aplica las migraciones pendientes y carga carreras,
-ramos, períodos, temas, los dos perfiles de demostración y los revisores con
-sus habilitaciones. Ejecuta el mismo comando si ya tenías la base de HU-01.
+ramos, períodos, temas, los dos perfiles de demostración y la comunidad estudiantil. Ejecuta el mismo comando si ya tenías la base de HU-01.
 Puedes volver a ejecutarlo sin duplicar filas.
 
 ### Ejecutar la aplicación
@@ -73,21 +72,11 @@ Las pruebas usan una base SQLite temporal por prueba y no dependen de `data/app.
 El selector superior guarda el perfil activo en la cookie `demo_role`. Los perfiles
 son **Estudiante** y **Moderador**. El Moderador representa a la **Comunidad
 Estudiantil** del modelo de dominio. Estudiante puede enviar aportes y corregir un
-archivo inválido. Moderador puede abrir **Organizar revisiones**, asignar un revisor
-e iniciar y resolver la revisión en su nombre. El selector sirve para recorrer la
-demostración.
+archivo inválido. Cualquier Moderador puede abrir la cola compartida y resolver una versión pendiente. La decisión identifica al moderador que la registra.
 
 ### Probar HU-02 en el navegador
 
-Con el perfil **Estudiante**, envía dos archivos válidos distintos y completa
-todos los campos de clasificación. Usa la carrera **Ingeniería Civil Informática**
-para ambos aportes. Luego cambia a **Moderador**, abre **Organizar revisiones** y
-pulsa **Asignar revisor** en el aporte de cada ramo.
-
-| Escenario | Clasificación sugerida | Qué deberías ver |
-|---|---|---|
-| Estudiante de la comunidad disponible | Ingeniería de Requisitos, Elicitación de requisitos, 2026 · semestre 1 | Se muestra el nombre e identificador del revisor. El aporte pasa a **Asignado** y sale del listado de pendientes. Su versión sigue **Pendiente de revisión**. |
-| Sin estudiantes revisores disponibles | Cálculo I, Límites y continuidad, 2026 · semestre 1 | Se muestra **Sin revisor disponible para este ramo**. El aporte sigue en el panel, pendiente de asignación, sin aprobarse ni publicarse. |
+Con el perfil Estudiante, envía un archivo válido. Cambia a Moderador y abre **Revisar aportes**. Selecciona la versión pendiente para abrir el archivo y el formulario de decisión. Volver a la cola o abrir otra pestaña mantiene el aporte disponible mientras no se registre una decisión.
 
 ### Probar HU-03 en el navegador
 
@@ -95,10 +84,7 @@ Con el entorno virtual activo, ejecuta `python -m app.db.seed` y
 `python -m uvicorn app.main:app --reload`. Abre <http://localhost:8000>.
 Para cada recorrido, envía un archivo válido distinto como **Estudiante**. Usa
 **Ingeniería Civil Informática → Ingeniería de Requisitos → Elicitación de
-requisitos** y completa el período y la procedencia. Cambia a **Moderador**, abre
-**Organizar revisiones**, pulsa **Asignar revisor** y abre **Revisar versión**.
-La pantalla identifica al revisor designado y permite abrir el archivo adjunto.
-Pulsa **Iniciar revisión** para abrir el formulario de decisión.
+requisitos** y completa el período y la procedencia. Cambia a **Moderador**, abre **Revisar aportes** y selecciona **Revisar versión**. El formulario permite abrir el archivo y registrar la decisión directamente.
 
 | Escenario | Qué hacer | Qué deberías ver |
 |---|---|---|
@@ -107,7 +93,7 @@ Pulsa **Iniciar revisión** para abrir el formulario de decisión.
 | Solicitud de corrección de RP-04 | Selecciona **Solicitar corrección**. Indica el alcance y qué debe corregirse. | Se confirma la solicitud y la versión sigue fuera del catálogo. El detalle indica **Corrección solicitada**. |
 | Intento no autorizado | Deja el formulario abierto. En otra pestaña del mismo navegador, abre el inicio y cambia a **Estudiante**. Vuelve a la primera pestaña e intenta registrar una aprobación. | Se muestra **Revisión no autorizada**. La versión sigue fuera del catálogo y conserva su estado. |
 
-Las decisiones válidas finalizan la asignación. Para ejecutar toda la suite usa
+Solo la primera decisión válida se confirma. Para ejecutar toda la suite usa
 `python -m pytest`. Para ejecutar los recorridos HTTP de HU-03 usa
 `python -m pytest tests/test_gherkin_hu03.py`.
 
@@ -125,10 +111,14 @@ aporte y revisa **Observaciones de revisión**. Luego pulsa
 | Escenario | Qué hacer | Qué deberías ver |
 |---|---|---|
 | Corrección inválida | Intenta adjuntar un archivo `.txt`. Si el selector lo filtra, muestra todos los archivos. | El formulario informa el error de formato y permite reintentar. El aporte conserva su estado, versión y observaciones. |
-| Nueva versión del mismo aporte | Adjunta un archivo permitido, con contenido distinto al anterior, y pulsa **Enviar versión corregida**. | El detalle conserva el ID del aporte, muestra el siguiente número de versión en **Pendiente de revisión** y conserva las observaciones bajo la versión anterior. El Moderador puede volver a asignar el aporte. |
+| Nueva versión del mismo aporte | Adjunta un archivo permitido, con contenido distinto al anterior, y pulsa **Enviar versión corregida**. | El detalle conserva el ID del aporte, muestra el siguiente número de versión en **Pendiente de revisión** y conserva las observaciones bajo la versión anterior. La nueva versión vuelve a la cola compartida. |
 
 Ejecuta `python -m pytest tests/test_gherkin_hu04.py` para correr los recorridos
 HTTP de esta historia. `python -m pytest` ejecuta toda la suite.
+
+### Probar la ficha del catálogo (HU-07 y HU-08)
+
+Aprueba un aporte desde **Revisar aportes**. Abre **Ver catálogo de apuntes** y selecciona el nombre del archivo. La ficha presenta los datos y el botón **Descargar**. PDF, PNG y JPG tienen vista previa. DOCX y PPTX se pueden descargar para abrirlos en su aplicación. Si el archivo falta o la versión ya no está publicada, el sistema informa la indisponibilidad y permite volver al catálogo.
 
 ### Almacenamiento simulado
 
@@ -147,9 +137,9 @@ confirma el registro.
 ### Alcance de esta entrega
 
 - Se implementan el envío y la corrección de archivos inválidos (HU-01), la
-  asignación de revisores (HU-02), la revisión y publicación (HU-03) y la consulta
-  del feedback por el autor con reenvío académico (HU-04).
-- Los avisos, la búsqueda, la ficha, la descarga pública, los reportes y el retiro
+  cola compartida de revisión (HU-02), la decisión y publicación (HU-03) y la consulta
+  del feedback por el autor con reenvío académico (HU-04), además de la ficha, vista previa y descarga de versiones publicadas (HU-07 y HU-08).
+- Los avisos, los filtros de búsqueda, los reportes y el retiro
   de versiones se desarrollan en las historias siguientes.
 - Los requisitos no funcionales se documentan, pero no se implementan como pruebas de
   rendimiento o usabilidad.

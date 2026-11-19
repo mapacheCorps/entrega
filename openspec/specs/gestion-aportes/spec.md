@@ -8,7 +8,7 @@ Permite que un estudiante autor entregue un apunte con su clasificación académ
 
 ### Requirement: Registro de un aporte válido
 
-El sistema DEBE registrar un `Aporte` y su primera `VersionApunte` cuando el autor adjunta un archivo no vacío, declara procedencia, carrera, ramo, período académico y tema, y el archivo cumple el formato y tamaño permitidos. El `Aporte` queda en estado `PendienteAsignacion` y la versión en `PendienteRevision`; ninguno se publica.
+El sistema DEBE registrar un `Aporte` y su primera `VersionApunte` cuando el autor adjunta un archivo no vacío, declara procedencia, carrera, ramo, período académico y tema, y el archivo cumple el formato y tamaño permitidos. El `Aporte` queda en estado `PendienteRevision` y la versión en `PendienteRevision`; ninguno se publica.
 
 #### Scenario: Registro de aporte completo
 
@@ -16,7 +16,7 @@ El sistema DEBE registrar un `Aporte` y su primera `VersionApunte` cuando el aut
 - **AND** el archivo cumple el formato y tamaño configurados y se declara carrera, ramo, período académico, tema y procedencia
 - **WHEN** el autor presenta el aporte
 - **THEN** el sistema registra el aporte y su primera versión
-- **AND** la versión queda pendiente de asignación o revisión, sin publicarse
+- **AND** la versión queda disponible para cualquier Moderador en la cola de revisión, sin publicarse
 
 ### Requirement: Clasificación académica dependiente
 
@@ -110,3 +110,59 @@ El sistema DEBE aceptar archivos `.pdf`, `.docx`, `.pptx`, `.png` y `.jpg`, con 
 - **WHEN** el autor presenta el aporte
 - **THEN** el sistema informa que el archivo no cumple las reglas configuradas
 - **AND** no lo remite a revisión
+
+### Requirement: Acceso directo al aporte pendiente
+
+El sistema DEBE permitir a cualquier Moderador consultar la versión vigente y validada del aporte y resolverla desde la cola compartida. Abrirla no cambia su estado ni la reserva.
+
+#### Scenario: Aporte disponible en la cola compartida
+
+- **WHEN** un Moderador abre un aporte pendiente
+- **THEN** accede a la versión y al formulario sin asignación previa
+- **AND** otro Moderador puede abrir esa misma versión mientras siga pendiente
+
+#### Scenario: Perfil sin autorización
+
+- **WHEN** un Estudiante intenta abrir la cola o decidir sobre el aporte
+- **THEN** el sistema deniega el acceso sin cambiar la versión
+
+### Requirement: Una decisión por versión y autoría de moderación
+
+El sistema DEBE persistir la primera decisión válida sobre la versión vigente en una transacción y conservar el Moderador que la registró, la fecha, el alcance y las observaciones.
+
+#### Scenario: Decisiones sobre la misma versión
+
+- **WHEN** dos Moderadores intentan resolver la misma versión pendiente
+- **THEN** se registra solo la primera decisión válida y el segundo recibe un aviso
+
+### Requirement: Retorno de la versión corregida a la cola
+
+El sistema DEBE dejar la versión corregida válida pendiente de revisión en la cola compartida y conservar las decisiones de versiones anteriores.
+
+#### Scenario: Reenvío válido
+
+- **WHEN** el autor reenvía una versión corregida válida
+- **THEN** la nueva versión queda disponible para revisión directa sin heredar la decisión previa
+
+### Requirement: Ficha de la misma versión publicada
+
+El sistema DEBE mostrar la ficha de la versión seleccionada con procedencia, clasificación y evidencia de revisión de esa versión. Para una publicación directa institucional la ficha debe identificar su origen cuando ese flujo esté disponible.
+
+#### Scenario: Consultar versión desde el catálogo
+
+- **WHEN** un estudiante abre una versión publicada desde el catálogo
+- **THEN** la ficha muestra los antecedentes de esa versión y ofrece descargar su archivo
+
+### Requirement: Vista previa o descarga del archivo exacto
+
+El sistema DEBE revalidar que la versión siga publicada y que el archivo esté disponible para cada solicitud. Ofrece vista previa para PDF, PNG y JPG y descarga para los formatos admitidos.
+
+#### Scenario: Archivo publicado disponible
+
+- **WHEN** el estudiante solicita una vista previa admitida o una descarga
+- **THEN** recibe el archivo de la misma versión seleccionada
+
+#### Scenario: Versión retirada o archivo ausente
+
+- **WHEN** el estudiante solicita una versión cuya publicación o archivo ya no está disponible
+- **THEN** recibe un aviso y puede volver al catálogo

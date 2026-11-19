@@ -1,5 +1,7 @@
 # HU-02 Asignar responsable de revisión
 
+> Registro del ciclo original. El flujo vigente de revisión se especifica en [el ajuste de revisión directa](../ajuste-hu-02-revision-directa/proposal.md).
+
 ## Por qué
 
 Los aportes validados en HU-01 quedan pendientes de asignación. HU-02 permite a la comunidad estudiantil organizar su revisión según P05 del TO-BE (cambio C02), el requisito RP-03 y el caso de uso CU-02.

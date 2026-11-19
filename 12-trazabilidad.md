@@ -8,7 +8,7 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 |---|---|---|---|---|---|
 | [RP-01](./03-requisitos.md) | HU-01 | CU-01 | DSS-01 | EST-01 | Aporte, VersionApunte, Estudiante, Academico |
 | [RP-02](./03-requisitos.md) | HU-01 | CU-01 | DSS-01 | EST-01 | Aporte, VersionApunte |
-| [RP-03](./03-requisitos.md) | HU-02 | CU-02 | - | EST-01 | Aporte, AsignacionRevision, Estudiante, ComunidadEstudiantil |
+| [RP-03](./03-requisitos.md) | HU-02 | CU-02 | DSS-02 | EST-01 | Aporte, VersionApunte, Estudiante, ComunidadEstudiantil |
 | [RP-04](./03-requisitos.md) | HU-03 | CU-03 | DSS-02 | EST-01 | RevisionAcademica, VersionApunte, Estudiante |
 | [RP-05](./03-requisitos.md) | HU-04 | CU-04 | - | EST-01 | Aporte, VersionApunte, RevisionAcademica |
 | [RP-06](./03-requisitos.md) | HU-03 | CU-03 | DSS-02 | EST-01 | VersionApunte, RevisionAcademica, Academico |
@@ -16,7 +16,7 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 | [RP-08](./03-requisitos.md) | HU-06 | CU-06 | - | - | Aporte, VersionApunte, Carrera, Ramo, PeriodoAcademico, TemaUnidad |
 | [RP-09](./03-requisitos.md) | HU-07 | CU-07 | - | EST-01 | VersionApunte, RevisionAcademica, Aporte |
 | [RP-10](./03-requisitos.md) | HU-08 | CU-08 | - | EST-01 | VersionApunte |
-| [RP-11](./03-requisitos.md) | HU-10 | CU-10 | - | - | AsignacionRevision, Estudiante, ComunidadEstudiantil |
+| [RP-11](./03-requisitos.md) | HU-10 | CU-10 | - | EST-01 | VersionApunte, ComunidadEstudiantil |
 | [RP-12](./03-requisitos.md) | HU-09 | CU-09 | - | - | ReporteError, VersionApunte, Estudiante |
 | [RP-13](./03-requisitos.md) | HU-09, HU-11 | CU-09, CU-11 | - | EST-01 | ReporteError, VersionApunte, RevisionAcademica |
 | [RP-14](./03-requisitos.md) | HU-04, HU-07, HU-11 | CU-04, CU-07, CU-11 | - | EST-01 | Aporte, VersionApunte, RevisionAcademica |
@@ -31,13 +31,13 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 
 | Requisito | Justificación / alcance |
 |---|---|
-| RP-03 | No hay DSS de asignación; EST-01 solo recoge entrada en revisión. |
+| RP-03 | DSS-02 recoge la consulta de la cola; EST-01 identifica la versión pendiente. |
 | RP-04 | DSS-02 muestra únicamente decisiones finales, como disparador de notificación. |
 | RP-05 | No hay DSS de reenvío; EST-01 finaliza versión reemplazada. |
 | RP-06 | DSS-02 contiene publicación tras aprobación. |
 | RP-08 | No hay DSS ni EST de consulta; los filtros se especifican en Gherkin. |
-| RP-09 | No hay DSS de ficha; revisión vincula una versión en el dominio. |
-| RP-10 | No hay DSS de descarga; EST-01 identifica publicada/retirada. |
+| RP-09 | B05 vincula ficha, evidencia y vista previa a la versión seleccionada. |
+| RP-10 | B06–B09 verifican el estado y disponibilidad de la versión antes de entregarla. |
 | RP-11 | No hay DSS de vencimiento ni EST de recordatorios; se valida con Gherkin. |
 | RP-12 | No hay DSS ni EST del reporte; está definido en Gherkin y dominio. |
 | RP-13 | No hay DSS de mantenimiento; EST-01 modela retiro y sustitución. |
