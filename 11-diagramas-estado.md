@@ -16,8 +16,7 @@ Fuente editable: [`est-01.puml`](./diagramas/est-01.puml)
 | Estado origen | Evento | Guarda | Acción | Estado destino |
 |---|---|---|---|---|
 | Inicio | registrarVersion | No aplica | Registrar versión | Recibida |
-| Recibida | validarAporte | Archivo y clasificación válidos y cuenta `@estudiantes.uv.cl` | Ingresar en la cola compartida | PendienteRevision |
-| Recibida | publicarDirecto | Archivo y clasificación válidos y cuenta `@uv.cl` | Registrar la publicación sin revisión académica | Publicada |
+| Recibida | validarAporte | Archivo y clasificación válidos | Ingresar en la cola compartida | PendienteRevision |
 | Recibida | validarAporte | Archivo o clasificación inválidos | Informar observaciones | RequiereCorreccion |
 | PendienteRevision | registrarDecision | La versión vigente sigue pendiente y el Moderador envía una decisión válida | Iniciar la resolución en la misma transacción | EnRevision |
 | EnRevision | registrarDecision | Comunidad aprueba | Registrar evaluación | Aprobada |
@@ -32,7 +31,7 @@ Fuente editable: [`est-01.puml`](./diagramas/est-01.puml)
 | Retirada | cerrarVersion | No aplica | Conservar historial | Final |
 | Sustituida | cerrarVersion | No aplica | Conservar historial | Final |
 
-Una versión rechazada no cambia a publicada. El estudiante puede crear otra versión corregida del mismo aporte, que vuelve a quedar pendiente de revisión. La publicación directa de una cuenta `@uv.cl` no pasa por `Aprobada` ni registra `RevisionAcademica`; el `Aporte` correspondiente queda en `Publicado` y no en `PendienteRevision`.
+Una versión rechazada no cambia a publicada. El estudiante puede crear otra versión corregida del mismo aporte, que vuelve a quedar pendiente de revisión.
 
 ## EST-02: Ciclo de vida de Notificacion
 

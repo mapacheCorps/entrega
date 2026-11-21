@@ -8,7 +8,7 @@ Los actores humanos son roles desempeñados por integrantes de la comunidad univ
 |---|---|---|
 | Usuario institucional | Humano | Persona que inicia sesión con una cuenta `@uv.cl` o `@estudiantes.uv.cl`; el dominio determina su tipo de cuenta. |
 | Estudiante autor | Humano | Persona con cuenta `@estudiantes.uv.cl` que envía apuntes, conoce la decisión y puede presentar versiones corregidas. |
-| Académico autor | Humano | Persona con cuenta `@uv.cl` que envía apuntes y los publica directamente después de la validación. |
+| Académico autor | Humano | Persona con cuenta `@uv.cl` que envía apuntes y los envía a revisión tras la validación. |
 | Estudiante consultante | Humano | Busca, consulta, obtiene y reporta errores de los apuntes publicados. |
 | Comunidad estudiantil | Colectivo humano | Estudiantes que consultan la cola de revisión, aceptan o rechazan aportes, entregan feedback y moderan el material. |
 | Servicio de almacenamiento (propuesto) | Sistema externo | Resguarda los archivos de apuntes. |
@@ -39,17 +39,16 @@ Fuente editable: [`casos-de-uso.puml`](./diagramas/casos-de-uso.puml)
 
 ## Reglas principales
 
-1. Todo apunte de una cuenta `@estudiantes.uv.cl` queda pendiente de revisión comunitaria; los aportes de `@uv.cl` se publican después de la validación, sin revisión.
+1. Todo aporte validado queda pendiente de revisión comunitaria.
 2. La comunidad decide si aprueba o rechaza la versión y registra observaciones.
 3. Si la aprueba, se publica la versión aprobada.
 4. Si la rechaza, la versión no se publica y el autor recibe la justificación y el feedback para corregirla.
-5. Si el autor presenta una nueva versión, esta vuelve a validación y sigue la ruta de su tipo de cuenta.
-6. El acceso exige una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl`; otro dominio se rechaza sin crear sesión.
+5. Si el autor presenta una nueva versión, esta vuelve a validación y vuelve a la cola compartida de revisión.
+6. Para HU-12, el acceso institucional previsto exige una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl`; otro dominio se rechaza sin crear sesión.
 
 ## Notas por caso de uso
 
 - **CU-01 — Clasificación dependiente:** el selector de ramo ofrece solo los ramos de la carrera seleccionada y el de tema solo los temas del ramo seleccionado; el período académico se elige con independencia del ramo. La validación del servidor rechaza combinaciones incoherentes.
-- **CU-01 — Ruta según cuenta:** los aportes de `@estudiantes.uv.cl` pasan a la cola de revisión; los de `@uv.cl` se publican después de la validación, sin `RevisionAcademica`.
 - **CU-12 — Acceso:** solo se aceptan correos `@uv.cl` y `@estudiantes.uv.cl`; otro dominio se rechaza sin crear sesión.
 
 El diagrama no incorpora relaciones `<<include>>` ni `<<extend>>` sin una dependencia de objetivos que las justifique. El almacenamiento y el correo se mantienen como integraciones propuestas.

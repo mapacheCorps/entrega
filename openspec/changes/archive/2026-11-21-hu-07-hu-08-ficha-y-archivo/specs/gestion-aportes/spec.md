@@ -4,7 +4,7 @@
 
 ### Requirement: Ficha de la misma versión publicada
 
-El sistema DEBE mostrar la ficha de la versión seleccionada con procedencia, clasificación y evidencia de revisión de esa versión. Para una publicación directa institucional la ficha debe identificar su origen cuando ese flujo esté disponible.
+El sistema DEBE mostrar la ficha de la versión seleccionada con procedencia, clasificación y evidencia de revisión de esa versión.
 
 #### Scenario: Consultar versión desde el catálogo
 

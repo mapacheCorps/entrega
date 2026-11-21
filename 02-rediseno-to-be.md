@@ -2,7 +2,7 @@
 
 ## Alcance
 
-Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimiento de apuntes, con revisión académica antes de publicar. Los participantes son Estudiante, Académico y Comunidad estudiantil; esta última representa al equipo de moderación y la operación de los servicios automáticos. El acceso exige una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl`: los aportes de `@estudiantes.uv.cl` pasan por revisión comunitaria y los de `@uv.cl` se publican directamente después de la validación.
+Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimiento de apuntes, con revisión académica antes de publicar. Los participantes son Estudiante, Académico y Comunidad estudiantil; esta última representa al equipo de moderación y la operación de los servicios automáticos. El acceso institucional se contempla en HU-12. Todo aporte validado ingresa a revisión comunitaria.
 
 ## Mejoras identificadas por participante
 
@@ -16,7 +16,7 @@ Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimien
 
 | ID | Criterio                                                                                                             |
 |---|----------------------------------------------------------------------------------------------------------------------|
-| D01 | Revisar antes de publicar; solo la versión aprobada o publicada directamente por una cuenta `@uv.cl` entra al catálogo.                                               |
+| D01 | Revisar antes de publicar; solo la versión aprobada entra al catálogo.                                               |
 | D02 | Ofrecer los aportes validados a todos los moderadores en una cola compartida.           |
 | D03 | Clasificar por carrera, ramo, período académico y tema o unidad.                                                     |
 | D04 | Aplicar controles de archivo, formatos y tamaño configurables, y detección de duplicados.                            |
@@ -24,7 +24,7 @@ Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimien
 | D06 | Mantener el identificador del aporte y crear una versión nueva al recibir correcciones.                              |
 | D07 | Investigar los reportes y corregir o retirar las versiones con errores confirmados.                                  |
 | D08 | Aplicar las metas y condiciones de calidad definidas en el documento 06.                                             |
-| D09 | Exigir una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl` y usar el dominio del correo para decidir la ruta: `@uv.cl` publica después de la validación; `@estudiantes.uv.cl` requiere revisión comunitaria. |
+| D09 | Exigir una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl` cuando se implemente HU-12. |
 
 ## Iniciativas de rediseño
 
@@ -52,7 +52,7 @@ Se propone centralizar aportes, revisión, publicación, búsqueda y mantenimien
 - Actividades AS-IS afectadas: A03–A04: envío y organización del apunte.
 - Heurísticas: **Split responsibilities, Order assignment y Contact reduction**.
 - Cambio propuesto: Registrar quién toma la decisión, devolver observaciones consolidadas y mantener versiones del mismo caso.
-- Efecto esperado y costo de la mejora: Menos pérdida de contexto; la disponibilidad del mismo revisor puede limitar la rapidez.
+- Efecto esperado y costo de la mejora: Menos pérdida de contexto; la rapidez depende de la disponibilidad del equipo de moderación.
 - Cambios trazables: C02, C04, C05.
 
 ### I04
@@ -116,13 +116,13 @@ El temporizador de publicación es no interruptivo: genera una alerta y permite 
 | C02 | A04: guardar y organizar con intervención humana | P04–P05: validar entrada y poner el aporte en la cola de revisión | Controles automáticos y revisión directa por cualquier Moderador. | D02, D04 |
 | C03 | Control académico formal no representado en el modelo AS-IS | P06 y P10: revisar y registrar rechazo | Se introduce revisión documentada antes de publicar. | D01, D02 |
 | C04 | Ciclo formal de correcciones no representado en el modelo AS-IS | P07, P08, P13 y P14: solicitar y recibir correcciones | Se mantiene el mismo caso y se revisa una nueva versión. | D01, D06 |
-| C05 | A04: archivo guardado por la comunidad | P09 y P11: publicar y notificar | Solo se publica la versión aprobada o publicada directamente por una cuenta `@uv.cl`; se comunica el resultado. | D01 |
+| C05 | A04: archivo guardado por la comunidad | P09 y P11: publicar y notificar | Solo se publica la versión aprobada; se comunica el resultado. | D01 |
 | C06 | A06, A07 y A10: buscar en chats y pedir ayuda | B01–B04 y B10: filtrar y devolver resultados | Consulta autónoma de apuntes publicados mediante catálogo. | D03 |
 | C07 | Ficha de revisión no representada en el modelo AS-IS | B05: consultar procedencia, versión, revisión y vista previa | La información de revisión se hace visible al estudiante. | D01, D02 |
 | C08 | A08, A09 y A11: recibir respuesta y guardar archivo | B06–B09: verificar y entregar vista previa o descarga | Se verifica disponibilidad al descargar y se informa si falta. | D03 |
 | C09 | Seguimiento de solicitudes no representado en el modelo AS-IS | P12: alertar a la comunidad | Seguimiento automático de una revisión demorada. | D05 |
 | C10 | Proceso de reportes no representado en el modelo AS-IS | E01–E11: reportar, investigar, corregir o retirar y comunicar | Se propone mantenimiento posterior a la publicación. | D07 |
-| C11 | Acceso no representado en el AS-IS: el intercambio ocurre en chats sin cuentas institucionales ni control de acceso | P00: iniciar sesión con cuenta institucional; compuerta de ruta después de P04 | Se exige una cuenta `@uv.cl` o `@estudiantes.uv.cl`; el dominio decide si el aporte se publica directamente o pasa a revisión. | D09 |
+| C11 | Acceso no representado en el AS-IS: el intercambio ocurre en chats sin cuentas institucionales ni control de acceso | P00: iniciar sesión con cuenta institucional; control de acceso previsto | El acceso institucional corresponde a HU-12. Todos los aportes validados pasan a revisión. | D09 |
 
 ## Catálogo de actividades TO-BE
 

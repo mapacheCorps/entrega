@@ -3,7 +3,7 @@
 Se especifican las doce historias existentes en [Entrega 1](./04-historias-usuario.md). Los escenarios describen comportamientos del dominio; no prueban que el software esté implementado. Los servicios externos de almacenamiento/correo son propuestas de diseño.
 
 ## HU-01 : Enviar y clasificar un aporte
-**Historia:** Como usuario con cuenta institucional que aporta material, quiero adjuntar y clasificar mi apunte, para que la comunidad lo reciba con la información necesaria.
+**Historia:** Como usuario que aporta material, quiero adjuntar y clasificar mi apunte, para que la comunidad lo reciba con la información necesaria.
 
 **Origen:** [HU-01 en Entrega 1](./04-historias-usuario.md#hu-01).
 
@@ -11,20 +11,11 @@ Se especifican las doce historias existentes en [Entrega 1](./04-historias-usuar
 Característica: Recepción de aporte
 
   Escenario: Registro de aporte completo
-    Dado existe un autor con cuenta @estudiantes.uv.cl que aporta un archivo no vacío
+    Dado existe un autor que aporta un archivo no vacío
     Y el archivo cumple el formato y tamaño configurados y se declara carrera, ramo, período académico, tema y procedencia
     Cuando el autor presenta el aporte
     Entonces el sistema registra el aporte y su primera versión
     Y la versión queda pendiente de revisión en la cola compartida, sin publicarse
-
-  Escenario: Publicación directa de un aporte con cuenta @uv.cl
-    Dado existe un autor con cuenta @uv.cl que aporta un archivo no vacío
-    Y el archivo cumple el formato y tamaño configurados y se declara carrera, ramo, período académico, tema y procedencia
-    Cuando el autor presenta el aporte
-    Entonces el sistema registra el aporte y su primera versión
-    Y la versión queda publicada de inmediato
-    Y no se crea una revisión académica
-    Y la confirmación no muestra el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión
 
   Escenario: Datos de aporte inválidos
     Dado el autor presenta un aporte con datos obligatorios faltantes o archivo inválido
@@ -46,7 +37,7 @@ Característica: Recepción de aporte
     Y el período académico se puede elegir con independencia del ramo
 
   Escenario: Confirmación con información útil para el autor
-    Dado un autor con cuenta @estudiantes.uv.cl presenta un aporte válido
+    Dado un autor presenta un aporte válido
     Cuando el sistema confirma el registro
     Entonces muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que aún no se publica
     Y no muestra el hash SHA-256, la referencia de almacenamiento, el tipo MIME ni la fecha de creación de la versión

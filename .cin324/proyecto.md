@@ -41,13 +41,13 @@
 | Historia | Estado | Cambio de OpenSpec | Fecha | Observaciones |
 |----------|--------|--------------------|-------|----------------|
 | HU-01 | hecha · validada y archivada | `openspec/changes/archive/2026-11-12-hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Especificaciones sincronizadas a `openspec/specs/gestion-aportes/spec.md`. |
-| HU-02 | revisión directa implementada | ajuste-hu-02-revision-directa | 2026-11-19 | Cola compartida. El cambio inicial de asignación queda como historial. |
-| HU-03 | revisión directa implementada | ajuste-hu-02-revision-directa | 2026-11-19 | Se registra al Moderador que confirma la primera decisión de la versión. |
-| HU-04 | implementada | hu-04-enviar-version-corregida | 2026-11-19 | El reenvío válido vuelve a la cola de revisión directa. |
+| HU-02 | revisión directa implementada y archivada | [Cambio inicial](../openspec/changes/archive/2026-11-21-hu-02-asignar-responsable-revision) y [ajuste vigente](../openspec/changes/archive/2026-11-21-ajuste-hu-02-revision-directa) | 2026-11-21 | Cola compartida. La asignación queda como historial. |
+| HU-03 | implementada y archivada | [Cambio HU-03](../openspec/changes/archive/2026-11-21-hu-03-registrar-revision-comunitaria) y [ajuste de revisión directa](../openspec/changes/archive/2026-11-21-ajuste-hu-02-revision-directa) | 2026-11-21 | Se registra al Moderador que confirma la primera decisión de la versión. |
+| HU-04 | implementada y archivada | [Cambio HU-04](../openspec/changes/archive/2026-11-21-hu-04-enviar-version-corregida) | 2026-11-21 | El reenvío válido vuelve a la cola de revisión directa. |
 | HU-05 | pendiente | — | — | Requiere decisiones de revisión (HU-03). |
 | HU-06 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
-| HU-07 | implementada para el flujo de revisión comunitaria | hu-07-hu-08-ficha-y-archivo | 2026-11-19 | Ficha por versión y vista previa de PDF, PNG y JPG. |
-| HU-08 | implementada para el flujo de revisión comunitaria | hu-07-hu-08-ficha-y-archivo | 2026-11-19 | Descarga de la versión exacta con comprobación de publicación y disponibilidad. |
+| HU-07 | implementada y archivada | [Ficha y archivo](../openspec/changes/archive/2026-11-21-hu-07-hu-08-ficha-y-archivo) | 2026-11-21 | Ficha por versión y vista previa de PDF, PNG y JPG. |
+| HU-08 | implementada y archivada | [Ficha y archivo](../openspec/changes/archive/2026-11-21-hu-07-hu-08-ficha-y-archivo) | 2026-11-21 | Descarga de la versión exacta con comprobación de publicación y disponibilidad. |
 | HU-09 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
 | HU-10 | pendiente | — | — | Mide la espera desde el ingreso de la versión a la cola (HU-02). |
 | HU-11 | pendiente | — | — | Requiere reportes confirmados (HU-09). |

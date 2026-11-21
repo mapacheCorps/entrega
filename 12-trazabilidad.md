@@ -24,10 +24,22 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 | [RP-16](./03-requisitos.md) | HU-01, HU-06, HU-08 | CU-01, CU-06, CU-08 | DSS-01 | EST-01 | Aporte, VersionApunte, Ramo |
 | [RP-17](./03-requisitos.md) | HU-06 | CU-06 | - | - | Aporte, VersionApunte |
 | [RP-18](./03-requisitos.md) | HU-03, HU-11 | CU-03, CU-11 | DSS-02 | EST-01 | Estudiante, RevisionAcademica, VersionApunte |
-| [RP-19](./03-requisitos.md) | HU-12 | CU-12 | DSS-01 | - | Estudiante, Academico |
-| [RP-20](./03-requisitos.md) | HU-01, HU-12 | CU-01, CU-12 | DSS-01 | EST-01 | Aporte, VersionApunte, Estudiante, Academico |
+| [RP-19](./03-requisitos.md) | HU-12 | CU-12 | - | - | Estudiante, Academico |
+| [RP-20](./03-requisitos.md) | HU-01, HU-02, HU-03 | CU-01, CU-02, CU-03 | DSS-01, DSS-02 | EST-01 | Aporte, VersionApunte, RevisionAcademica |
 
 ## Observaciones
+
+### Código y pruebas de la Entrega 3
+
+| Historia | Operación y código | Pruebas automáticas |
+|---|---|---|
+| [HU-01](./04-historias-usuario.md#hu-01) | `POST /aportes`: [rutas](./app/rutas/aportes.py), [validación](./app/servicios/validacion.py), [envío](./app/servicios/aportes.py) | [Envío completo, datos inválidos, duplicado, clasificación y confirmación](./tests/test_gherkin_hu01.py) |
+| [HU-02](./04-historias-usuario.md#hu-02) | `GET /moderacion/aportes`: [cola y acceso](./app/rutas/moderacion.py), [consulta de versiones vigentes](./app/dominio/revisiones.py) | [Consulta sin reserva y acceso desde Estudiante](./tests/test_gherkin_hu02.py), [migración](./tests/test_db.py) |
+| [HU-03](./04-historias-usuario.md#hu-03) | `POST /moderacion/aportes/{aporte_id}/versiones/{version_id}/revision/decision`: [ruta](./app/rutas/moderacion.py), [transiciones y decisión](./app/servicios/revisiones.py) | [Aprobación, rechazo, corrección y autorización](./tests/test_gherkin_hu03.py), [decisiones simultáneas y reversión](./tests/test_revisiones.py) |
+| [HU-04](./04-historias-usuario.md#hu-04) | `POST /aportes/{aporte_id}/versiones/{version_id}/reenviar`: [rutas](./app/rutas/aportes.py), [reenvío y versionado](./app/servicios/aportes.py) | [Reenvío válido, archivo inválido, conservación del historial y autorización](./tests/test_gherkin_hu04.py) |
+| [HU-07](./04-historias-usuario.md#hu-07) y [HU-08](./04-historias-usuario.md#hu-08) | `GET /catalogo/{version_id}` y rutas de archivo: [ficha, vista previa y descarga](./app/rutas/aportes.py) | [Formatos, archivo ausente y versión publicada exacta](./tests/test_gherkin_hu03.py) |
+
+### Justificación y alcance
 
 | Requisito | Justificación / alcance |
 |---|---|
@@ -46,8 +58,8 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 | RP-16 | Métrica de usabilidad: DSS-01 solo cubre aporte; resto por pruebas. |
 | RP-17 | Métrica de tiempo: requiere medición de rendimiento. |
 | RP-18 | Métrica de autorización: DSS-02 presupone a la comunidad estudiantil; el control requiere pruebas. |
-| RP-19 | DSS-01 muestra el inicio de sesión y el rechazo por dominio; no hay EST de sesión porque la sesión no es una entidad del dominio. |
-| RP-20 | DSS-01 y EST-01 distinguen la ruta `@uv.cl` (publicación directa) de `@estudiantes.uv.cl` (revisión). |
+| RP-19 | Inicio de sesión institucional previsto para HU-12, fuera de la entrega base. |
+| RP-20 | DSS-01, DSS-02 y EST-01 muestran la validación, revisión y publicación tras aprobación. |
 
 ## Coherencia con el TO-BE
 
@@ -56,7 +68,7 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 - **C04:** RP-05/RP-14 → HU-04 → CU-04 → EST-01 (`P07`, `P08`, `P13`, `P14`).
 - **C06-C08:** RP-08/RP-09/RP-10 → HU-06/HU-07/HU-08 → CU-06/CU-07/CU-08 → clases de clasificación y VersionApunte (`B01`-`B10`).
 - **C09-C10:** RP-11/RP-12/RP-13 → HU-10/HU-09/HU-11 → CU-10/CU-09/CU-11 (`P12`, `E01`-`E11`).
-- **C11:** RP-19/RP-20 → HU-12/HU-01 → CU-12/CU-01 → DSS-01 → Estudiante y Academico (`P00`).
+- **C11:** RP-19 → HU-12 → CU-12 corresponde al acceso institucional previsto. RP-20 vincula la validación, la cola y la decisión de HU-01 a HU-03.
 - **Calidad:** RP-15/RP-16/RP-17/RP-18 son restricciones no funcionales que deben comprobarse con baterías de pruebas; los diagramas no demuestran por sí mismos su satisfacción.
 
 ## Notas de alcance

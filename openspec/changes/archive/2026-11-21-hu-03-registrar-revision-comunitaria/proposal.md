@@ -1,6 +1,6 @@
 # HU-03 Registrar revisión comunitaria
 
-> Registro del ciclo original. El flujo vigente de revisión se especifica en [el ajuste de revisión directa](../ajuste-hu-02-revision-directa/proposal.md).
+> Registro del ciclo original. El flujo vigente de revisión se especifica en [el ajuste de revisión directa](../2026-11-21-ajuste-hu-02-revision-directa/proposal.md).
 
 ## Por qué
 

@@ -4,11 +4,11 @@ Las historias corresponden a la propuesta TO-BE. Cada una identifica las activid
 
 ## HU-01
 
-Como **usuario con cuenta institucional que aporta material**, quiero **adjuntar y clasificar mi apunte**, para **que la comunidad lo reciba con la información necesaria**.
+Como **usuario que aporta material**, quiero **adjuntar y clasificar mi apunte**, para **que la comunidad lo reciba con la información necesaria**.
 
-**Actividades TO-BE:** P00–P04, P07.  
+**Actividades TO-BE:** P01–P04, P07.  
 **Cambios AS-IS → TO-BE:** C01, C02, C11.  
-**Requisitos:** RP-01, RP-02, RP-16, RP-19, RP-20.
+**Requisitos:** RP-01, RP-02, RP-16, RP-20.
 
 **Criterios de aceptación:**
 
@@ -16,8 +16,7 @@ Como **usuario con cuenta institucional que aporta material**, quiero **adjuntar
 - **HU-01-CA2:** Si falta un campo obligatorio o el archivo incumple una regla configurada, se identifica el problema y no se remite a revisión hasta corregirlo.
 - **HU-01-CA3:** La coincidencia con un archivo idéntico se comunica para resolver el duplicado; no se presenta como aprobación académica.
 - **HU-01-CA4:** Las opciones de ramo corresponden a la carrera seleccionada y las de tema al ramo seleccionado; el período académico se elige con independencia del ramo.
-- **HU-01-CA5:** La confirmación muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que no se publica cuando la cuenta es `@estudiantes.uv.cl`; cuando la cuenta es `@uv.cl`, indica que la versión quedó publicada. No muestra hash, referencia de almacenamiento, tipo MIME ni fecha de creación.
-- **HU-01-CA6:** Dado un usuario autenticado con correo `@uv.cl` y un archivo que cumple las reglas configuradas, al enviar se registra el aporte y la versión se publica de inmediato, sin revisión académica.
+- **HU-01-CA5:** La confirmación muestra los identificadores del aporte y de la versión, la clasificación, el estado y la aclaración de que aún no se publica. No muestra hash, referencia de almacenamiento, tipo MIME ni fecha de creación.
 
 ## HU-02
 
@@ -99,7 +98,7 @@ Como **estudiante que consulta un apunte**, quiero **ver su procedencia, revisi�
 
 **Criterios de aceptación:**
 
-- **HU-07-CA1:** La ficha muestra procedencia declarada, período, versión, fecha, responsable y alcance de revisión cuando corresponde. Si la publicación fue directa, identifica ese origen.
+- **HU-07-CA1:** La ficha muestra procedencia declarada, período, versión, fecha, responsable y alcance de revisión cuando corresponde.
 - **HU-07-CA2:** La evidencia, la vista previa de PDF, PNG o JPG y la descarga corresponden a la misma versión seleccionada.
 - **HU-07-CA3:** Una comprobación técnica del archivo no se etiqueta como revisión académica ni como garantía absoluta de corrección.
 
@@ -161,6 +160,8 @@ Como **moderador habilitado**, quiero **corregir o retirar una versión con erro
 - **HU-11-CA4:** La resolución se notifica; una persona sin autorización no puede publicar ni retirar versiones.
 
 ## HU-12
+
+Historia de alcance futuro, fuera de las cuatro HU de la entrega base.
 
 Como **integrante de la comunidad universitaria**, quiero **iniciar sesión con mi cuenta institucional**, para **acceder al sistema con el tipo de cuenta que me corresponde**.
 

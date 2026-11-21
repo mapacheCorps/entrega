@@ -1,10 +1,13 @@
 from contextlib import closing
 
+import pytest
+
 from app.db.conexion import conectar
 from tests.conftest import datos_aporte
 
 
-def test_cola_compartida_ofrece_version_validada_sin_reserva(cliente, ruta_db, catalogos):
+@pytest.fixture
+def aporte_pendiente(cliente, catalogos):
     envio = cliente.post(
         "/aportes",
         data=datos_aporte(catalogos),
@@ -12,7 +15,15 @@ def test_cola_compartida_ofrece_version_validada_sin_reserva(cliente, ruta_db, c
         follow_redirects=False,
     )
     assert envio.status_code == 303
+
+
+def test_acceso_a_la_cola_desde_el_perfil_estudiante(cliente, aporte_pendiente):
+    """HU-02 · Acceso a la cola desde el perfil Estudiante."""
     assert cliente.get("/moderacion/aportes").status_code == 403
+
+
+def test_cola_compartida_ofrece_version_validada_sin_reserva(cliente, ruta_db, aporte_pendiente):
+    """HU-02 · Consultar un aporte pendiente."""
     cliente.post("/demo/rol", data={"rol": "Moderador"})
     with closing(conectar(ruta_db)) as conexion:
         version = conexion.execute("SELECT id, aporte_id FROM versiones_apunte").fetchone()

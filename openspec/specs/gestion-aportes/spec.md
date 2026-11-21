@@ -146,7 +146,7 @@ El sistema DEBE dejar la versión corregida válida pendiente de revisión en la
 
 ### Requirement: Ficha de la misma versión publicada
 
-El sistema DEBE mostrar la ficha de la versión seleccionada con procedencia, clasificación y evidencia de revisión de esa versión. Para una publicación directa institucional la ficha debe identificar su origen cuando ese flujo esté disponible.
+El sistema DEBE mostrar la ficha de la versión seleccionada con procedencia, clasificación y evidencia de revisión de esa versión.
 
 #### Scenario: Consultar versión desde el catálogo
 
@@ -166,3 +166,76 @@ El sistema DEBE revalidar que la versión siga publicada y que el archivo esté 
 
 - **WHEN** el estudiante solicita una versión cuya publicación o archivo ya no está disponible
 - **THEN** recibe un aviso y puede volver al catálogo
+
+### Requirement: Aprobación y publicación de la versión revisada
+
+El sistema DEBE registrar la aprobación de la versión actual pendiente de revisión, con fecha, alcance, observaciones, moderador y comunidad. DEBE publicar esa misma versión y actualizar el aporte a `Publicado`.
+
+#### Scenario: Aprobación de versión revisada
+
+- **GIVEN** existe una versión pendiente y un Moderador de una comunidad habilitada
+- **WHEN** el Moderador registra la aprobación con alcance y observaciones
+- **THEN** la decisión queda asociada a esa versión, a la fecha, al Moderador que la registró y a su comunidad
+- **AND** esa versión pasa a `Aprobada` y luego a `Publicada` y aparece en el catálogo básico
+- **AND** el aporte queda `Publicado`
+
+### Requirement: Rechazo fundamentado de la versión revisada
+
+El sistema DEBE registrar el rechazo de la versión actual pendiente de revisión con alcance y retroalimentación concreta. DEBE dejar el aporte en `Rechazado` y mantener la versión fuera del catálogo.
+
+#### Scenario: Rechazo o solicitud de corrección
+
+- **GIVEN** existe una versión pendiente y un Moderador puede registrar su decisión
+- **WHEN** el Moderador registra el rechazo con alcance y retroalimentación concreta
+- **THEN** queda guardada la decisión sobre esa versión con la fecha, el alcance, el revisor, la comunidad y el feedback
+- **AND** la versión queda `Rechazada` y sigue fuera del catálogo
+
+### Requirement: Solicitud de corrección académica
+
+El sistema DEBE registrar la solicitud de corrección como una decisión con alcance y retroalimentación concreta. La versión queda en `RequiereCorreccion`, el aporte en `CorreccionSolicitada`. La versión sigue fuera del catálogo.
+
+#### Scenario: Solicitud de corrección con observaciones
+
+- **GIVEN** existe una versión actual pendiente y un Moderador de una comunidad habilitada
+- **WHEN** el Moderador registra una solicitud de corrección con alcance y observaciones
+- **THEN** la solicitud queda guardada para la versión exacta, con la fecha, el revisor, la comunidad, el alcance y las observaciones
+- **AND** la versión queda en `RequiereCorreccion`, el aporte en `CorreccionSolicitada`
+- **AND** la versión sigue fuera del catálogo y el aporte queda fuera del formulario de corrección de archivos inválidos de HU-01
+
+### Requirement: Consulta del feedback por el autor
+
+El sistema DEBE mostrar al autor la decisión, el alcance y las observaciones de cada rechazo o solicitud de corrección en el detalle del aporte. Cada registro DEBE identificar la versión revisada y seguir visible tras un reenvío.
+
+#### Scenario: El autor consulta la revisión de una versión anterior
+
+- **GIVEN** una versión del aporte recibió una decisión de rechazo o corrección con observaciones
+- **WHEN** el autor abre el detalle del aporte antes o después de reenviar
+- **THEN** ve la decisión y las observaciones asociadas al número de la versión revisada
+
+### Requirement: Validación del archivo reenviado
+
+El sistema DEBE aplicar la validación de archivos y duplicados exactos de HU-01. Si falta el archivo, es inválido o es un duplicado exacto, DEBE informar la causa y conservar el aporte, su versión vigente y su revisión para que el autor pueda reintentar.
+
+#### Scenario: Corrección inválida
+
+- **GIVEN** existe un aporte rechazado con retroalimentación y el archivo corregido incumple una regla de validación
+- **WHEN** el autor presenta el archivo
+- **THEN** se muestran los incumplimientos y el aporte sigue en su estado anterior
+- **AND** no se crea una versión ni se envía el archivo inválido a revisión
+
+#### Scenario: Reenvío duplicado
+
+- **GIVEN** el archivo que el autor adjunta ya está registrado con el mismo contenido
+- **WHEN** intenta reenviarlo
+- **THEN** se informa la coincidencia exacta sin tratarla como aprobación
+- **AND** se conserva la versión vigente y su feedback
+
+### Requirement: Acceso al feedback y reenvío del propio aporte
+
+El sistema DEBE verificar que el perfil Estudiante corresponda al autor registrado en el aporte antes de mostrar el feedback académico o permitir el reenvío.
+
+#### Scenario: Consulta o reenvío por una persona distinta del autor
+
+- **GIVEN** existe un aporte con rechazo o con una solicitud de corrección
+- **WHEN** una persona que no actúa como su autor intenta consultar su feedback o enviar otra versión
+- **THEN** el sistema no muestra esas observaciones ni modifica el aporte o su historial
