@@ -45,6 +45,7 @@ Como **Moderador**, quiero **registrar una decisión fundamentada sobre una vers
 - **HU-03-CA1:** La decisión registra al Moderador que la tomó, fecha, versión, alcance y observaciones. Se registra una sola decisión sobre la versión.
 - **HU-03-CA2:** Solo una decisión de aprobación permite publicar esa versión; corrección o rechazo mantienen el aporte fuera del catálogo publicado.
 - **HU-03-CA3:** Un estudiante sin rol habilitado no puede registrar una decisión de revisión ni cambiar el estado de publicación.
+- **HU-03-CA4:** Si el aporte presentado es de una materia específica tengo la opción de llamar a un experto para hacer la revisión.
 
 ## HU-04
 
