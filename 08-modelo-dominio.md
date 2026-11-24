@@ -8,7 +8,8 @@ Para evitar cruces de relaciones y mejorar la lectura, el modelo se presenta en 
 
 ### 1. Aporte y revisión comunitaria
 
-![Modelo de dominio UML: aporte y revisión](./diagramas/modelo-dominio.png)
+<img width="687" height="695" alt="image" src="https://github.com/user-attachments/assets/e8fcde4c-91f9-44fc-86ee-358019418f09" />
+
 
 Fuente: [`modelo-dominio.puml`](./diagramas/modelo-dominio.puml)
 
