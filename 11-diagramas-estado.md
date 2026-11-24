@@ -7,7 +7,7 @@ Los estados representan condiciones de las entidades del dominio. Los eventos in
 - Clase: [`VersionApunte`](./08-modelo-dominio.md)
 - Secuencias relacionadas: [`DSS-01`, `DSS-02`](./10-diagramas-secuencia.md)
 
-![EST-01: estados de una versión](./diagramas/est-01.png)
+![EST-01: estados de una versión](./diagramas/est1-01-ev3.png)
 
 Fuente editable: [`est-01.puml`](./diagramas/est-01.puml)
 
