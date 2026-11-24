@@ -9,7 +9,7 @@ Los estados representan condiciones de las entidades del dominio. Los eventos in
 
 ![EST-01: estados de una versión](./diagramas/est1-01-ev3.png)
 
-Fuente editable: [`est-01.puml`](./diagramas/est-01.puml)
+!Fuente editable: [`est-01.puml`](./diagramas/est-01.puml) (legacy)
 
 ### Tabla de transiciones
 
