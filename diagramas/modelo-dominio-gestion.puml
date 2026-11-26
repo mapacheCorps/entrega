@@ -25,6 +25,7 @@ class VersionApunte {
   nombreArchivo: texto
   referenciaArchivo: texto
   estado: texto
+  especialidadRequerida: texto [0..1]
 }
 
 class Notificacion {
@@ -51,6 +52,6 @@ VersionApunte "1" -- "0..*" Notificacion : origina
 Estudiante "1" -- "0..*" Notificacion : recibe
 VersionApunte "1" -- "0..*" ReporteError : recibe
 Estudiante "1" -- "0..*" ReporteError : informa
-VersionApunte "1" *-- "0..*" RevisionAcademica : conserva
+VersionApunte "1" *-- "0..1" RevisionAcademica : conserva
 Experto "0..1" -- "0..*" RevisionAcademica : revisa como Experto
 @enduml

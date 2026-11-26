@@ -7,7 +7,7 @@ Los estados representan condiciones de las entidades del dominio. Los eventos in
 - Clase: [`VersionApunte`](./08-modelo-dominio.md)
 - Secuencias relacionadas: [`DSS-01`, `DSS-02`](./10-diagramas-secuencia.md)
 
-![EST-01: estados de una versión](./diagramas/est1-01-ev3.png)
+![EST-01: estados de una versión](./diagramas/est-01.png)
 
 Fuente editable: [`est-01.puml`](./diagramas/est-01.puml)
 
@@ -36,6 +36,8 @@ Fuente editable: [`est-01.puml`](./diagramas/est-01.puml)
 | Sustituida | cerrarVersion | No aplica | Conservar historial | Final |
 
 Una versión rechazada no cambia a publicada. El estudiante puede crear otra versión corregida del mismo aporte, que vuelve a quedar pendiente de revisión. Para materias especializadas, la versión puede derivarse a un Experto desde PendienteRevision.
+
+En la demo, la aprobación y la publicación se confirman en una misma transacción. El estado persistido al finalizar es `Publicada`. La guarda de derivación exige un Moderador y una versión vigente pendiente. Una segunda decisión se rechaza.
 
 ## EST-02: Ciclo de vida de Notificacion
 

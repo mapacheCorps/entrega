@@ -16,7 +16,7 @@
       <h3>Aporte #{{ revision.aporte_id }} · versión {{ revision.numero }}</h3>
       <p>{{ revision.nombre_archivo }}</p>
       <p>{{ revision.ramo }} · {{ revision.tema }} · {{ revision.anio }}, semestre {{ revision.semestre }}</p>
-      <p><strong>Especialidad requerida:</strong> {{ revision.especialidad_registrada or 'No especificada' }}</p>
+      <p><strong>Especialidad requerida:</strong> {{ revision.especialidad_requerida or 'No especificada' }}</p>
       <a class="enlace" href="{{ url_for('detalle_evaluacion_experto', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
         Evaluar versión {{ revision.numero }} del aporte #{{ revision.aporte_id }}
       </a>
@@ -35,7 +35,8 @@
   <article class="tarjeta">
     <h2>Aporte #{{ revision.aporte_id }} · versión {{ revision.numero }}</h2>
     <p>{{ revision.nombre_archivo }}</p>
-    <p><strong>Especialidad requerida:</strong> {{ revision.especialidad_registrada or 'No especificada' }}</p>
+    <p><strong>Especialidad requerida:</strong> {{ revision.especialidad_requerida or 'No especificada' }}</p>
+    <p><a href="{{ url_for('archivo_revision_experto', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">Descargar apunte para revisar</a></p>
 
     <form method="POST" action="{{ url_for('evaluar_por_experto', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
       <div class="campo">

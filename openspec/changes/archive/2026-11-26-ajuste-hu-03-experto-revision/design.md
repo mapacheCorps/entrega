@@ -111,3 +111,11 @@ Stack: Python 3.14 + FastAPI + Jinja2 + SQLite. Migraciones en `app/db/migration
 3. Ejecutar `py -m app.db.seed` (recrea BD o migra existente)
 4. Verificar que revisiones existentes tienen `tipo_revisor='comunidad'`
 5. Ejecutar suite de pruebas completa (`pytest`)
+
+## Decisiones confirmadas al cerrar la entrega
+
+- **Rutas.** La derivación y la evaluación tienen operaciones separadas, con perfiles de demostración distintos. La cola experta se consulta en el sistema.
+- **Persistencia.** La migración 006 separa la especialidad requerida en la versión de la especialidad del revisor en el dictamen. La bandeja consulta versiones pendientes de evaluación sin exigir un dictamen.
+- **Decisión.** Se usa `BEGIN IMMEDIATE` en SQLite. La decisión y su efecto se confirman juntos. En la aprobación queda persistido `Publicada`.
+- **Alcance.** El catálogo muestra identidad y especialidad del Experto tras aprobar. El autor consulta rechazo o corrección en el detalle. La autenticación y el correo real no forman parte de la demo.
+- **Evidencia.** Las pruebas de servidor y formularios verifican las tres decisiones, el archivo exacto, la especialidad de la solicitud y los bloqueos de autorización y segunda decisión.

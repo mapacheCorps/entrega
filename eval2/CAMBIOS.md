@@ -1,72 +1,35 @@
-# Cambios por el cambio de requerimientos — Evaluación 2
+# Cambios de la Evaluación 2
 
-**Fecha:** 2026-11-24 (Martes)  
-**Equipo:** mapacheCorps  
-**Cambio solicitado:** Incorporar la figura de **Experto** para la revisión de apuntes de materias especializadas (según EVALUACION2.md)
+**Grupo 6 · Torpedos universitarios**
 
----
+El Moderador puede derivar la versión vigente de un apunte especializado a un Experto. El Experto consulta la bandeja, descarga la versión y registra una decisión fundamentada. La aprobación publica esa versión. El rechazo y la solicitud de corrección dejan observaciones para el autor.
 
-## Resumen del cambio
+## Versiones de referencia
 
-El cambio requiere que, cuando un aporte corresponde a una materia especializada, la comunidad estudiantil pueda convocar a un **Experto** (persona con conocimiento especializado, puede ser un profesor externo) para que realice la revisión académica en lugar de o además de la comunidad.
+| Versión | Evidencia |
+|---|---|
+| `base-eval2` | Base de la Entrega 3. |
+| [`c5871e4`](https://github.com/mapacheCorps/entrega-1/tree/c5871e4) | Corte del martes 24/11 en el [seguimiento del curso](https://shimmering-sprite-afb4dd.netlify.app/). Se registró el cambio en `EVALUACION2.md`, se añadió HU-03-CA4 y se actualizó el material de dominio y estado, incluido el [boceto de EST-01](../diagramas/est1-01-ev3.png). La etiqueta `cambio-validado` se añadió posteriormente sobre este commit. |
+| [`b784aff`](https://github.com/mapacheCorps/entrega-1/tree/b784aff) | Versión publicada que se compara en el PPT. Contenía los modelos detallados del Experto y la implementación inicial. En el ensayo HTTP, la versión derivada no aparecía en la bandeja y enviar la evaluación devolvía 500. |
+| `entrega-eval2` | Versión de entrega con las correcciones posteriores, pruebas HTTP, exportaciones UML y cambio OpenSpec archivado. |
 
----
+## Cambios por artefacto
 
-## Artefactos afectados
+| Artefacto | Antes y después | Por qué | Responsable |
+|---|---|---|---|
+| [HU y Gherkin](../07-criterios-aceptacion.md) | El martes HU-03-CA4 introdujo la opción de llamar a un Experto. Los escenarios posteriores detallan derivación, aprobación, rechazo, corrección y autorización. | Cada decisión tiene un resultado verificable para la versión y su autor. | Nicolás Lázcano |
+| [Modelo de dominio](../08-modelo-dominio.md) | La propuesta del martes introduce al Experto. Las fuentes finales muestran su relación con `RevisionAcademica`, un único revisor por decisión y la especialidad requerida en `VersionApunte`. | Distingue quién solicitó la revisión, qué especialidad pidió y quién decidió. | Sebastián Rojas |
+| [Casos de uso](../09-casos-de-uso.md) | CU-03 conserva la revisión comunitaria. CU-13 agrega la solicitud del Moderador y la evaluación del Experto. | Derivar y evaluar son operaciones con responsabilidades y permisos distintos. | Ignacio Rivera |
+| [Diagramas de secuencia](../10-diagramas-secuencia.md) | DSS-02 del martes muestra revisión comunitaria. El final agrega derivación, consulta de bandeja, descarga, evaluación y rechazo de una segunda decisión. | El Experto necesita acceder a la versión exacta y registrar su propia decisión. | Rodrigo Sances |
+| [Diagramas de estado](../11-diagramas-estado.md) | El boceto anotaba una excepción de revisión experta y una referencia a 24 horas. EST-01 formaliza `PendienteRevision` → `EnRevisionExperto` y sus tres resultados. EST-02 conserva los estados del aviso propuesto. | La bandeja y la validación de una decisión dependen del estado de la versión. El límite del boceto no está en el alcance implementado. | Benjamín Isasmendi |
+| [Trazabilidad](../12-trazabilidad.md) | RP-04, RP-06, RP-18 y RP-20 incorporan CU-13 y Experto. La fila HU-03-CA4 enlaza las rutas y pruebas HTTP. | Permite seguir el cambio hasta su implementación y su verificación. | Rodrigo Sances |
 
-| Artefacto | Qué cambió (antes → después) | Por qué el cambio lo exige | Responsable |
-|-----------|------------------------------|----------------------------|-------------|
-| **04-historias-usuario.md** (HU y Gherkin) | HU-03: Agregado criterio de aceptación **HU-03-CA4** — "Si el aporte presentado es de una materia específica tengo la opción de llamar a un experto para hacer la revisión." | El cambio pide explícitamente que exista la opción de llamar a un experto para revisar materias especializadas. | **Nicolás Lázcano** |
-| **07-criterios-aceptacion.md** (Gherkin) | HU-03: Agregados 3 nuevos escenarios Gherkin: (1) Solicitud de revisión por Experto, (2) Aprobación por Experto, (3) Rechazo/corrección por Experto. | Cada regla del cambio debe tener su escenario Gherkin equivalente para trazabilidad y pruebas. | **Nicolás Lázcano** |
-| **08-modelo-dominio.md** + **diagramas/modelo-dominio.puml** + **diagramas/modelo-dominio-gestion.puml** | Modelo de dominio: Nueva clase **Experto** (identificador, nombre, correo, especialidad). Relación `Experto "0..1" -- "0..*" RevisionAcademica : revisa como Experto`. Actualizada tabla de clases y relaciones. Decisiones de modelado incluyen al Experto como rol especializado. | El cambio crea una nueva entidad "Experto" que participa en la revisión académica. El modelo de dominio debe reflejar esta entidad y sus relaciones. | **Sebastián Rojas** |
-| **09-casos-de-uso.md** + **diagramas/casos-de-uso.puml** | Nuevo actor **Experto en la materia**. Nuevo caso de uso **CU-13 Revisar aporte como Experto** (origen HU-03). Actor asociado a CU-13. Moderador también asociado a CU-13 (solicita la revisión). Reglas principales: agregada regla 6 sobre revisión por Experto. Notas: agregada CU-13. | El cambio introduce un nuevo actor externo y un nuevo caso de uso para la revisión por experto. | **Ignacio Rivera** |
-| **10-diagramas-secuencia.md** + **diagramas/dss-02.puml** | DSS-02: Nuevo fragmento `alt Materia especializada - se requiere Experto` con actor `Experto en la materia`. Flujo: Comunidad solicita revisión → Sistema pide evaluación al Experto → Experto entrega evaluación → Sistema informa decisión → Correo notifica. Documentación actualizada con variante Experto. | El diagrama de secuencia del sistema debe mostrar cómo la comunidad deriva la revisión a un Experto y cómo este interactúa con el sistema. | **Rodrigo Sances** |
-| **diagramas/secuencia-hu-05-notificacion.puml** | HU-05: Grupo "Decisión de revisión (HU-03)" con `alt Revisión por Comunidad` / `else Revisión por Experto`. Incluye mensajes `solicitarRevisionExperto`, `solicitarEvaluacion`, `entregarEvaluacion`, `registrarDecisionFinal` con datos del experto. Notificación cubre 3 decisiones: aprobada, rechazada, solicitud de corrección. | El flujo de notificación debe cubrir ambos orígenes de decisión (Comunidad y Experto). | **Rodrigo Sances** |
-| **11-diagramas-estado.md** + **diagramas/est-01.puml** | EST-01: Nuevo estado **EnRevisionExperto**. Transiciones: `PendienteRevision --> EnRevisionExperto : solicitarRevisionExperto [materia especializada]`, `EnRevisionExperto --> Aprobada : evaluacionExperto [experto aprueba]`, `EnRevisionExperto --> Rechazada : evaluacionExperto [experto rechaza] / guardarFeedback`, `EnRevisionExperto --> RequiereCorreccion : evaluacionExperto [experto solicita correccion] / guardarFeedback`. Tabla de transiciones actualizada. | El diagrama de estados debe modelar el nuevo flujo de revisión por Experto como camino alternativo desde PendienteRevision. | **Benjamín Isasmendi** |
-| **12-trazabilidad.md** | Matriz actualizada: RP-04, RP-06, RP-18, RP-20 incluyen ahora `Experto` y `CU-13` en columnas Caso de uso y Clases del dominio. Coherencia TO-BE actualizada para C03/C05 y RP-20. | La trazabilidad debe reflejar que el Experto y CU-13 participan en los requisitos de revisión, decisión y publicación. | **Rodrigo Sances** |
-| **tests/test_gherkin_hu03_experto.py** (Tests) | 6 nuevos tests: solicitud Experto, aprobación Experto, rechazo Experto, corrección Experto, no autorizado Experto, simultáneas Comunidad+Experto. Total 103 tests pasan. | El cambio exige validar el flujo Experto con pruebas automáticas por cada escenario Gherkin nuevo. | **Sebastián Rojas** |
+El AS-IS, la clasificación académica, DSS-01 y EST-02 mantienen el alcance original. El cambio añade una vía de revisión en el TO-BE existente. La identidad del Experto se simula en el selector de la demo. La autenticación institucional y el correo real continúan como funcionalidades previstas.
 
----
+## Correcciones posteriores y evidencia
 
-## Artefactos SIN cambios (y por qué)
-
-| Artefacto | Justificación |
-|-----------|---------------|
-| **01-proceso-as-is.md** | El proceso AS-IS refleja el estado actual sin el cambio; no se modifica. |
-| **02-rediseno-to-be.md** | El TO-BE ya describe actividades de revisión; el cambio es una especialización de P06/P09-P10, no una actividad nueva. |
-| **03-requisitos.md** | Los requisitos RP-01 a RP-20 no cambian; el cambio afecta *cómo* se cumple RP-04/RP-06/RP-18, no los requisitos en sí. |
-| **05-elicitacion.md** | Técnicas de elicitación no cambian. |
-| **06-atributos-calidad.md** | Atributos de calidad no cambian. |
-| **07-trazabilidad.md** | Corresponde a Entrega 1; se mantiene intacto. |
-| **08-diagramas-casos-uso-secuencia.md** | Documento de apoyo; la info autoritativa está en 09, 10, 11. |
-| **diagramas/modelo-dominio-clasificacion.puml** | Clasificación académica (Carrera, Ramo, Tema, Periodo) no se ve afectada por el rol Experto. |
-| **diagramas/dss-01.puml** | DSS-01 cubre presentación de aporte (HU-01); el Experto interviene solo en revisión (HU-03/HU-05). |
-| **diagramas/est-02.puml** | EST-02 cubre ciclo de vida de Notificación; no cambia por el origen de la decisión. |
-| **diagramas/secuencia-hu-01-envio-aporte.puml** | HU-01 no involucra revisión por Experto. |
-| **app/** (código) | La implementación se hará entre sesiones con `/cin324-generar-app`. |
-
----
-
-## Validación del profesor (martes 24/11)
-
-- [ ] Equipo explicó el cambio con sus palabras al profesor
-- [ ] Profesor validó que el equipo entendió el cambio
-- [ ] Commits realizados durante la sesión con autores responsables declarados:
-  - HU y Gherkin: **Nicolás Lázcano**
-  - Modelo de dominio: **Sebastián Rojas**
-  - Casos de uso: **Ignacio Rivera**
-  - Diagramas de secuencia: **Rodrigo Sances**
-  - Diagramas de estado: **Benjamín Isasmendi**
-  - Trazabilidad: **Rodrigo Sances**
-  - Tests: **Sebastián Rojas**
-- [ ] Sin asistentes de IA ni OpenCode abiertos durante la especificación
-
----
-
-## Próximos pasos (entre sesiones)
-
-1. Crear cambio `ajuste-experto-revision` en OpenSpec con `/cin324-generar-app`
-2. Generar código y pruebas para CU-13 y flujo Experto en HU-03/HU-05
-3. Ejecutar suite completa (pruebas nuevas + regresión)
-4. Corregir artefactos si la implementación revela insuficiencias (commits posteriores a cambio-validado)
-5. Preparar demostración y reflexión para jueves 26/11
+- La bandeja consulta versiones en `EnRevisionExperto`, aunque todavía no tengan un dictamen. La migración 006 guarda la especialidad solicitada y la comunidad que derivó.
+- La ruta de evaluación recibe el identificador del Experto y aplica el guardado de la decisión sobre la versión vigente. La ficha pública muestra el revisor correcto. El detalle del autor muestra el feedback experto cuando corresponde.
+- Las [pruebas HTTP de HU-03-CA4](../tests/test_rutas_experto.py) cubren derivación, autorización, archivo exacto, las tres decisiones y el bloqueo de una segunda decisión. La suite completa pasó **106 pruebas**.
+- Se regeneraron las exportaciones de dominio, casos de uso, DSS-02, EST-01 y la secuencia de HU-05 a partir de sus fuentes. El [cambio de OpenSpec](../openspec/changes/archive/2026-11-26-ajuste-hu-03-experto-revision/) se validó y sincronizó antes de archivarlo.
+- La [presentación del grupo](./Presentacion_Evaluacion2_mapacheCorps.pptx) contiene las comparaciones visuales de `c5871e4` y `b784aff`. Las notas incluyen los hallazgos de la verificación posterior.

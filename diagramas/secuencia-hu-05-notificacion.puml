@@ -1,5 +1,5 @@
 @startuml
-title HU-05 - Notificar resolución de un aporte
+title HU-05 - Notificar resolución de un aporte (propuesto)
 skinparam shadowing false
 skinparam backgroundColor white
 skinparam defaultFontName DejaVu Sans
@@ -26,9 +26,9 @@ group Decision de revision (HU-03)
     MOD -> SIS : registrarDecisionFinal(aporteId, versionId,\ndecision, observaciones)
   else Revisión por Experto (materia especializada)
     MOD -> SIS : solicitarRevisionExperto(aporteId, versionId, materia)
-    SIS -> EXP : solicitarEvaluacion(aporteId, versionId)
-    EXP -> SIS : entregarEvaluacion(decision, observaciones)
-    MOD -> SIS : registrarDecisionFinal(aporteId, versionId,\ndecisionExperto, observacionesExperto)
+    EXP -> SIS : consultarBandejaExperta()
+    SIS --> EXP : mostrarVersionesDerivadas()
+    EXP -> SIS : evaluacionExperto(decision, alcance, observaciones)
   end
 end
 note over MOD,SIS

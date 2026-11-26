@@ -87,12 +87,16 @@ class ServicioRevisiones:
         """Transición PendienteRevision → EnRevisionExperto (Moderador deriva a Experto)."""
         if moderador["rol"] != "Moderador" or moderador["comunidad_id"] is None:
             raise ErrorRevision(MotivoRevision.COMUNIDAD_NO_AUTORIZADA)
+        especialidad = especialidad.strip()
+        if not especialidad:
+            raise DatosRevisionInvalidos({"especialidad": "Indica la especialidad requerida."})
         with self.conexion:
             self.conexion.execute("BEGIN IMMEDIATE")
-            revision = self.consultar_para_comunidad(aporte_id, version_id)
+            self.consultar_para_comunidad(aporte_id, version_id)
+            self.repo.registrar_solicitud_experto(
+                version_id, especialidad, moderador["comunidad_id"]
+            )
             self.repo.cambiar_estado_version(version_id, EstadoVersion.EN_REVISION_EXPERTO)
-            # Registramos una 'solicitud' inicial sin decisión aún; el experto completará la revisión
-            # Aquí solo cambiamos el estado; la revisión académica se crea cuando el experto decide
 
     def evaluar_por_experto(
         self,
@@ -114,11 +118,15 @@ class ServicioRevisiones:
             fecha = datetime.now(timezone.utc).isoformat(timespec="seconds")
             # Transición EnRevisionExperto → estado final
             self.repo.cambiar_estado_version(version_id, estado_version)
-            # Obtener comunidad_id del moderador que derivó (fallback: primera comunidad)
-            comunidad = self.conexion.execute(
-                "SELECT id FROM comunidades_estudiantiles LIMIT 1"
-            ).fetchone()
-            comunidad_id = comunidad["id"] if comunidad else 1
+            comunidad_id = revision["comunidad_solicitante_id"]
+            if comunidad_id is None:
+                # Las versiones derivadas antes de la migración no guardaban este dato.
+                comunidad = self.conexion.execute(
+                    "SELECT id FROM comunidades_estudiantiles ORDER BY id LIMIT 1"
+                ).fetchone()
+                if comunidad is None:
+                    raise ErrorRevision(MotivoRevision.ESTADO_INCOMPATIBLE)
+                comunidad_id = comunidad["id"]
 
             self.repo.registrar(
                 revision,
@@ -130,7 +138,7 @@ class ServicioRevisiones:
                 decision=decision_valida,
                 alcance=alcance.strip(),
                 observaciones=observaciones.strip(),
-                especialidad_registrada=experto.get("especialidad"),
+                especialidad_registrada=experto["especialidad"],
             )
             self.repo.actualizar_estado_aporte(revision, estado_aporte)
             return decision_valida

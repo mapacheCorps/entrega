@@ -14,10 +14,12 @@ class RevisionAcademicaRepositorio:
     def listar_feedback_autor(self, aporte_id: int, autor_id: int) -> list[sqlite3.Row]:
         return self.conexion.execute(
             """
-            SELECT v.id AS version_id, v.numero, ra.decision, ra.alcance, ra.observaciones
+            SELECT v.id AS version_id, v.numero, ra.decision, ra.alcance, ra.observaciones,
+                   ra.tipo_revisor, ra.especialidad_registrada, x.nombre AS nombre_experto
             FROM revisiones_academicas ra
             JOIN versiones_apunte v ON v.id = ra.version_id
             JOIN aportes a ON a.id = v.aporte_id
+            LEFT JOIN expertos x ON x.id = ra.experto_id
             WHERE a.id = ? AND a.autor_id = ?
               AND ra.decision IN ('Rechazo', 'SolicitudCorreccion')
             ORDER BY v.numero DESC
@@ -55,7 +57,7 @@ class RevisionAcademicaRepositorio:
             """
             SELECT a.id AS aporte_id, v.id AS version_id, v.numero,
                    v.nombre_archivo, r.nombre AS ramo, t.nombre AS tema, p.anio, p.semestre,
-                   ra.especialidad_registrada
+                   v.especialidad_requerida
             FROM aportes a
             JOIN ramos r ON r.id = a.ramo_id
             JOIN temas_unidad t ON t.id = a.tema_id
@@ -64,7 +66,6 @@ class RevisionAcademicaRepositorio:
                 SELECT id FROM versiones_apunte
                 WHERE aporte_id = a.id ORDER BY numero DESC LIMIT 1
             )
-            JOIN revisiones_academicas ra ON ra.version_id = v.id
             WHERE a.estado = 'PendienteRevision' AND v.estado = 'EnRevisionExperto'
             ORDER BY v.fecha_creacion, a.id
             """
@@ -76,7 +77,8 @@ class RevisionAcademicaRepositorio:
             SELECT a.id AS aporte_id, a.estado AS estado_aporte,
                    v.id AS version_id, v.numero, v.nombre_archivo, v.referencia_archivo,
                    v.estado AS estado_version, ra.id AS decision_id,
-                   ra.tipo_revisor, ra.experto_id, ra.especialidad_registrada
+                   ra.tipo_revisor, ra.experto_id, ra.especialidad_registrada,
+                   v.especialidad_requerida, v.comunidad_solicitante_id
             FROM aportes a
             JOIN versiones_apunte v ON v.id = (
                 SELECT id FROM versiones_apunte
@@ -91,6 +93,18 @@ class RevisionAcademicaRepositorio:
     def cambiar_estado_version(self, version_id: int, estado: EstadoVersion) -> None:
         self.conexion.execute(
             "UPDATE versiones_apunte SET estado = ? WHERE id = ?", (estado, version_id)
+        )
+
+    def registrar_solicitud_experto(
+        self, version_id: int, especialidad: str, comunidad_id: int
+    ) -> None:
+        self.conexion.execute(
+            """
+            UPDATE versiones_apunte
+            SET especialidad_requerida = ?, comunidad_solicitante_id = ?
+            WHERE id = ?
+            """,
+            (especialidad, comunidad_id, version_id),
         )
 
     def registrar(
@@ -135,10 +149,12 @@ class RevisionAcademicaRepositorio:
     _publicadas = """
             SELECT v.id AS version_id, v.numero, v.nombre_archivo, v.referencia_archivo,
                    c.nombre AS carrera, r.nombre AS ramo, t.nombre AS tema, p.anio, p.semestre,
-                   a.procedencia, ra.fecha, ra.alcance, e.nombre AS revisor
+                   a.procedencia, ra.fecha, ra.alcance, ra.especialidad_registrada,
+                   COALESCE(x.nombre, e.nombre) AS revisor
             FROM versiones_apunte v
             JOIN revisiones_academicas ra ON ra.version_id = v.id AND ra.decision = 'Aprobacion'
-            JOIN estudiantes e ON e.id = COALESCE(ra.revisor_id, ra.experto_id)
+            LEFT JOIN estudiantes e ON e.id = ra.revisor_id
+            LEFT JOIN expertos x ON x.id = ra.experto_id
             JOIN aportes a ON a.id = v.aporte_id
             JOIN ramos r ON r.id = a.ramo_id
             JOIN carreras c ON c.id = r.carrera_id

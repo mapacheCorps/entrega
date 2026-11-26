@@ -13,7 +13,7 @@
     <dt>Tema</dt><dd>{{ version.tema }}</dd>
     <dt>Período</dt><dd>{{ version.anio }} · semestre {{ version.semestre }}</dd>
     <dt>Procedencia</dt><dd>{{ version.procedencia }}</dd>
-    <dt>Revisión</dt><dd>Aprobada por {{ version.revisor }}</dd>
+    <dt>Revisión</dt><dd>Aprobada por {{ version.revisor }}{% if version.especialidad_registrada %} ({{ version.especialidad_registrada }}){% endif %}</dd>
     <dt>Fecha</dt><dd>{{ version.fecha }}</dd>
     <dt>Alcance</dt><dd>{{ version.alcance }}</dd>
   </dl>

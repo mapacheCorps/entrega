@@ -11,33 +11,35 @@ COM -> SIS : Consultar cola compartida
 SIS --> COM : Versiones vigentes pendientes de revision
 COM -> SIS : Abrir version y consultar su archivo
 SIS --> COM : Archivo y formulario de decision
-COM -> SIS : Registrar decision, alcance y observaciones
-alt La version ya fue resuelta
-  SIS --> COM : Informar que ya existe una decision
-else Primera decision valida
-  note right of SIS: Se conserva el Moderador que registra la decision.
-  alt Aporte aprobado por la comunidad
-    SIS --> COM : Confirmar aprobacion y publicacion de la version
-    SIS -> COR : Solicitar aviso de aprobacion y enlace publicado
-  else Aporte rechazado por la comunidad
-    SIS --> COM : Confirmar rechazo, sin publicar la version
-    SIS -> COR : Solicitar aviso de rechazo y retroalimentacion
-  else Solicitud de correccion
-    SIS --> COM : Confirmar solicitud y conservar observaciones
-  else Materia especializada - se requiere Experto
-    SIS --> COM : Confirmar solicitud de revision por Experto
-    SIS -> EXP : Solicitar revision de version (materia especializada)
-    EXP -> SIS : Entregar evaluacion y observaciones
-    alt Experto aprueba
-      SIS --> COM : Informar aprobacion por Experto
-      SIS -> COR : Solicitar aviso de aprobacion y enlace publicado
-    else Experto rechaza o solicita correccion
-      SIS --> COM : Informar decision del Experto
-      SIS -> COR : Solicitar aviso de rechazo/correccion y retroalimentacion
+alt Revisión por Comunidad
+  COM -> SIS : Registrar decisión, alcance y observaciones
+  alt Primera decisión válida
+    SIS --> COM : Confirmar resultado de la revisión
+  else Versión ya resuelta
+    SIS --> COM : Informar que ya existe una decisión
+  end
+else Materia especializada (CU-13)
+  COM -> SIS : solicitarRevisionExperto(versión, especialidad)
+  alt Versión vigente y pendiente
+    SIS --> COM : Confirmar derivación a Experto
+    EXP -> SIS : Consultar bandeja experta
+    SIS --> EXP : Mostrar versiones derivadas y especialidad solicitada
+    EXP -> SIS : Abrir versión y descargar el apunte
+    SIS --> EXP : Entregar archivo y formulario
+    EXP -> SIS : evaluacionExperto(decisión, alcance, observaciones)
+    alt Aprobación
+      SIS --> EXP : Confirmar publicación de la versión
+    else Rechazo o solicitud de corrección
+      SIS --> EXP : Confirmar decisión y conservar feedback
+    else Versión ya resuelta
+      SIS --> EXP : Informar que ya existe una decisión
     end
+  else Derivación no disponible
+    SIS --> COM : Informar que la versión ya no está pendiente
   end
 end
-opt Aviso de resolucion final solicitado (HU-05)
+opt Aviso de resolución final previsto en HU-05
+  SIS -> COR : Solicitar aviso del resultado
   alt Servicio acepta el aviso
     COR --> SIS : Confirmar aceptacion para envio
     COR -> AUT : Comunicar decision y observaciones de la comunidad
@@ -45,7 +47,6 @@ opt Aviso de resolucion final solicitado (HU-05)
     COR --> SIS : Informar fallo del aviso
     SIS --> COM : Conservar decision y registrar aviso pendiente
   end
-end
 end
 note over SIS,AUT
   Un rechazo incluye feedback para que el autor pueda

@@ -24,7 +24,7 @@ Fuente editable: [`dss-01.puml`](./diagramas/dss-01.puml)
 ## DSS-02: Registrar la decisión y comunicar el feedback
 
 - Caso de uso principal: [CU-05](./09-casos-de-uso.md)
-- Caso relacionado: [CU-03](./09-casos-de-uso.md)
+- Casos relacionados: [CU-03 y CU-13](./09-casos-de-uso.md)
 - Historia principal: [HU-05](./04-historias-usuario.md#hu-05)
 - Historia relacionada: [HU-03](./04-historias-usuario.md#hu-03)
 - Requisitos: [RP-04, RP-06, RP-07](./03-requisitos.md)
@@ -37,9 +37,9 @@ Fuente editable: [`dss-02.puml`](./diagramas/dss-02.puml)
 
 **Escenario principal:** cualquier Moderador abre una versión pendiente, revisa el archivo y registra la decisión. Se guarda su identidad y solo se confirma la primera decisión válida. Una aprobación habilita la publicación de esa versión; un rechazo impide la publicación y debe ir acompañado de retroalimentación que el autor pueda consultar.
 
-**Variante `alt` — Materia especializada:** si el aporte corresponde a una materia que requiere conocimiento especializado, la comunidad puede solicitar la revisión de un Experto. El Experto evalúa la versión y entrega su decisión (aprobación, rechazo o solicitud de corrección) con observaciones fundamentadas.
+**Variante `alt` — Materia especializada:** el Moderador deriva la versión vigente e indica la especialidad solicitada. El Experto de demostración consulta su bandeja, descarga el apunte y registra su decisión con alcance y observaciones. La aprobación publica esa versión. El rechazo o la corrección dejan el feedback en el detalle del aporte del autor.
 
-**Variantes `alt`:** aprobación o rechazo fundamentado (por comunidad o Experto); servicio de correo acepta el aviso o registra un fallo. La falla del correo no modifica la decisión guardada.
+**Variantes `alt`:** aprobación, rechazo, corrección y bloqueo de una segunda decisión. La interacción con correo de HU-05 corresponde al diseño propuesto.
 
 ## Consistencia del proceso
 

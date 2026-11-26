@@ -13,7 +13,7 @@
 | Historias de usuario | `04-historias-usuario.md` (HU-01 a HU-11) | completo |
 | Criterios Gherkin | `07-criterios-aceptacion.md` (27 escenarios) | completo |
 | Modelo de dominio | `08-modelo-dominio.md`; `diagramas/modelo-dominio.puml`, `modelo-dominio-gestion.puml`, `modelo-dominio-clasificacion.puml` (+ PNG) | completo, con huecos registrados como supuestos |
-| Casos de uso | `09-casos-de-uso.md`; `diagramas/casos-de-uso.png` | completo; fuentes `.puml`/`.svg` desactualizadas (evidencia histórica) |
+| Casos de uso | `09-casos-de-uso.md`; `diagramas/casos-de-uso.puml`, PNG y SVG | completo, con CU-13 y exportaciones sincronizadas |
 | Diagramas de estado | `11-diagramas-estado.md`; `diagramas/est-01.puml`, `est-02.puml` (+ PNG) | completo |
 | Diagramas de secuencia | `10-diagramas-secuencia.md`; `diagramas/dss-01.puml`, `dss-02.puml`, `secuencia-hu-01-envio-aporte.puml`, `secuencia-hu-05-notificacion.puml` (+ PNG) | completo |
 | Requisitos y atributos de calidad | `03-requisitos.md`; `06-atributos-calidad.md` | completo |
@@ -42,7 +42,7 @@
 |----------|--------|--------------------|-------|----------------|
 | HU-01 | hecha · validada y archivada | `openspec/changes/archive/2026-11-12-hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Especificaciones sincronizadas a `openspec/specs/gestion-aportes/spec.md`. |
 | HU-02 | revisión directa implementada y archivada | [Cambio inicial](../openspec/changes/archive/2026-11-21-hu-02-asignar-responsable-revision) y [ajuste vigente](../openspec/changes/archive/2026-11-21-ajuste-hu-02-revision-directa) | 2026-11-21 | Cola compartida. La asignación queda como historial. |
-| HU-03 | **hecha · validada y archivada** | `openspec/changes/archive/ajuste-hu-03-experto-revision` | 2026-11-26 | Extiende HU-03 con flujo de revisión por Experto (CU-13) para materias especializadas. Panel Experto en `/`, derivación desde Moderador, evaluación (aprobar/rechazar/corregir), notificación HU-05. 103 pruebas pasando. |
+| HU-03 | implementada, verificada por HTTP y archivada | [Ajuste de revisión experta](../openspec/changes/archive/2026-11-26-ajuste-hu-03-experto-revision) | 2026-11-26 | CU-13 permite derivar, descargar y evaluar. La aprobación publica el apunte. El autor puede consultar el feedback de rechazo o corrección. |
 | HU-04 | implementada y archivada | [Cambio HU-04](../openspec/changes/archive/2026-11-21-hu-04-enviar-version-corregida) | 2026-11-21 | El reenvío válido vuelve a la cola de revisión directa. |
 | HU-05 | pendiente | — | — | Requiere decisiones de revisión (HU-03). |
 | HU-06 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
@@ -61,4 +61,4 @@
 | Cambio | Historia afectada | Motivo | Fecha |
 |--------|-------------------|--------|-------|
 | Ajuste OBS-1/OBS-2 | HU-01 | Filtrar ramos por carrera y temas por ramo; mostrar solo información útil en la confirmación | 2026-11-12 |
-| Extensión Experto (HU-03) | HU-03 | Añadir flujo de revisión por Experto para materias especializadas (CU-13): tabla `experto`, estado `EnRevisionExperto`, panel Experto, derivación, evaluación, notificación | 2026-11-26 |
+| Extensión Experto (HU-03) | HU-03 | CU-13, tabla `expertos`, estado `EnRevisionExperto`, especialidad solicitada, bandeja y evaluación. Correo de HU-05 previsto en la especificación. | 2026-11-26 |

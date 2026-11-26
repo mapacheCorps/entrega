@@ -3,7 +3,7 @@
   <dd>
     {{ 'Rechazo' if revision.decision == 'Rechazo' else 'Solicitud de corrección' }}
     {% if revision.tipo_revisor == 'experto' %}
-      <span class="badge experto">Por Experto: {{ revision.nombre_experto or revision.experto_nombre }}{% if revision.especialidad_registrada %} ({{ revision.especialidad_registrada }}){% endif %}</span>
+      <span class="badge experto">Por Experto: {{ revision.nombre_experto }}{% if revision.especialidad_registrada %} ({{ revision.especialidad_registrada }}){% endif %}</span>
     {% else %}
       <span class="badge comunidad">Por Comunidad Estudiantil</span>
     {% endif %}

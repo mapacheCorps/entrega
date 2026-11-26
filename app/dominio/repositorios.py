@@ -86,7 +86,7 @@ class CatalogoRepositorio:
     def obtener_experto_actual(self) -> sqlite3.Row | None:
         """Obtiene un experto de demostración (el primero disponible)."""
         return self.conexion.execute(
-            "SELECT id, nombre, correo, especialidad, 'Experto' AS rol, NULL AS comunidad_id "
+            "SELECT id, id AS experto_id, nombre, correo, especialidad, 'Experto' AS rol "
             "FROM expertos ORDER BY id LIMIT 1"
         ).fetchone()
 

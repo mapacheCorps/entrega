@@ -163,6 +163,10 @@ def archivo_revision(
     conexion: sqlite3.Connection = Depends(obtener_conexion),
 ):
     revision = ServicioRevisiones(conexion).consultar_para_comunidad(aporte_id, version_id)
+    return _descargar_archivo_revision(request, revision)
+
+
+def _descargar_archivo_revision(request: Request, revision: sqlite3.Row) -> Response:
     try:
         archivo = request.app.state.almacenamiento.leer(revision["referencia_archivo"] or "")
     except ErrorAlmacenamiento:
@@ -193,6 +197,18 @@ def detalle_evaluacion_experto(
     return _formulario_evaluacion_experto(request, revision, experto)
 
 
+@router.get(BASE_REVISION + "/experto/archivo")
+def archivo_revision_experto(
+    aporte_id: Identificador,
+    version_id: Identificador,
+    request: Request,
+    experto: sqlite3.Row = Depends(_experto_autorizado),
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    revision = ServicioRevisiones(conexion).consultar_para_experto(aporte_id, version_id)
+    return _descargar_archivo_revision(request, revision)
+
+
 @router.post(BASE_REVISION + "/revision/derivar-experto")
 async def derivar_a_experto(
     aporte_id: Identificador,
@@ -205,6 +221,8 @@ async def derivar_a_experto(
     servicio = ServicioRevisiones(conexion)
     try:
         servicio.solicitar_revision_experto(aporte_id, version_id, moderador, especialidad.strip())
+    except DatosRevisionInvalidos as error:
+        return pagina_error(request, 400, "Derivación inválida", error.errores["especialidad"])
     except ErrorRevision as error:
         return await mostrar_error_revision(request, error)
 

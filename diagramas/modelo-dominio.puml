@@ -43,6 +43,7 @@ class VersionApunte {
   nombreArchivo: texto
   referenciaArchivo: texto
   estado: texto
+  especialidadRequerida: texto [0..1]
 }
 
 class RevisionAcademica {
@@ -57,10 +58,16 @@ ComunidadEstudiantil "1" o-- "1..*" Estudiante : agrupa
 Estudiante "0..1" -- "0..*" Aporte : presenta
 Academico "0..1" -- "0..*" Aporte : presenta
 Aporte "1" *-- "1..*" VersionApunte : contiene
-VersionApunte "1" *-- "0..*" RevisionAcademica : conserva
-ComunidadEstudiantil "1" -- "0..*" RevisionAcademica : decide
-Estudiante "1" -- "0..*" RevisionAcademica : registra como Moderador
+VersionApunte "1" *-- "0..1" RevisionAcademica : conserva
+ComunidadEstudiantil "1" -- "0..*" RevisionAcademica : coordina
+Estudiante "0..1" -- "0..*" RevisionAcademica : registra como Moderador
 Experto "0..1" -- "0..*" RevisionAcademica : revisa como Experto
+ComunidadEstudiantil "0..1" -- "0..*" VersionApunte : deriva a Experto
+
+note right of RevisionAcademica
+  Una decisión tiene un único revisor:
+  Moderador o Experto {xor}.
+end note
 
 note bottom of Aporte
   Cada Aporte tiene exactamente un autor:

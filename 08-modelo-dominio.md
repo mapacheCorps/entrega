@@ -4,12 +4,11 @@ El modelo representa **conceptos del negocio** y no componentes técnicos. Se si
 
 ## Diagramas UML
 
-Para evitar cruces de relaciones y mejorar la lectura, el modelo se presenta en **tres vistas UML del mismo dominio**. El núcleo incluye seis clases y las otras vistas desarrollan el seguimiento y la clasificación académica. Todas tienen su fuente PlantUML editable.
+El modelo se presenta en **tres vistas UML del mismo dominio**. Todas tienen su fuente PlantUML editable.
 
 ### 1. Aporte y revisión comunitaria
 
-<img width="687" height="695" alt="image" src="https://github.com/user-attachments/assets/e8fcde4c-91f9-44fc-86ee-358019418f09" />
-
+![Modelo de dominio UML: aporte y revisión](./diagramas/modelo-dominio.png)
 
 Fuente: [`modelo-dominio.puml`](./diagramas/modelo-dominio.puml)
 
@@ -34,8 +33,8 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 | `Experto` | Persona con conocimiento especializado en una materia (puede ser un profesor externo) que revisa aportes de materias específicas cuando la comunidad lo solicita. | identificador, nombre, correo, especialidad |
 | `ComunidadEstudiantil` | Colectivo de estudiantes que organiza las revisiones y decide sobre el material. | identificador, nombre |
 | `Aporte` | Envío de apuntes realizado por un estudiante o académico para revisión y eventual publicación. | identificador, fechaEnvio, procedenciaDeclarada, estado |
-| `VersionApunte` | Archivo concreto presentado, aprobado, rechazado o reemplazado. | numero, nombreArchivo, referenciaArchivo, estado |
-| `RevisionAcademica` | Decisión de la comunidad sobre una versión, con fundamento y feedback. | identificador, fecha, decision, alcance, retroalimentacion |
+| `VersionApunte` | Archivo concreto presentado, aprobado, rechazado o reemplazado. Si se deriva, conserva la especialidad solicitada. | numero, nombreArchivo, referenciaArchivo, estado, especialidadRequerida (opcional) |
+| `RevisionAcademica` | Decisión de un Moderador o Experto sobre una versión, con fundamento y feedback. | identificador, fecha, decision, alcance, retroalimentacion |
 | `Notificacion` | Comunicación del resultado de la revisión a quien envió el apunte. | identificador, contenido, estadoEntrega |
 | `ReporteError` | Advertencia estudiantil sobre un posible error de un apunte. | identificador, descripcion, estado |
 | `Carrera` | Carrera a la que pertenece una asignatura. | codigo, nombre |
@@ -51,10 +50,11 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 | Estudiante presenta Aporte | Estudiante `0..1`, Aporte `0..*` | Asociación: un aporte puede tener como autor a un estudiante. |
 | Academico presenta Aporte | Academico `0..1`, Aporte `0..*` | Asociación con restricción `{xor}`: cada aporte tiene exactamente un autor, estudiante o académico. |
 | Aporte contiene VersionApunte | Aporte `1`, VersionApunte `1..*` | **Composición (rombo lleno):** las versiones pertenecen a su aporte e historial. |
-| ComunidadEstudiantil decide RevisionAcademica | ComunidadEstudiantil `1`, RevisionAcademica `0..*` | Asociación: la decisión es comunitaria y queda fundamentada. |
-| Estudiante del equipo de moderación registra RevisionAcademica | Estudiante `1`, RevisionAcademica `0..*` | Asociación: conserva la identidad de quien registra la decisión. |
+| ComunidadEstudiantil coordina RevisionAcademica | ComunidadEstudiantil `1`, RevisionAcademica `0..*` | Asociación: vincula la decisión a la comunidad responsable. |
+| ComunidadEstudiantil deriva VersionApunte | ComunidadEstudiantil `0..1`, VersionApunte `0..*` | Asociación: conserva qué comunidad solicitó la revisión experta. |
+| Estudiante del equipo de moderación registra RevisionAcademica | Estudiante `0..1`, RevisionAcademica `0..*` | Asociación: junto con Experto aplica la restricción `{xor}`. |
 | Experto revisa RevisionAcademica | Experto `0..1`, RevisionAcademica `0..*` | Asociación: un experto puede ser convocado para revisar materias específicas. |
-| VersionApunte conserva RevisionAcademica | VersionApunte `1`, RevisionAcademica `0..*` | **Composición (rombo lleno):** cada revisión pertenece a una versión concreta. |
+| VersionApunte conserva RevisionAcademica | VersionApunte `1`, RevisionAcademica `0..1` | **Composición (rombo lleno):** cada versión admite una única decisión. |
 | VersionApunte recibe ReporteError | VersionApunte `1`, ReporteError `0..*` | Asociación: los reportes se refieren a una versión determinada. |
 | Estudiante informa ReporteError | Estudiante `1`, ReporteError `0..*` | Asociación: se identifica al consultante que reportó el error. |
 | VersionApunte origina Notificacion | VersionApunte `1`, Notificacion `0..*` | Asociación: los avisos se refieren a una versión. |

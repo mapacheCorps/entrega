@@ -10,8 +10,8 @@ Documentación de Ingeniería de Requisitos, CIN324.
 |------------|----------------------------------------|
 | **Ignacio Rivera** | Casos de uso (CU-13, Actor Experto) |
 | **Nicolás Lázcano** | HU y Gherkin (HU-03-CA4, 7 escenarios Experto), Implementación frontend (Templates Experto/Moderador/Feedback, selector rol) |
-| **Sebastián Rojas** | Modelo de dominio (Entidad Experto, migración 005), Tests (test_gherkin_hu03_experto.py, 103 tests) |
-| **Rodrigo Sances** | Diagramas de secuencia (DSS-02 variante Experto, HU-05), Documentación Evaluación 2 (CAMBIOS.md, README, PPTX) |
+| **Sebastián Rojas** | Modelo de dominio y pruebas del flujo Experto |
+| **Rodrigo Sances** | Diagramas de secuencia y matriz de trazabilidad |
 | **Benjamín Isasmendi** | Implementación backend (ServicioRevisiones, endpoints, migración 005), Diagramas de estado (EST-01 EnRevisionExperto) |
 
 ### Requisitos
@@ -48,12 +48,17 @@ corresponde a una etapa futura.
 1. Como **Estudiante**, envía un aporte de materia especializada (ej. "Física Cuántica").
 2. Como **Moderador**, abre **Revisar aportes**, verás un botón **"Derivar a Experto"**.
    Ingresa la especialidad requerida (ej. "Física Cuántica") y confirma.
-3. Cambia el rol a **Experto** en el selector superior. Verás **Panel de Experto**
-   con las versiones derivadas. Selecciona "Evaluar", elige decisión
+3. Cambia el rol a **Experto** en el selector superior. En **Panel de Experto**,
+   abre la versión derivada y descarga el apunte. Elige decisión
    (Aprobar/Rechazar/Solicitar corrección), escribe alcance y observaciones.
-4. Vuelve a **Moderador** o **Estudiante**: la decisión del Experto aparece en
-   la ficha del aporte con su nombre y especialidad. Si aprobó, la versión
-   está publicada en el catálogo.
+4. Si aprueba, abre la ficha del catálogo y verifica la versión publicada y quién la revisó.
+   Si rechaza o pide corrección, cambia a **Estudiante** y consulta el detalle
+   del aporte para ver las observaciones. La versión sigue fuera del catálogo.
+5. Para mostrar la transición inválida, vuelve a la URL del formulario de evaluación
+   después de decidir. El sistema informa que la versión ya fue resuelta.
+
+La demo usa un Experto precargado. La especialidad requerida queda registrada en la
+derivación. El correo automático de HU-05 y la autenticación institucional siguen previstos.
 
 ### Evaluación 2 — Cambio de requerimientos (Martes 24/11 → Jueves 26/11)
 
@@ -61,14 +66,14 @@ corresponde a una etapa futura.
 
 | Etiqueta Git | Descripción |
 |--------------|-------------|
-| `base-eval2` | 4 HU base implementadas (HU-01 a HU-04, HU-07, HU-08) |
-| `cambio-validado` | Especificación sin IA (martes 24/11): EVALUACION2.md + artefactos actualizados |
-| `entrega-eval2` | Implementación con skills (entre sesiones): cambio `ajuste-hu-03-experto-revision` |
+| `base-eval2` | Base de Entrega 3. HU-01 a HU-04, con HU-07 y HU-08 para consultar el catálogo. |
+| `cambio-validado` | Referencia agregada al cierre sobre `c5871e4`, el corte del martes registrado por el curso. |
+| `entrega-eval2` | Versión final con la demo, las pruebas, los artefactos actualizados y el cambio archivado. |
 
 **Artefactos de la Evaluación 2:**
 - [`eval2/CAMBIOS.md`](./eval2/CAMBIOS.md) — Registro de cambios por artefacto (requerido por rúbrica)
 - [`eval2/Presentacion_Evaluacion2_mapacheCorps.pptx`](./eval2/Presentacion_Evaluacion2_mapacheCorps.pptx) — Presentación 5 min (mapa de impacto + reflexión por artefacto)
-- [`openspec/changes/ajuste-hu-03-experto-revision/`](./openspec/changes/ajuste-hu-03-experto-revision/) — Propuesta, specs, design, tasks de OpenSpec
+- [Cambio archivado en OpenSpec](./openspec/changes/archive/2026-11-26-ajuste-hu-03-experto-revision/) — Propuesta, diseño, especificación y tareas
 
 ### Pruebas
 
@@ -94,14 +99,14 @@ enlaza las historias con su código y pruebas.
 ├── 12-trazabilidad.md               # Matriz RP ↔ HU ↔ CU ↔ DSS ↔ EST
 ├── diagramas/                       # Fuentes .puml + PNG/SVG exportados
 ├── app/                             # Código FastAPI + SQLite
-│   ├── db/migrations/               # 001..005 (005 = Experto)
+│   ├── db/migrations/               # 001..006 (005 y 006 = flujo Experto)
 │   ├── templates/                   # Jinja2 (incluye experto_evaluacion.html)
 │   └── ...
 ├── openspec/                        # Especificaciones OpenSpec
-│   ├── changes/ajuste-hu-03-experto-revision/
+│   ├── changes/archive/
 │   └── specs/gestion-aportes/
-├── tests/                           # 103 tests (pytest)
-│   └── test_gherkin_hu03_experto.py # 6 tests nuevos flujo Experto
+├── tests/                           # Servicio, HTTP y regresión
+│   └── test_rutas_experto.py        # Tres decisiones del Experto por HTTP
 └── eval2/                           # Entregables Evaluación 2
     ├── CAMBIOS.md
     └── Presentacion_Evaluacion2_mapacheCorps.pptx
