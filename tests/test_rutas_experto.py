@@ -1,5 +1,6 @@
 """Verificación del flujo HU-03-CA4 desde los formularios de la demo."""
 
+import re
 from contextlib import closing
 
 import pytest
@@ -53,7 +54,11 @@ def test_hu03_ca4_flujo_http_experto(
     assert bandeja.status_code == 200
     assert f"Aporte #{aporte_id}" in bandeja.text
     assert "Física Cuántica" in bandeja.text
-    assert cliente.get(base + "/experto/evaluar").status_code == 200
+    formulario = cliente.get(base + "/experto/evaluar")
+    assert formulario.status_code == 200
+    opciones = re.findall(r'name="decision" value="([^"]+)"', formulario.text)
+    assert opciones == ["Aprobacion", "Rechazo", "SolicitudCorreccion"]
+    dictamen["decision"] = opciones[opciones.index(decision)]
     assert cliente.get(base + "/experto/archivo").content == archivo
     assert cliente.post(evaluar, data=dictamen).status_code == 200
     assert cliente.post(evaluar, data=dictamen).status_code == 409
@@ -67,6 +72,9 @@ def test_hu03_ca4_flujo_http_experto(
         assert version.fetchone()["estado"] == estado
     ficha = cliente.get(f"/catalogo/{version_id}")
     assert ficha.status_code == estado_catalogo
+    catalogo = cliente.get("/catalogo")
+    assert catalogo.status_code == 200
+    assert (f'/catalogo/{version_id}"' in catalogo.text) == (estado_catalogo == 200)
     if estado_catalogo == 200:
         assert nombre_experto in ficha.text
         assert especialidad_experto in ficha.text

@@ -44,7 +44,7 @@
         <div class="radio-grupo">
           {% for clave, etiqueta in decisiones.items() %}
             <label>
-              <input type="radio" name="decision" value="{{ clave }}" {% if valores and valores.decision == clave %}checked{% endif %} required>
+              <input type="radio" name="decision" value="{{ clave.value }}" {% if valores and valores.decision == clave.value %}checked{% endif %} required>
               {{ etiqueta }}
             </label>
           {% endfor %}
