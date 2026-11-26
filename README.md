@@ -4,12 +4,15 @@ Documentación de Ingeniería de Requisitos, CIN324.
 - [Entrega 1](./IngReq-Entrega%201.md)
 - [Entrega 2](./IngReq-Entrega%202.md)
 
-## Integrantes
-- Ignacio Rivera
-- Nicolas Lazcano
-- Sebastian Rojas
-- Rodrigo Sances
-- Benjamín Isasmendi
+## Integrantes y responsables por artefacto (Evaluación 2)
+
+| Integrante | Artefactos responsables (Evaluación 2) |
+|------------|----------------------------------------|
+| **Ignacio Rivera** | Casos de uso (CU-13, Actor Experto) |
+| **Nicolás Lázcano** | HU y Gherkin (HU-03-CA4, 7 escenarios Experto), Implementación frontend (Templates Experto/Moderador/Feedback, selector rol) |
+| **Sebastián Rojas** | Modelo de dominio (Entidad Experto, migración 005), Tests (test_gherkin_hu03_experto.py, 103 tests) |
+| **Rodrigo Sances** | Diagramas de secuencia (DSS-02 variante Experto, HU-05), Documentación Evaluación 2 (CAMBIOS.md, README, PPTX) |
+| **Benjamín Isasmendi** | Implementación backend (ServicioRevisiones, endpoints, migración 005), Diagramas de estado (EST-01 EnRevisionExperto) |
 
 ### Requisitos
 
