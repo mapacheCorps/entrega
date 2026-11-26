@@ -13,6 +13,13 @@ class Estudiante {
   correo: texto
 }
 
+class Experto {
+  identificador: texto
+  nombre: texto
+  correo: texto
+  especialidad: texto
+}
+
 class VersionApunte {
   numero: entero
   nombreArchivo: texto
@@ -32,8 +39,18 @@ class ReporteError {
   estado: texto
 }
 
+class RevisionAcademica {
+  identificador: texto
+  fecha: fecha
+  decision: texto
+  alcance: texto
+  retroalimentacion: texto
+}
+
 VersionApunte "1" -- "0..*" Notificacion : origina
 Estudiante "1" -- "0..*" Notificacion : recibe
 VersionApunte "1" -- "0..*" ReporteError : recibe
 Estudiante "1" -- "0..*" ReporteError : informa
+VersionApunte "1" *-- "0..*" RevisionAcademica : conserva
+Experto "0..1" -- "0..*" RevisionAcademica : revisa como Experto
 @enduml

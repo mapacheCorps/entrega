@@ -15,9 +15,15 @@
       <h3>Aporte #{{ revision.aporte_id }} · versión {{ revision.numero }}</h3>
       <p>{{ revision.nombre_archivo }}</p>
       <p>{{ revision.ramo }} · {{ revision.tema }} · {{ revision.anio }}, semestre {{ revision.semestre }}</p>
-      <a class="enlace" href="{{ url_for('detalle_revision', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
-        Revisar versión {{ revision.numero }} del aporte #{{ revision.aporte_id }}
-      </a>
+      <div class="acciones">
+        <a class="enlace" href="{{ url_for('detalle_revision', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
+          Revisar versión {{ revision.numero }} del aporte #{{ revision.aporte_id }}
+        </a>
+        <form method="POST" action="{{ url_for('derivar_a_experto', aporte_id=revision.aporte_id, version_id=revision.version_id) }}" style="display:inline;" onsubmit="return confirm('¿Derivar esta versión a un Experto para revisión especializada?');">
+          <input type="text" name="especialidad" placeholder="Especialidad requerida (ej: Física Cuántica)" required style="width: 200px; margin-right: 0.5rem;">
+          <button type="submit" class="boton boton-secundario">Derivar a Experto</button>
+        </form>
+      </div>
     </article>
   {% else %}
     <p>No hay aportes pendientes de revisión.</p>

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block titulo %}{% if revisiones is defined %}Panel de Experto{% else %}Evaluar versión como Experto{% endif %} — Torpedos universitarios{% endblock %}
+
+{% block contenido %}
+{% if revisiones is defined %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <h1>Panel de Experto</h1>
+    <a class="enlace" href="{{ url_for('inicio') }}">Volver al inicio</a>
+  </div>
+
+  <h2>Versiones pendientes de evaluación experta</h2>
+  {% for revision in revisiones %}
+    <article class="tarjeta aporte-pendiente">
+      <h3>Aporte #{{ revision.aporte_id }} · versión {{ revision.numero }}</h3>
+      <p>{{ revision.nombre_archivo }}</p>
+      <p>{{ revision.ramo }} · {{ revision.tema }} · {{ revision.anio }}, semestre {{ revision.semestre }}</p>
+      <p><strong>Especialidad requerida:</strong> {{ revision.especialidad_registrada or 'No especificada' }}</p>
+      <a class="enlace" href="{{ url_for('detalle_evaluacion_experto', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
+        Evaluar versión {{ revision.numero }} del aporte #{{ revision.aporte_id }}
+      </a>
+    </article>
+  {% else %}
+    <p>No hay versiones pendientes de evaluación experta.</p>
+  {% endfor %}
+</section>
+{% else %}
+<section class="panel">
+  <div class="encabezado-panel">
+    <h1>Evaluar versión como Experto</h1>
+    <a class="enlace" href="{{ url_for('panel_experto') }}">Volver al panel</a>
+  </div>
+
+  <article class="tarjeta">
+    <h2>Aporte #{{ revision.aporte_id }} · versión {{ revision.numero }}</h2>
+    <p>{{ revision.nombre_archivo }}</p>
+    <p><strong>Especialidad requerida:</strong> {{ revision.especialidad_registrada or 'No especificada' }}</p>
+
+    <form method="POST" action="{{ url_for('evaluar_por_experto', aporte_id=revision.aporte_id, version_id=revision.version_id) }}">
+      <div class="campo">
+        <label for="decision">Decisión <span class="requerido">*</span></label>
+        <div class="radio-grupo">
+          {% for clave, etiqueta in decisiones.items() %}
+            <label>
+              <input type="radio" name="decision" value="{{ clave }}" {% if valores and valores.decision == clave %}checked{% endif %} required>
+              {{ etiqueta }}
+            </label>
+          {% endfor %}
+        </div>
+        {% if errores and errores.decision %}
+          <span class="error">{{ errores.decision }}</span>
+        {% endif %}
+      </div>
+
+      <div class="campo">
+        <label for="alcance">Alcance <span class="requerido">*</span></label>
+        <textarea name="alcance" id="alcance" rows="3" required placeholder="Qué parte del contenido revisaste...">{{ valores.alcance if valores else '' }}</textarea>
+        {% if errores and errores.alcance %}
+          <span class="error">{{ errores.alcance }}</span>
+        {% endif %}
+      </div>
+
+      <div class="campo">
+        <label for="observaciones">Observaciones <span class="requerido">*</span></label>
+        <textarea name="observaciones" id="observaciones" rows="4" required placeholder="Observaciones que fundamentan la decisión...">{{ valores.observaciones if valores else '' }}</textarea>
+        {% if errores and errores.observaciones %}
+          <span class="error">{{ errores.observaciones }}</span>
+        {% endif %}
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="boton">Registrar evaluación</button>
+        <a class="enlace boton-secundario" href="{{ url_for('panel_experto') }}">Cancelar</a>
+      </div>
+    </form>
+  </article>
+</section>
+{% endif %}
+{% endblock %}

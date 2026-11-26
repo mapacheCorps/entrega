@@ -15,16 +15,27 @@ skinparam sequence {
 }
 
 autoactivate off
-actor "Ayudante\nhabilitado" as AYU
+actor "Moderador /\nComunidad" as MOD
+actor "Experto en\nla materia" as EXP <<actor externo>>
 participant "Torpedos\nuniversitarios" as SIS
 participant "Servicio externo\nde correo" as COR <<sistema externo>>
 actor "Autor del\naporte" as AUT
 
-AYU -> SIS : registrarDecisionFinal(aporteId, versionId,\ndecision, observaciones)
-note over AYU,SIS
+group Decision de revision (HU-03)
+  alt Revisión por Comunidad
+    MOD -> SIS : registrarDecisionFinal(aporteId, versionId,\ndecision, observaciones)
+  else Revisión por Experto (materia especializada)
+    MOD -> SIS : solicitarRevisionExperto(aporteId, versionId, materia)
+    SIS -> EXP : solicitarEvaluacion(aporteId, versionId)
+    EXP -> SIS : entregarEvaluacion(decision, observaciones)
+    MOD -> SIS : registrarDecisionFinal(aporteId, versionId,\ndecisionExperto, observacionesExperto)
+  end
+end
+note over MOD,SIS
   La decisión pertenece al flujo de revisión (HU-03).
   Se vincula a la versión exacta del aporte.
   HU-05 comunica el resultado final al autor.
+  La decisión puede provenir de la Comunidad o de un Experto.
 end note
 
 alt [decisión = APROBADA y versión publicada]
@@ -35,6 +46,10 @@ else [decisión = RECHAZADA]
   SIS -> COR : enviarCorreo(autor, aporteId, versionId,\nmotivoRechazo)
   COR --> SIS : solicitudAceptada(idMensaje)
   COR -> AUT : correoDeRechazo(motivoRechazo)
+else [decisión = SOLICITUD DE CORRECCIÓN]
+  SIS -> COR : enviarCorreo(autor, aporteId, versionId,\nobservacionesCorreccion)
+  COR --> SIS : solicitudAceptada(idMensaje)
+  COR -> AUT : correoDeCorreccion(observacionesCorreccion)
 end
 
 note over SIS,COR

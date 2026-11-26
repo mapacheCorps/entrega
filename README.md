@@ -39,6 +39,18 @@ corresponde a una etapa futura.
    que aparece la versión aprobada. Su ficha permite abrir una vista previa
    para PDF, PNG y JPG y descargar el archivo exacto.
 
+### Flujo Experto (HU-03 / CU-13) — Evaluación 2
+
+1. Como **Estudiante**, envía un aporte de materia especializada (ej. "Física Cuántica").
+2. Como **Moderador**, abre **Revisar aportes**, verás un botón **"Derivar a Experto"**.
+   Ingresa la especialidad requerida (ej. "Física Cuántica") y confirma.
+3. Cambia el rol a **Experto** en el selector superior. Verás **Panel de Experto**
+   con las versiones derivadas. Selecciona "Evaluar", elige decisión
+   (Aprobar/Rechazar/Solicitar corrección), escribe alcance y observaciones.
+4. Vuelve a **Moderador** o **Estudiante**: la decisión del Experto aparece en
+   la ficha del aporte con su nombre y especialidad. Si aprobó, la versión
+   está publicada en el catálogo.
+
 Desde la raíz del repositorio, ejecuta `.\.venv\Scripts\python.exe -m pytest`.
 La [matriz de trazabilidad](./12-trazabilidad.md#código-y-pruebas-de-la-entrega-3)
 enlaza las historias con su código y pruebas.

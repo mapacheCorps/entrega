@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
-ROLES_DEMO = ["Estudiante", "Moderador"]
+ROLES_DEMO = ["Estudiante", "Moderador", "Experto"]
 COOKIE_ROL = "demo_role"
 ROL_POR_DEFECTO = "Estudiante"
 

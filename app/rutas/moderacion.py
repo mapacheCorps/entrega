@@ -1,4 +1,4 @@
-"""Cola compartida de revisión comunitaria (HU-02 y HU-03)."""
+"""Cola compartida de revisión comunitaria y por Experto (HU-02, HU-03, CU-13)."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, Form, Path, Request
 from fastapi.responses import Response
 
 from app.db.conexion import obtener_conexion
-from app.dominio.entidades import DecisionRevision
+from app.dominio.entidades import DecisionRevision, TipoRevisor
 from app.dominio.repositorios import CatalogoRepositorio
 from app.dominio.revisiones import RevisionAcademicaRepositorio
 from app.integraciones.almacenamiento import ErrorAlmacenamiento, nombre_seguro
@@ -51,11 +51,28 @@ def _moderador_autorizado(
     return moderador
 
 
+def _experto_autorizado(
+    request: Request,
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+) -> sqlite3.Row:
+    if rol_actual(request) != "Experto":
+        raise ErrorRevision(MotivoRevision.EXPERTO_NO_AUTORIZADO)
+    experto = CatalogoRepositorio(conexion).obtener_experto_actual()
+    if experto is None:
+        raise ErrorRevision(MotivoRevision.EXPERTO_NO_AUTORIZADO)
+    return experto
+
+
 async def mostrar_error_revision(request: Request, error: ErrorRevision):
     if error.motivo is MotivoRevision.COMUNIDAD_NO_AUTORIZADA:
         return pagina_error(
             request, 403, "Revisión no autorizada",
             "Solo el perfil Moderador puede revisar aportes.",
+        )
+    if error.motivo is MotivoRevision.EXPERTO_NO_AUTORIZADO:
+        return pagina_error(
+            request, 403, "Evaluación no autorizada",
+            "Solo el perfil Experto puede evaluar versiones derivadas a experto.",
         )
     if error.motivo is MotivoRevision.NO_ENCONTRADA:
         return pagina_error(
@@ -63,11 +80,11 @@ async def mostrar_error_revision(request: Request, error: ErrorRevision):
         )
     if error.motivo is MotivoRevision.YA_RESUELTA:
         return pagina_error(
-            request, 409, "Versión ya resuelta", "Otro moderador ya registró una decisión para esta versión."
+            request, 409, "Versión ya resuelta", "Ya se registró una decisión para esta versión."
         )
     return pagina_error(
         request, 409, "La acción no está disponible",
-        "Comprueba que sea la versión vigente y que siga pendiente de revisión.",
+        "Comprueba que sea la versión vigente y que siga en el estado correcto.",
     )
 
 
@@ -86,6 +103,23 @@ def _formulario_revision(
     )
 
 
+def _formulario_evaluacion_experto(
+    request: Request,
+    revision: sqlite3.Row,
+    experto: sqlite3.Row,
+    valores: dict[str, str] | None = None,
+    errores: dict[str, str] | None = None,
+):
+    contexto = contexto_base(request)
+    contexto.update(
+        revision=revision, experto=experto, decisiones=DECISIONES,
+        valores=valores or {}, errores=errores or {},
+    )
+    return templates.TemplateResponse(
+        request, "experto_evaluacion.html", contexto, status_code=400 if errores else 200,
+    )
+
+
 @router.get("/aportes")
 def panel_moderacion(
     request: Request,
@@ -97,6 +131,17 @@ def panel_moderacion(
     return templates.TemplateResponse(request, "moderacion_aportes.html", contexto)
 
 
+@router.get("/experto/aportes")
+def panel_experto(
+    request: Request,
+    experto: sqlite3.Row = Depends(_experto_autorizado),
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    contexto = contexto_base(request)
+    contexto["revisiones"] = RevisionAcademicaRepositorio(conexion).listar_para_experto()
+    return templates.TemplateResponse(request, "experto_evaluacion.html", contexto)
+
+
 @router.get(BASE_REVISION + "/revision")
 def detalle_revision(
     aporte_id: Identificador,
@@ -105,7 +150,7 @@ def detalle_revision(
     moderador: sqlite3.Row = Depends(_moderador_autorizado),
     conexion: sqlite3.Connection = Depends(obtener_conexion),
 ):
-    revision = ServicioRevisiones(conexion).consultar(aporte_id, version_id)
+    revision = ServicioRevisiones(conexion).consultar_para_comunidad(aporte_id, version_id)
     return _formulario_revision(request, revision)
 
 
@@ -117,7 +162,7 @@ def archivo_revision(
     moderador: sqlite3.Row = Depends(_moderador_autorizado),
     conexion: sqlite3.Connection = Depends(obtener_conexion),
 ):
-    revision = ServicioRevisiones(conexion).consultar(aporte_id, version_id)
+    revision = ServicioRevisiones(conexion).consultar_para_comunidad(aporte_id, version_id)
     try:
         archivo = request.app.state.almacenamiento.leer(revision["referencia_archivo"] or "")
     except ErrorAlmacenamiento:
@@ -136,26 +181,100 @@ def archivo_revision(
     )
 
 
+@router.get(BASE_REVISION + "/experto/evaluar")
+def detalle_evaluacion_experto(
+    aporte_id: Identificador,
+    version_id: Identificador,
+    request: Request,
+    experto: sqlite3.Row = Depends(_experto_autorizado),
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    revision = ServicioRevisiones(conexion).consultar_para_experto(aporte_id, version_id)
+    return _formulario_evaluacion_experto(request, revision, experto)
+
+
+@router.post(BASE_REVISION + "/revision/derivar-experto")
+async def derivar_a_experto(
+    aporte_id: Identificador,
+    version_id: Identificador,
+    request: Request,
+    especialidad: str = Form(...),
+    moderador: sqlite3.Row = Depends(_moderador_autorizado),
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    servicio = ServicioRevisiones(conexion)
+    try:
+        servicio.solicitar_revision_experto(aporte_id, version_id, moderador, especialidad.strip())
+    except ErrorRevision as error:
+        return await mostrar_error_revision(request, error)
+
+    contexto = contexto_base(request)
+    contexto["mensaje"] = f"La versión fue derivada a Experto (especialidad: {especialidad})."
+    return templates.TemplateResponse(request, "revision_resultado.html", contexto)
+
+
 @router.post(BASE_REVISION + "/revision/decision")
-def decidir_revision(
+async def decidir_revision(
     aporte_id: Identificador,
     version_id: Identificador,
     request: Request,
     decision: str = Form(""),
     alcance: str = Form(""),
     observaciones: str = Form(""),
+    tipo_revisor: str = Form("comunidad"),
+    experto_id: int | None = Form(None),
     moderador: sqlite3.Row = Depends(_moderador_autorizado),
     conexion: sqlite3.Connection = Depends(obtener_conexion),
 ):
     servicio = ServicioRevisiones(conexion)
     try:
+        if tipo_revisor == "experto":
+            if experto_id is None:
+                raise DatosRevisionInvalidos({"experto_id": "Selecciona un experto."})
+            # Para compatibilidad: si se envía tipo_revisor=experto desde formulario comunidad
+            # (no debería ocurrir en flujo normal, pero validamos)
+            raise DatosRevisionInvalidos({"tipo_revisor": "El flujo de experto usa su propio endpoint."})
+
         resultado = servicio.decidir(
             aporte_id, version_id, moderador, decision, alcance, observaciones
         )
     except DatosRevisionInvalidos as error:
-        revision = servicio.consultar(aporte_id, version_id)
+        revision = servicio.consultar_para_comunidad(aporte_id, version_id)
         valores = {"decision": decision, "alcance": alcance, "observaciones": observaciones}
         return _formulario_revision(request, revision, valores, error.errores)
+    except ErrorRevision as error:
+        return await mostrar_error_revision(request, error)
+
+    contexto = contexto_base(request)
+    contexto.update(
+        mensaje=CONFIRMACIONES[resultado],
+        publicada=resultado is DecisionRevision.APROBACION,
+    )
+    return templates.TemplateResponse(request, "revision_resultado.html", contexto)
+
+
+@router.post("/experto/aportes/{aporte_id}/versiones/{version_id}/evaluar")
+async def evaluar_por_experto(
+    aporte_id: Identificador,
+    version_id: Identificador,
+    request: Request,
+    decision: str = Form(""),
+    alcance: str = Form(""),
+    observaciones: str = Form(""),
+    experto: sqlite3.Row = Depends(_experto_autorizado),
+    conexion: sqlite3.Connection = Depends(obtener_conexion),
+):
+    servicio = ServicioRevisiones(conexion)
+    try:
+        resultado = servicio.evaluar_por_experto(
+            aporte_id, version_id, experto, decision, alcance, observaciones
+        )
+    except DatosRevisionInvalidos as error:
+        revision = servicio.consultar_para_experto(aporte_id, version_id)
+        valores = {"decision": decision, "alcance": alcance, "observaciones": observaciones}
+        return _formulario_evaluacion_experto(request, revision, experto, valores, error.errores)
+    except ErrorRevision as error:
+        return await mostrar_error_revision(request, error)
 
     contexto = contexto_base(request)
     contexto.update(

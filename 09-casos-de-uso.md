@@ -11,6 +11,7 @@ Los actores humanos son roles desempeñados por integrantes de la comunidad univ
 | Académico autor | Humano | Persona con cuenta `@uv.cl` que envía apuntes y los envía a revisión tras la validación. |
 | Estudiante consultante | Humano | Busca, consulta, obtiene y reporta errores de los apuntes publicados. |
 | Comunidad estudiantil | Colectivo humano | Estudiantes que consultan la cola de revisión, aceptan o rechazan aportes, entregan feedback y moderan el material. |
+| Experto en la materia | Humano externo | Persona con conocimiento especializado (puede ser profesor externo) convocada por la comunidad para revisar aportes de materias específicas. |
 | Servicio de almacenamiento (propuesto) | Sistema externo | Resguarda los archivos de apuntes. |
 | Servicio de correo (propuesto) | Sistema externo | Recibe solicitudes de envío de avisos de resolución. |
 
@@ -36,6 +37,7 @@ Fuente editable: [`casos-de-uso.puml`](./diagramas/casos-de-uso.puml)
 | CU-10 | Gestionar revisiones demoradas | Comunidad estudiantil | [HU-10](./04-historias-usuario.md#hu-10) |
 | CU-11 | Corregir o retirar versión | Comunidad estudiantil | [HU-11](./04-historias-usuario.md#hu-11) |
 | CU-12 | Iniciar sesión con cuenta institucional | Usuario institucional | [HU-12](./04-historias-usuario.md#hu-12) |
+| CU-13 | Revisar aporte como Experto | Experto en la materia | [HU-03](./04-historias-usuario.md#hu-03) |
 
 ## Reglas principales
 
@@ -44,11 +46,13 @@ Fuente editable: [`casos-de-uso.puml`](./diagramas/casos-de-uso.puml)
 3. Si la aprueba, se publica la versión aprobada.
 4. Si la rechaza, la versión no se publica y el autor recibe la justificación y el feedback para corregirla.
 5. Si el autor presenta una nueva versión, esta vuelve a validación y vuelve a la cola compartida de revisión.
-6. Para HU-12, el acceso institucional previsto exige una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl`; otro dominio se rechaza sin crear sesión.
+6. Para aportes de materias especializadas, la comunidad puede solicitar la revisión de un Experto en la materia.
+7. Para HU-12, el acceso institucional previsto exige una cuenta institucional `@uv.cl` o `@estudiantes.uv.cl`; otro dominio se rechaza sin crear sesión.
 
 ## Notas por caso de uso
 
 - **CU-01 — Clasificación dependiente:** el selector de ramo ofrece solo los ramos de la carrera seleccionada y el de tema solo los temas del ramo seleccionado; el período académico se elige con independencia del ramo. La validación del servidor rechaza combinaciones incoherentes.
 - **CU-12 — Acceso:** solo se aceptan correos `@uv.cl` y `@estudiantes.uv.cl`; otro dominio se rechaza sin crear sesión.
+- **CU-13 — Revisión por Experto:** cuando un aporte corresponde a una materia especializada, la comunidad estudiantil puede derivar la revisión a un Experto. El Experto evalúa la versión y entrega su decisión (aprobación, rechazo o solicitud de corrección) con observaciones fundamentadas.
 
 El diagrama no incorpora relaciones `<<include>>` ni `<<extend>>` sin una dependencia de objetivos que las justifique. El almacenamiento y el correo se mantienen como integraciones propuestas.

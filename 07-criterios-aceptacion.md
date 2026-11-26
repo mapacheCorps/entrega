@@ -73,23 +73,44 @@ Característica: Cola compartida de revisión
 ```gherkin
 Característica: Decisión de revisión académica
 
-  Escenario: Aprobación de versión revisada
+  Escenario: Aprobación de versión revisada por la comunidad
     Dado existe una versión pendiente de decisión con revisión realizada
     Y el Moderador que revisa puede tomar una decisión sobre esa versión
     Cuando la comunidad registra la aprobación con observaciones
     Entonces queda asociada a la versión la fecha y la identidad del revisor
     Y esa versión aprobada se publica
 
-  Escenario: Rechazo o solicitud de corrección
+  Escenario: Rechazo o solicitud de corrección por la comunidad
     Dado existe una versión pendiente de decisión
     Y el Moderador que revisa puede tomar una decisión sobre esa versión
     Cuando la comunidad registra rechazo con retroalimentación concreta para el autor
     Entonces queda documentada la decisión sobre la versión
     Y la versión rechazada no se publica
 
+  Escenario: Solicitud de revisión por Experto para materia especializada
+    Dado existe una versión pendiente de decisión de una materia especializada
+    Y la comunidad identifica que se requiere conocimiento experto
+    Cuando la comunidad solicita la revisión a un Experto en la materia
+    Entonces la versión pasa a estado de revisión por Experto
+    Y se registra la solicitud con la especialidad requerida
+
+  Escenario: Aprobación de versión revisada por Experto
+    Dado existe una versión en revisión por Experto
+    Y el Experto evaluó la versión y la aprueba con observaciones
+    Cuando el Experto registra su decisión de aprobación
+    Entonces queda asociada a la versión la fecha, la identidad del Experto y su especialidad
+    Y esa versión aprobada se publica
+
+  Escenario: Rechazo o solicitud de corrección por Experto
+    Dado existe una versión en revisión por Experto
+    Y el Experto evaluó la versión y la rechaza o solicita corrección con retroalimentación
+    Cuando el Experto registra su decisión
+    Entonces queda documentada la decisión del Experto sobre la versión
+    Y la versión rechazada no se publica
+
   Escenario: Intento no autorizado
     Dado existe una versión pendiente de revisión
-    Y el interesado no tiene el perfil Moderador
+    Y el interesado no tiene el perfil Moderador ni Experto
     Cuando el interesado intenta registrar aprobación
     Entonces se rechaza la decisión por falta de autorización
     Y no cambia el estado de publicación

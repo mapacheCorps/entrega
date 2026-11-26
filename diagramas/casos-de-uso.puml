@@ -7,6 +7,7 @@ actor "Estudiante autor" as Autor
 actor "Estudiante consultante" as Consultante
 actor "Académico" as Academico
 actor "Moderador / Comunidad estudiantil" as Moderador
+actor "Experto en la materia" as Experto
 actor "Almacenamiento" as Archivos
 actor "Correo" as Correo
 rectangle "Torpedos universitarios" {
@@ -22,6 +23,7 @@ rectangle "Torpedos universitarios" {
   usecase "CU-10 Consultar alertas de demora" as CU10
   usecase "CU-11 Corregir o retirar versión" as CU11
   usecase "CU-12 Iniciar sesión institucional" as CU12
+  usecase "CU-13 Revisar aporte como Experto" as CU13
 }
 Autor -- CU1
 Academico -- CU1
@@ -31,6 +33,8 @@ Moderador -- CU2
 Moderador -- CU3
 Moderador -- CU10
 Moderador -- CU11
+Moderador -- CU13
+Experto -- CU13
 Consultante -- CU6
 Consultante -- CU7
 Consultante -- CU8

@@ -31,6 +31,7 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 |---|---|---|
 | `Estudiante` | Persona con cuenta `@estudiantes.uv.cl` que puede aportar, consultar o participar en la revisión comunitaria. Sus aportes pasan por revisión. | identificador, nombre, correo |
 | `Academico` | Tipo de cuenta institucional previsto en HU-12. Sus aportes siguen la revisión comunitaria. | identificador, nombre, correo |
+| `Experto` | Persona con conocimiento especializado en una materia (puede ser un profesor externo) que revisa aportes de materias específicas cuando la comunidad lo solicita. | identificador, nombre, correo, especialidad |
 | `ComunidadEstudiantil` | Colectivo de estudiantes que organiza las revisiones y decide sobre el material. | identificador, nombre |
 | `Aporte` | Envío de apuntes realizado por un estudiante o académico para revisión y eventual publicación. | identificador, fechaEnvio, procedenciaDeclarada, estado |
 | `VersionApunte` | Archivo concreto presentado, aprobado, rechazado o reemplazado. | numero, nombreArchivo, referenciaArchivo, estado |
@@ -52,6 +53,7 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 | Aporte contiene VersionApunte | Aporte `1`, VersionApunte `1..*` | **Composición (rombo lleno):** las versiones pertenecen a su aporte e historial. |
 | ComunidadEstudiantil decide RevisionAcademica | ComunidadEstudiantil `1`, RevisionAcademica `0..*` | Asociación: la decisión es comunitaria y queda fundamentada. |
 | Estudiante del equipo de moderación registra RevisionAcademica | Estudiante `1`, RevisionAcademica `0..*` | Asociación: conserva la identidad de quien registra la decisión. |
+| Experto revisa RevisionAcademica | Experto `0..1`, RevisionAcademica `0..*` | Asociación: un experto puede ser convocado para revisar materias específicas. |
 | VersionApunte conserva RevisionAcademica | VersionApunte `1`, RevisionAcademica `0..*` | **Composición (rombo lleno):** cada revisión pertenece a una versión concreta. |
 | VersionApunte recibe ReporteError | VersionApunte `1`, ReporteError `0..*` | Asociación: los reportes se refieren a una versión determinada. |
 | Estudiante informa ReporteError | Estudiante `1`, ReporteError `0..*` | Asociación: se identifica al consultante que reportó el error. |
@@ -64,7 +66,7 @@ Fuente: [`modelo-dominio-clasificacion.puml`](./diagramas/modelo-dominio-clasifi
 
 ## Decisiones de modelado
 
-- **Roles y tipos de cuenta:** `Estudiante autor`, `Estudiante consultante` y `Comunidad estudiantil` son actores del diagrama de casos de uso; no crean clases por sí solos. El tipo de cuenta institucional sí se distingue: `Estudiante` (`@estudiantes.uv.cl`) y `Academico` (`@uv.cl`). La comunidad se representa como un colectivo asociado a los estudiantes.
+- **Roles y tipos de cuenta:** `Estudiante autor`, `Estudiante consultante` y `Comunidad estudiantil` son actores del diagrama de casos de uso; no crean clases por sí solos. El tipo de cuenta institucional sí se distingue: `Estudiante` (`@estudiantes.uv.cl`) y `Academico` (`@uv.cl`). La comunidad se representa como un colectivo asociado a los estudiantes. `Experto` es un rol especializado (no necesariamente cuenta institucional) convocado por la comunidad para revisar materias específicas.
 - **Revisión comunitaria:** la comunidad es el colectivo que organiza y modera. No se crean cargos independientes de los estudiantes. El modelo no presupone una votación ni un mecanismo de consenso no especificado.
 - **Resultado de revisión:** la comunidad aprueba una versión y entonces se publica, o la rechaza con retroalimentación y no se publica. Una versión corregida requiere revisión nueva; no hereda la aprobación de versiones anteriores.
 - **Integraciones externas:** almacenamiento de archivos y correo no son entidades del dominio; figuran únicamente en los diagramas donde interactúan con el sistema.

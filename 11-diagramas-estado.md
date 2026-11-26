@@ -9,7 +9,7 @@ Los estados representan condiciones de las entidades del dominio. Los eventos in
 
 ![EST-01: estados de una versión](./diagramas/est1-01-ev3.png)
 
-!Fuente editable: [`est-01.puml`](./diagramas/est-01.puml) (legacy)
+Fuente editable: [`est-01.puml`](./diagramas/est-01.puml)
 
 ### Tabla de transiciones
 
@@ -19,9 +19,13 @@ Los estados representan condiciones de las entidades del dominio. Los eventos in
 | Recibida | validarAporte | Archivo y clasificación válidos | Ingresar en la cola compartida | PendienteRevision |
 | Recibida | validarAporte | Archivo o clasificación inválidos | Informar observaciones | RequiereCorreccion |
 | PendienteRevision | registrarDecision | La versión vigente sigue pendiente y el Moderador envía una decisión válida | Iniciar la resolución en la misma transacción | EnRevision |
+| PendienteRevision | solicitarRevisionExperto | La versión corresponde a una materia especializada | Derivar a Experto | EnRevisionExperto |
 | EnRevision | registrarDecision | Comunidad aprueba | Registrar evaluación | Aprobada |
 | EnRevision | registrarDecision | Comunidad rechaza | Guardar feedback obligatorio | Rechazada |
 | EnRevision | registrarDecision | Comunidad solicita corrección | Guardar observaciones | RequiereCorreccion |
+| EnRevisionExperto | evaluacionExperto | Experto aprueba | Registrar evaluación del Experto | Aprobada |
+| EnRevisionExperto | evaluacionExperto | Experto rechaza | Guardar feedback obligatorio del Experto | Rechazada |
+| EnRevisionExperto | evaluacionExperto | Experto solicita corrección | Guardar observaciones del Experto | RequiereCorreccion |
 | Aprobada | publicarVersion | No aplica | Publicar la versión aprobada | Publicada |
 | Publicada | confirmarReporteDeError | Reporte confirmado | Conservar antecedente | BajoInvestigacion |
 | BajoInvestigacion | retirarVersion | Error no corregible | Dejar de publicar | Retirada |
@@ -31,7 +35,7 @@ Los estados representan condiciones de las entidades del dominio. Los eventos in
 | Retirada | cerrarVersion | No aplica | Conservar historial | Final |
 | Sustituida | cerrarVersion | No aplica | Conservar historial | Final |
 
-Una versión rechazada no cambia a publicada. El estudiante puede crear otra versión corregida del mismo aporte, que vuelve a quedar pendiente de revisión.
+Una versión rechazada no cambia a publicada. El estudiante puede crear otra versión corregida del mismo aporte, que vuelve a quedar pendiente de revisión. Para materias especializadas, la versión puede derivarse a un Experto desde PendienteRevision.
 
 ## EST-02: Ciclo de vida de Notificacion
 

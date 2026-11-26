@@ -29,14 +29,17 @@ Fuente editable: [`dss-01.puml`](./diagramas/dss-01.puml)
 - Historia relacionada: [HU-03](./04-historias-usuario.md#hu-03)
 - Requisitos: [RP-04, RP-06, RP-07](./03-requisitos.md)
 - Integración: servicio externo de correo (propuesto).
+- Actor externo: Experto en la materia (convocado por la comunidad).
 
-![DSS-02: Resolución comunitaria](./diagramas/dss-02.png)
+![DSS-02: Resolución comunitaria con Experto](./diagramas/dss-02.png)
 
 Fuente editable: [`dss-02.puml`](./diagramas/dss-02.puml)
 
 **Escenario principal:** cualquier Moderador abre una versión pendiente, revisa el archivo y registra la decisión. Se guarda su identidad y solo se confirma la primera decisión válida. Una aprobación habilita la publicación de esa versión; un rechazo impide la publicación y debe ir acompañado de retroalimentación que el autor pueda consultar.
 
-**Variantes `alt`:** aprobación o rechazo fundamentado; servicio de correo acepta el aviso o registra un fallo. La falla del correo no modifica la decisión guardada.
+**Variante `alt` — Materia especializada:** si el aporte corresponde a una materia que requiere conocimiento especializado, la comunidad puede solicitar la revisión de un Experto. El Experto evalúa la versión y entrega su decisión (aprobación, rechazo o solicitud de corrección) con observaciones fundamentadas.
+
+**Variantes `alt`:** aprobación o rechazo fundamentado (por comunidad o Experto); servicio de correo acepta el aviso o registra un fallo. La falla del correo no modifica la decisión guardada.
 
 ## Consistencia del proceso
 

@@ -21,6 +21,7 @@ class EstadoVersion(str, Enum):
     REQUIERE_CORRECCION = "RequiereCorreccion"
     FINAL = "Final"
     EN_REVISION = "EnRevision"
+    EN_REVISION_EXPERTO = "EnRevisionExperto"
     APROBADA = "Aprobada"
     PUBLICADA = "Publicada"
     RECHAZADA = "Rechazada"
@@ -30,6 +31,11 @@ class DecisionRevision(str, Enum):
     APROBACION = "Aprobacion"
     RECHAZO = "Rechazo"
     SOLICITUD_CORRECCION = "SolicitudCorreccion"
+
+
+class TipoRevisor(str, Enum):
+    COMUNIDAD = "comunidad"
+    EXPERTO = "experto"
 
 
 @dataclass
@@ -69,8 +75,41 @@ class VersionApunte:
     def esta_pendiente_de_revision(self) -> bool:
         return self.estado is EstadoVersion.PENDIENTE_REVISION
 
+    def esta_en_revision_experto(self) -> bool:
+        return self.estado is EstadoVersion.EN_REVISION_EXPERTO
+
     def requiere_correccion(self) -> bool:
         return self.estado is EstadoVersion.REQUIERE_CORRECCION
 
     def esta_final(self) -> bool:
         return self.estado is EstadoVersion.FINAL
+
+
+@dataclass
+class Experto:
+    id: int | None
+    nombre: str
+    correo: str
+    especialidad: str
+    creado_en: datetime | None = None
+
+
+@dataclass
+class RevisionAcademica:
+    id: int | None
+    version_id: int
+    comunidad_id: int
+    fecha: datetime
+    decision: DecisionRevision
+    alcance: str
+    observaciones: str
+    tipo_revisor: TipoRevisor = TipoRevisor.COMUNIDAD
+    revisor_id: int | None = None          # Moderador (cuando comunidad)
+    experto_id: int | None = None          # Experto (cuando experto)
+    especialidad_registrada: str | None = None  # Denormalizada para ficha
+
+    def es_por_comunidad(self) -> bool:
+        return self.tipo_revisor is TipoRevisor.COMUNIDAD
+
+    def es_por_experto(self) -> bool:
+        return self.tipo_revisor is TipoRevisor.EXPERTO

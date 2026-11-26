@@ -41,6 +41,12 @@ REVISORES = [
     ("Revisor Demo 2", "revisor2@demo.cl", ("REQ",)),
 ]
 
+EXPERTOS = [
+    ("Dr. Juan Pérez", "juan.perez@experto.cl", "Física Cuántica"),
+    ("Dra. María González", "maria.gonzalez@experto.cl", "Cálculo Avanzado"),
+    ("Dr. Carlos Rodríguez", "carlos.rodriguez@experto.cl", "Estructuras de Datos"),
+]
+
 
 def sembrar(conexion: sqlite3.Connection) -> None:
     """Inserta catálogos, perfiles y revisores sin duplicarlos."""
@@ -142,6 +148,17 @@ def sembrar(conexion: sqlite3.Connection) -> None:
                     (codigo_ramo, correo),
                 )
 
+        for nombre, correo, especialidad in EXPERTOS:
+            conexion.execute(
+                """
+                INSERT INTO expertos (nombre, correo, especialidad)
+                VALUES (?, ?, ?)
+                ON CONFLICT(correo) DO UPDATE
+                    SET nombre = excluded.nombre, especialidad = excluded.especialidad
+                """,
+                (nombre, correo, especialidad),
+            )
+
 
 def main() -> None:
     ruta = ruta_db_por_defecto()
@@ -159,6 +176,7 @@ def main() -> None:
                 "estudiantes",
                 "comunidades_estudiantiles",
                 "estudiantes_ramos_habilitados",
+                "expertos",
             )
         }
     finally:

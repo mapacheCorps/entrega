@@ -1,6 +1,16 @@
 <dl class="datos">
   <dt>Decisión</dt>
-  <dd>{{ 'Rechazo' if revision.decision == 'Rechazo' else 'Solicitud de corrección' }}</dd>
+  <dd>
+    {{ 'Rechazo' if revision.decision == 'Rechazo' else 'Solicitud de corrección' }}
+    {% if revision.tipo_revisor == 'experto' %}
+      <span class="badge experto">Por Experto: {{ revision.nombre_experto or revision.experto_nombre }}{% if revision.especialidad_registrada %} ({{ revision.especialidad_registrada }}){% endif %}</span>
+    {% else %}
+      <span class="badge comunidad">Por Comunidad Estudiantil</span>
+    {% endif %}
+  </dd>
   <dt>Alcance</dt><dd>{{ revision.alcance }}</dd>
   <dt>Observaciones</dt><dd>{{ revision.observaciones }}</dd>
+  {% if revision.tipo_revisor == 'experto' and revision.especialidad_registrada %}
+    <dt>Especialidad del Experto</dt><dd>{{ revision.especialidad_registrada }}</dd>
+  {% endif %}
 </dl>

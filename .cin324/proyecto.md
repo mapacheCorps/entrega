@@ -42,7 +42,7 @@
 |----------|--------|--------------------|-------|----------------|
 | HU-01 | hecha · validada y archivada | `openspec/changes/archive/2026-11-12-hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Especificaciones sincronizadas a `openspec/specs/gestion-aportes/spec.md`. |
 | HU-02 | revisión directa implementada y archivada | [Cambio inicial](../openspec/changes/archive/2026-11-21-hu-02-asignar-responsable-revision) y [ajuste vigente](../openspec/changes/archive/2026-11-21-ajuste-hu-02-revision-directa) | 2026-11-21 | Cola compartida. La asignación queda como historial. |
-| HU-03 | implementada y archivada | [Cambio HU-03](../openspec/changes/archive/2026-11-21-hu-03-registrar-revision-comunitaria) y [ajuste de revisión directa](../openspec/changes/archive/2026-11-21-ajuste-hu-02-revision-directa) | 2026-11-21 | Se registra al Moderador que confirma la primera decisión de la versión. |
+| HU-03 | **en curso** (extensión: revisión por Experto) | `ajuste-hu-03-experto-revision` (nuevo) | 2026-11-26 | Extiende HU-03 con flujo de revisión por Experto (CU-13) para materias especializadas. Ficha confirmada en `.cin324/historias/HU-03.md`. |
 | HU-04 | implementada y archivada | [Cambio HU-04](../openspec/changes/archive/2026-11-21-hu-04-enviar-version-corregida) | 2026-11-21 | El reenvío válido vuelve a la cola de revisión directa. |
 | HU-05 | pendiente | — | — | Requiere decisiones de revisión (HU-03). |
 | HU-06 | pendiente | — | — | Requiere versiones publicadas (HU-03). |

@@ -19,7 +19,7 @@ def test_migracion_se_aplica_una_sola_vez(tmp_path):
         conexion.close()
 
     assert primeras == [
-        "001_inicial.sql", "002_asignacion_revision.sql", "003_revision_comunitaria.sql", "004_revision_directa.sql"
+        "001_inicial.sql", "002_asignacion_revision.sql", "003_revision_comunitaria.sql", "004_revision_directa.sql", "005_experto_revision.sql"
     ]
     assert segundas == []
     assert [fila["version"] for fila in filas] == primeras
@@ -92,7 +92,7 @@ def test_migracion_hu02_conserva_un_aporte_corregido_y_su_historial(tmp_path):
             conexion.execute("UPDATE versiones_apunte SET estado = 'Final' WHERE id = 10")
 
         assert aplicar_migraciones(conexion) == [
-            "002_asignacion_revision.sql", "003_revision_comunitaria.sql", "004_revision_directa.sql"
+            "002_asignacion_revision.sql", "003_revision_comunitaria.sql", "004_revision_directa.sql", "005_experto_revision.sql"
         ]
         assert conexion.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         assert conexion.execute("PRAGMA foreign_key_check").fetchall() == []
@@ -112,7 +112,7 @@ def test_migracion_hu02_conserva_un_aporte_corregido_y_su_historial(tmp_path):
 def test_revision_directa_migra_un_aporte_asignado_y_conserva_su_historial(tmp_path):
     migraciones_hu03 = tmp_path / "hu03"
     migraciones_hu03.mkdir()
-    for nombre in ("001_inicial.sql", "002_asignacion_revision.sql", "003_revision_comunitaria.sql"):
+    for nombre in ("001_inicial.sql", "002_asignacion_revision.sql", "003_revision_comunitaria.sql", "005_experto_revision.sql"):
         (migraciones_hu03 / nombre).write_bytes((MIGRACIONES_DIR / nombre).read_bytes())
 
     conexion = conectar(tmp_path / "app.db")

@@ -9,9 +9,9 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 | [RP-01](./03-requisitos.md) | HU-01 | CU-01 | DSS-01 | EST-01 | Aporte, VersionApunte, Estudiante, Academico |
 | [RP-02](./03-requisitos.md) | HU-01 | CU-01 | DSS-01 | EST-01 | Aporte, VersionApunte |
 | [RP-03](./03-requisitos.md) | HU-02 | CU-02 | DSS-02 | EST-01 | Aporte, VersionApunte, Estudiante, ComunidadEstudiantil |
-| [RP-04](./03-requisitos.md) | HU-03 | CU-03 | DSS-02 | EST-01 | RevisionAcademica, VersionApunte, Estudiante |
+| [RP-04](./03-requisitos.md) | HU-03 | CU-03, CU-13 | DSS-02 | EST-01 | RevisionAcademica, VersionApunte, Estudiante, Experto |
 | [RP-05](./03-requisitos.md) | HU-04 | CU-04 | - | EST-01 | Aporte, VersionApunte, RevisionAcademica |
-| [RP-06](./03-requisitos.md) | HU-03 | CU-03 | DSS-02 | EST-01 | VersionApunte, RevisionAcademica, Academico |
+| [RP-06](./03-requisitos.md) | HU-03 | CU-03, CU-13 | DSS-02 | EST-01 | VersionApunte, RevisionAcademica, Academico, Experto |
 | [RP-07](./03-requisitos.md) | HU-05 | CU-05 | DSS-02 | EST-02 | Aporte, VersionApunte, Notificacion |
 | [RP-08](./03-requisitos.md) | HU-06 | CU-06 | - | - | Aporte, VersionApunte, Carrera, Ramo, PeriodoAcademico, TemaUnidad |
 | [RP-09](./03-requisitos.md) | HU-07 | CU-07 | - | EST-01 | VersionApunte, RevisionAcademica, Aporte |
@@ -23,9 +23,9 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 | [RP-15](./03-requisitos.md) | HU-06 | CU-06 | - | - | Aporte, VersionApunte, Ramo, TemaUnidad |
 | [RP-16](./03-requisitos.md) | HU-01, HU-06, HU-08 | CU-01, CU-06, CU-08 | DSS-01 | EST-01 | Aporte, VersionApunte, Ramo |
 | [RP-17](./03-requisitos.md) | HU-06 | CU-06 | - | - | Aporte, VersionApunte |
-| [RP-18](./03-requisitos.md) | HU-03, HU-11 | CU-03, CU-11 | DSS-02 | EST-01 | Estudiante, RevisionAcademica, VersionApunte |
+| [RP-18](./03-requisitos.md) | HU-03, HU-11 | CU-03, CU-11, CU-13 | DSS-02 | EST-01 | Estudiante, Experto, RevisionAcademica, VersionApunte |
 | [RP-19](./03-requisitos.md) | HU-12 | CU-12 | - | - | Estudiante, Academico |
-| [RP-20](./03-requisitos.md) | HU-01, HU-02, HU-03 | CU-01, CU-02, CU-03 | DSS-01, DSS-02 | EST-01 | Aporte, VersionApunte, RevisionAcademica |
+| [RP-20](./03-requisitos.md) | HU-01, HU-02, HU-03 | CU-01, CU-02, CU-03, CU-13 | DSS-01, DSS-02 | EST-01 | Aporte, VersionApunte, RevisionAcademica, Experto |
 
 ## Observaciones
 
@@ -64,11 +64,11 @@ Una fila por cada requisito de producto `RP-01` a `RP-20` de la [Entrega 1](./03
 ## Coherencia con el TO-BE
 
 - **C01-C02:** RP-01/RP-02 → HU-01 → CU-01 → DSS-01 → Aporte y VersionApunte (`P01`-`P04`).
-- **C03/C05:** RP-04/RP-06/RP-07 → HU-03/HU-05 → CU-03/CU-05 → DSS-02 → RevisionAcademica, VersionApunte y Notificacion (`P06`, `P09`-`P11`).
+- **C03/C05:** RP-04/RP-06/RP-07 → HU-03/HU-05 → CU-03, CU-13/CU-05 → DSS-02 → RevisionAcademica, VersionApunte, Experto y Notificacion (`P06`, `P09`-`P11`).
 - **C04:** RP-05/RP-14 → HU-04 → CU-04 → EST-01 (`P07`, `P08`, `P13`, `P14`).
 - **C06-C08:** RP-08/RP-09/RP-10 → HU-06/HU-07/HU-08 → CU-06/CU-07/CU-08 → clases de clasificación y VersionApunte (`B01`-`B10`).
 - **C09-C10:** RP-11/RP-12/RP-13 → HU-10/HU-09/HU-11 → CU-10/CU-09/CU-11 (`P12`, `E01`-`E11`).
-- **C11:** RP-19 → HU-12 → CU-12 corresponde al acceso institucional previsto. RP-20 vincula la validación, la cola y la decisión de HU-01 a HU-03.
+- **C11:** RP-19 → HU-12 → CU-12 corresponde al acceso institucional previsto. RP-20 vincula la validación, la cola y la decisión de HU-01 a HU-03 (incluye revisión por Experto).
 - **Calidad:** RP-15/RP-16/RP-17/RP-18 son restricciones no funcionales que deben comprobarse con baterías de pruebas; los diagramas no demuestran por sí mismos su satisfacción.
 
 ## Notas de alcance

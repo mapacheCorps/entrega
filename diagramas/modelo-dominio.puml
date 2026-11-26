@@ -24,6 +24,13 @@ class Academico {
   correo: texto
 }
 
+class Experto {
+  identificador: texto
+  nombre: texto
+  correo: texto
+  especialidad: texto
+}
+
 class Aporte {
   identificador: texto
   fechaEnvio: fecha
@@ -53,6 +60,7 @@ Aporte "1" *-- "1..*" VersionApunte : contiene
 VersionApunte "1" *-- "0..*" RevisionAcademica : conserva
 ComunidadEstudiantil "1" -- "0..*" RevisionAcademica : decide
 Estudiante "1" -- "0..*" RevisionAcademica : registra como Moderador
+Experto "0..1" -- "0..*" RevisionAcademica : revisa como Experto
 
 note bottom of Aporte
   Cada Aporte tiene exactamente un autor:

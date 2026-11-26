@@ -4,7 +4,9 @@ title DSS-02: Resolver revision y comunicar feedback (HU-02 / HU-03 / HU-05)
 actor "Moderador de la comunidad" as COM
 participant "Torpedos universitarios\n(caja negra)" as SIS
 participant "Servicio externo de correo\n(propuesto)" as COR <<sistema externo>>
+actor "Experto en la materia" as EXP <<actor externo>>
 actor "Estudiante autor" as AUT
+
 COM -> SIS : Consultar cola compartida
 SIS --> COM : Versiones vigentes pendientes de revision
 COM -> SIS : Abrir version y consultar su archivo
@@ -14,28 +16,41 @@ alt La version ya fue resuelta
   SIS --> COM : Informar que ya existe una decision
 else Primera decision valida
   note right of SIS: Se conserva el Moderador que registra la decision.
-alt Aporte aprobado por la comunidad
-  SIS --> COM : Confirmar aprobacion y publicacion de la version
-  SIS -> COR : Solicitar aviso de aprobacion y enlace publicado
-else Aporte rechazado por la comunidad
-  SIS --> COM : Confirmar rechazo, sin publicar la version
-  SIS -> COR : Solicitar aviso de rechazo y retroalimentacion
-else Solicitud de correccion
-  SIS --> COM : Confirmar solicitud y conservar observaciones
+  alt Aporte aprobado por la comunidad
+    SIS --> COM : Confirmar aprobacion y publicacion de la version
+    SIS -> COR : Solicitar aviso de aprobacion y enlace publicado
+  else Aporte rechazado por la comunidad
+    SIS --> COM : Confirmar rechazo, sin publicar la version
+    SIS -> COR : Solicitar aviso de rechazo y retroalimentacion
+  else Solicitud de correccion
+    SIS --> COM : Confirmar solicitud y conservar observaciones
+  else Materia especializada - se requiere Experto
+    SIS --> COM : Confirmar solicitud de revision por Experto
+    SIS -> EXP : Solicitar revision de version (materia especializada)
+    EXP -> SIS : Entregar evaluacion y observaciones
+    alt Experto aprueba
+      SIS --> COM : Informar aprobacion por Experto
+      SIS -> COR : Solicitar aviso de aprobacion y enlace publicado
+    else Experto rechaza o solicita correccion
+      SIS --> COM : Informar decision del Experto
+      SIS -> COR : Solicitar aviso de rechazo/correccion y retroalimentacion
+    end
+  end
 end
 opt Aviso de resolucion final solicitado (HU-05)
-alt Servicio acepta el aviso
-  COR --> SIS : Confirmar aceptacion para envio
-  COR -> AUT : Comunicar decision y observaciones de la comunidad
-else Servicio no acepta el aviso
-  COR --> SIS : Informar fallo del aviso
-  SIS --> COM : Conservar decision y registrar aviso pendiente
-end
+  alt Servicio acepta el aviso
+    COR --> SIS : Confirmar aceptacion para envio
+    COR -> AUT : Comunicar decision y observaciones de la comunidad
+  else Servicio no acepta el aviso
+    COR --> SIS : Informar fallo del aviso
+    SIS --> COM : Conservar decision y registrar aviso pendiente
+  end
 end
 end
 note over SIS,AUT
   Un rechazo incluye feedback para que el autor pueda
   corregir y presentar una nueva version para revision.
   El correo externo es una integracion propuesta.
+  Para materias especializadas, la comunidad puede convocar a un Experto.
 end note
 @enduml

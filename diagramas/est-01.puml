@@ -6,9 +6,13 @@ title EST-01: Ciclo de vida de VersionApunte
 Recibida --> PendienteRevision : validarAporte [archivo y clasificacion validos]
 Recibida --> RequiereCorreccion : validarAporte [archivo o clasificacion invalidos]
 PendienteRevision --> EnRevision : registrarDecision [version vigente y Moderador autorizado]
+PendienteRevision --> EnRevisionExperto : solicitarRevisionExperto [materia especializada]
 EnRevision --> Aprobada : registrarDecision [comunidad aprueba]
 EnRevision --> Rechazada : registrarDecision [comunidad rechaza] / guardarFeedback
 EnRevision --> RequiereCorreccion : registrarDecision [solicitud de correccion] / guardarFeedback
+EnRevisionExperto --> Aprobada : evaluacionExperto [experto aprueba]
+EnRevisionExperto --> Rechazada : evaluacionExperto [experto rechaza] / guardarFeedback
+EnRevisionExperto --> RequiereCorreccion : evaluacionExperto [experto solicita correccion] / guardarFeedback
 Aprobada --> Publicada : publicarVersion
 Publicada --> BajoInvestigacion : confirmarReporteDeError
 BajoInvestigacion --> Retirada : retirarVersion [error no corregible]
