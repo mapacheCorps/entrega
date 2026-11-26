@@ -11,35 +11,12 @@ Documentación de Ingeniería de Requisitos, CIN324.
 - Rodrigo Sances
 - Benjamín Isasmendi
 
-### Requisitos previos
+### Requisitos
 
-- **Python 3.11+** (en Windows se usa el lanzador `py`)
-- **Git** (para clonar el repositorio)
-- **Node.js 20.19+** (solo si vas a instalar OpenSpec CLI para desarrollo con skills)
+- Python 3.11 o superior. En Windows se usa el lanzador `py`.
+- Git (opcional, para clonar el repositorio).
 
-### Instalación
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/mapacheCorps/entrega.git
-cd entrega
-
-# 2. Crear y activar entorno virtual
-py -m venv .venv
-.\.venv\Scripts\activate
-
-# 3. Instalar dependencias de la aplicación
-pip install -r requirements.txt
-
-# 4. Inicializar base de datos (migraciones + datos de ejemplo)
-py -m app.db.seed
-
-# 5. (Opcional) Instalar OpenSpec CLI para desarrollo con skills
-npm install -g @fission-ai/openspec@latest
-# Luego en la carpeta del repo: openspec init --tools opencode
-```
-
-### Ejecutar la aplicación
+### Ejecutar
 
 ```
 py -m venv .venv
@@ -96,8 +73,6 @@ Desde la raíz del repositorio:
 ```
 .\.venv\Scripts\python.exe -m pytest
 ```
-**103 tests pasan** (97 originales + 6 nuevos: `test_gherkin_hu03_experto.py`)
-
 La [matriz de trazabilidad](./12-trazabilidad.md#código-y-pruebas-de-la-entrega-3)
 enlaza las historias con su código y pruebas.
 
