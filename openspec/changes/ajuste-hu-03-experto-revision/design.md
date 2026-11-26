@@ -66,7 +66,14 @@ Stack: Python 3.14 + FastAPI + Jinja2 + SQLite. Migraciones en `app/db/migration
 
 ### 4. UI: selector de rol extendido + panel Experto simulado
 
-**Opción elegida:** Selector de rol actual (Estudiante/Moderador) se extiende con "Experto (demo)". Al elegir Experto, se muestra lista de versiones en `EnRevisionExperto` con botón "Evaluar". El Moderador ve en la cola un botón "Derivar a Experto" para versiones en `PendienteRevision`.
+**Opción elegida:** Selector de rol actual (Estudiante/Moderador) se extiende con "Experto (demo)".
+
+- **En página de inicio (`/`)**: según `rol_actual`, se muestra:
+  - `Estudiante` → botón "Enviar un aporte" + enlace "Ver catálogo"
+  - `Moderador` → botón "Revisar aportes" (cola comunidad) + enlace "Ver catálogo"
+  - `Experto` → **botón "Panel de Experto" (enlace a `/moderacion/experto/aportes`)** + enlace "Ver catálogo"
+- **Panel de Experto** (`/moderacion/experto/aportes`): lista de versiones en `EnRevisionExperto` con botón "Evaluar"
+- **Panel de Moderador** (`/moderacion/aportes`): botón "Derivar a Experto" para versiones en `PendienteRevision`
 
 **Rationale:**
 - Consistencia con arquitectura actual (selector de rol demo)

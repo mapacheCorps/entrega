@@ -17,10 +17,11 @@ def conexion(ruta_db):
 
 def test_catalogos_sembrados(conexion):
     repo = CatalogoRepositorio(conexion)
-    assert len(repo.listar_carreras()) == 3
-    assert len(repo.listar_ramos()) == 5
+    # Actualizado: agregada carrera ICF + 3 ramos expertos
+    assert len(repo.listar_carreras()) == 4
+    assert len(repo.listar_ramos()) == 8
     assert len(repo.listar_periodos()) == 2
-    assert len(repo.listar_temas()) == 8
+    assert len(repo.listar_temas()) == 14
     assert repo.obtener_estudiante_por_rol("Estudiante")["nombre"] == "Estudiante Demo"
     assert repo.obtener_estudiante_por_rol("Moderador")["nombre"] == "Comunidad Estudiantil"
     assert repo.obtener_estudiante_por_rol("Ayudante") is None

@@ -13,15 +13,22 @@
   </p>
   {% if es_estudiante %}
     <a class="boton" href="{{ url_for('formulario_aporte') }}">Enviar un aporte</a>
+  {% elif rol_actual == 'Moderador' %}
+    <p class="aviso">
+      El perfil activo es <strong>Moderador</strong> (Comunidad Estudiantil). Para enviar un aporte,
+      cambia al perfil <strong>Estudiante</strong> en el selector superior.
+    </p>
+    <a class="boton" href="{{ url_for('panel_moderacion') }}">Revisar aportes</a>
+  {% elif rol_actual == 'Experto' %}
+    <p class="aviso">
+      El perfil activo es <strong>Experto</strong>.
+    </p>
+    <a class="boton" href="{{ url_for('panel_experto') }}">Panel de Experto</a>
   {% else %}
     <p class="aviso">
       El perfil activo es <strong>{{ rol_actual }}</strong>. Para enviar un aporte,
       cambia al perfil <strong>Estudiante</strong> en el selector superior.
     </p>
-    {% if rol_actual == 'Moderador' %}
-      <p>El perfil Moderador representa a la Comunidad Estudiantil.</p>
-      <a class="boton" href="{{ url_for('panel_moderacion') }}">Revisar aportes</a>
-    {% endif %}
   {% endif %}
   <p><a class="enlace" href="{{ url_for('catalogo') }}">Ver catálogo de apuntes</a></p>
 </section>

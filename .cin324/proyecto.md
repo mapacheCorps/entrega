@@ -3,7 +3,7 @@
 ## Proyecto
 - Nombre: Torpedos universitarios
 - Repositorio de documentación: esta carpeta
-- Última auditoría: 2026-11-05 — resultado: con supuestos
+- Última auditoría: 2026-11-26 — resultado: completo (HU-03 Experto implementado)
 
 ## Mapa de artefactos (rutas detectadas)
 | Artefacto | Ruta(s) | Estado |
@@ -42,7 +42,7 @@
 |----------|--------|--------------------|-------|----------------|
 | HU-01 | hecha · validada y archivada | `openspec/changes/archive/2026-11-12-hu-01-enviar-clasificar-aporte` | 2026-11-12 | Código ajustado y 62 pruebas aprobadas. Selección dependiente y confirmación útil verificadas en navegador. Especificaciones sincronizadas a `openspec/specs/gestion-aportes/spec.md`. |
 | HU-02 | revisión directa implementada y archivada | [Cambio inicial](../openspec/changes/archive/2026-11-21-hu-02-asignar-responsable-revision) y [ajuste vigente](../openspec/changes/archive/2026-11-21-ajuste-hu-02-revision-directa) | 2026-11-21 | Cola compartida. La asignación queda como historial. |
-| HU-03 | **en curso** (extensión: revisión por Experto) | `ajuste-hu-03-experto-revision` (nuevo) | 2026-11-26 | Extiende HU-03 con flujo de revisión por Experto (CU-13) para materias especializadas. Ficha confirmada en `.cin324/historias/HU-03.md`. |
+| HU-03 | **hecha · validada y archivada** | `openspec/changes/archive/ajuste-hu-03-experto-revision` | 2026-11-26 | Extiende HU-03 con flujo de revisión por Experto (CU-13) para materias especializadas. Panel Experto en `/`, derivación desde Moderador, evaluación (aprobar/rechazar/corregir), notificación HU-05. 103 pruebas pasando. |
 | HU-04 | implementada y archivada | [Cambio HU-04](../openspec/changes/archive/2026-11-21-hu-04-enviar-version-corregida) | 2026-11-21 | El reenvío válido vuelve a la cola de revisión directa. |
 | HU-05 | pendiente | — | — | Requiere decisiones de revisión (HU-03). |
 | HU-06 | pendiente | — | — | Requiere versiones publicadas (HU-03). |
@@ -61,3 +61,4 @@
 | Cambio | Historia afectada | Motivo | Fecha |
 |--------|-------------------|--------|-------|
 | Ajuste OBS-1/OBS-2 | HU-01 | Filtrar ramos por carrera y temas por ramo; mostrar solo información útil en la confirmación | 2026-11-12 |
+| Extensión Experto (HU-03) | HU-03 | Añadir flujo de revisión por Experto para materias especializadas (CU-13): tabla `experto`, estado `EnRevisionExperto`, panel Experto, derivación, evaluación, notificación | 2026-11-26 |

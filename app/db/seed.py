@@ -10,6 +10,7 @@ CARRERAS = [
     ("ICI", "Ingeniería Civil Informática"),
     ("ICO", "Ingeniería Comercial"),
     ("DER", "Derecho"),
+    ("ICF", "Ingeniería Civil Física"),
 ]
 
 RAMOS = [
@@ -18,6 +19,10 @@ RAMOS = [
     ("ICI", "REQ", "Ingeniería de Requisitos"),
     ("ICO", "MIC", "Microeconomía"),
     ("DER", "DCIV", "Derecho Civil"),
+    # Ramos para especialidades de Expertos (seed)
+    ("ICF", "FCUA", "Física Cuántica"),
+    ("ICF", "FNUC", "Física Nuclear"),
+    ("ICI", "CAVA", "Cálculo Avanzado"),
 ]
 
 PERIODOS = [(2025, 2), (2026, 1)]
@@ -28,6 +33,10 @@ TEMAS = {
     ("ICI", "REQ"): [(1, "Elicitación de requisitos"), (2, "Especificación")],
     ("ICO", "MIC"): [(1, "Oferta y demanda")],
     ("DER", "DCIV"): [(1, "Obligaciones civiles")],
+    # Temas para ramos de especialidades Expertos
+    ("ICF", "FCUA"): [(1, "Principios cuánticos"), (2, "Ecuación de Schrödinger")],
+    ("ICF", "FNUC"): [(1, "Modelo de capas"), (2, "Reacciones nucleares")],
+    ("ICI", "CAVA"): [(1, "Series y sucesiones"), (2, "Análisis complejo")],
 }
 
 PERFILES = [
