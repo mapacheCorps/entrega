@@ -11,12 +11,36 @@ Documentación de Ingeniería de Requisitos, CIN324.
 - Rodrigo Sances
 - Benjamín Isasmendi
 
-### Requisitos
+### Requisitos previos
 
-- Python 3.11 o superior. En Windows se usa el lanzador `py`.
-- Git (opcional, para clonar el repositorio).
+- **Python 3.11+** (en Windows se usa el lanzador `py`)
+- **Git** (para clonar el repositorio)
+- **Node.js 20.19+** (solo si vas a instalar OpenSpec CLI para desarrollo con skills)
 
-### Ejecutar
+### Instalación
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/mapacheCorps/entrega.git
+cd entrega
+
+# 2. Crear y activar entorno virtual
+py -m venv .venv
+.\.venv\Scripts\activate
+
+# 3. Instalar dependencias de la aplicación
+pip install -r requirements.txt
+
+# 4. Inicializar base de datos (migraciones + datos de ejemplo)
+py -m app.db.seed
+
+# 5. (Opcional) Instalar OpenSpec CLI para desarrollo con skills
+npm install -g @fission-ai/openspec@latest
+# Luego en la carpeta del repo: openspec init --tools opencode
+```
+
+### Ejecutar la aplicación
+
 ```
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
@@ -25,7 +49,7 @@ py -m venv .venv
 ```
 
 Abre <http://127.0.0.1:8000>. El sistema usa SQLite y ofrece los perfiles de
-demostración **Estudiante** y **Moderador**. El acceso institucional de HU-12
+demostración **Estudiante**, **Moderador** y **Experto**. El acceso institucional de HU-12
 corresponde a una etapa futura.
 
 ### Demostración de la Entrega 3
@@ -51,6 +75,56 @@ corresponde a una etapa futura.
    la ficha del aporte con su nombre y especialidad. Si aprobó, la versión
    está publicada en el catálogo.
 
-Desde la raíz del repositorio, ejecuta `.\.venv\Scripts\python.exe -m pytest`.
+### Evaluación 2 — Cambio de requerimientos (Martes 24/11 → Jueves 26/11)
+
+**Cambio implementado:** Incorporación de la figura de **Experto** para revisión de materias especializadas.
+
+| Etiqueta Git | Descripción |
+|--------------|-------------|
+| `base-eval2` | 4 HU base implementadas (HU-01 a HU-04, HU-07, HU-08) |
+| `cambio-validado` | Especificación sin IA (martes 24/11): EVALUACION2.md + artefactos actualizados |
+| `entrega-eval2` | Implementación con skills (entre sesiones): cambio `ajuste-hu-03-experto-revision` |
+
+**Artefactos de la Evaluación 2:**
+- [`eval2/CAMBIOS.md`](./eval2/CAMBIOS.md) — Registro de cambios por artefacto (requerido por rúbrica)
+- [`eval2/Presentacion_Evaluacion2_mapacheCorps.pptx`](./eval2/Presentacion_Evaluacion2_mapacheCorps.pptx) — Presentación 5 min (mapa de impacto + reflexión por artefacto)
+- [`openspec/changes/ajuste-hu-03-experto-revision/`](./openspec/changes/ajuste-hu-03-experto-revision/) — Propuesta, specs, design, tasks de OpenSpec
+
+### Pruebas
+
+Desde la raíz del repositorio:
+```
+.\.venv\Scripts\python.exe -m pytest
+```
+**103 tests pasan** (97 originales + 6 nuevos: `test_gherkin_hu03_experto.py`)
+
 La [matriz de trazabilidad](./12-trazabilidad.md#código-y-pruebas-de-la-entrega-3)
 enlaza las historias con su código y pruebas.
+
+### Estructura del proyecto
+
+```
+├── 01-proceso-as-is.md              # BPMN AS-IS
+├── 02-rediseno-to-be.md             # BPMN TO-BE
+├── 03-requisitos.md                 # Requisitos RP-01 a RP-20
+├── 04-historias-usuario.md          # HU-01 a HU-12
+├── 07-criterios-aceptacion.md       # Gherkin (27+ escenarios)
+├── 08-modelo-dominio.md             # Modelo de dominio (3 vistas UML)
+├── 09-casos-de-uso.md               # 13 CU (incluye CU-13 Experto)
+├── 10-diagramas-secuencia.md        # DSS-01, DSS-02
+├── 11-diagramas-estado.md           # EST-01, EST-02
+├── 12-trazabilidad.md               # Matriz RP ↔ HU ↔ CU ↔ DSS ↔ EST
+├── diagramas/                       # Fuentes .puml + PNG/SVG exportados
+├── app/                             # Código FastAPI + SQLite
+│   ├── db/migrations/               # 001..005 (005 = Experto)
+│   ├── templates/                   # Jinja2 (incluye experto_evaluacion.html)
+│   └── ...
+├── openspec/                        # Especificaciones OpenSpec
+│   ├── changes/ajuste-hu-03-experto-revision/
+│   └── specs/gestion-aportes/
+├── tests/                           # 103 tests (pytest)
+│   └── test_gherkin_hu03_experto.py # 6 tests nuevos flujo Experto
+└── eval2/                           # Entregables Evaluación 2
+    ├── CAMBIOS.md
+    └── Presentacion_Evaluacion2_mapacheCorps.pptx
+```
